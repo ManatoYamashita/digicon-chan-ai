@@ -1,8 +1,17 @@
 // app/layout.tsx
+
+"use client"
+
+import { useEffect } from 'react';
+import feather from 'feather-icons';
 import '../styles/globals.css';
 import Menu from '@/components/menu';
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
+  useEffect(() => {
+    feather.replace();
+  }, []);
+
   return (
     <html lang="en">
       <head>
