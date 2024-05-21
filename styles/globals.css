@@ -1,26 +1,19 @@
 :root {
-    --color-primary: #007bff;
-    --color-secondary: #6c757d;
-    --color-success: #28a745;
-    --color-danger: #dc3545;
-    --color-warning: #ffc107;
-    --color-info: #17a2b8;
-    --color-light: #f8f9fa;
-    --color-dark: #343a40;
-    --color-white: #fff;
-    --color-black: #000;
+    --dc-primary-sb: #06C0FF;
+    --dc-primary-b: #0070D9;
 }
 body {
     font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     line-height: 1.6;
-    color: var(--color-dark);
-    background-color: var(--color-light);
+    background-color: var(--dc-primary-sb);
+    background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+    min-height: 100vh;
 
-    text-align: center;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     margin: 0;
+    padding: 0;
 }

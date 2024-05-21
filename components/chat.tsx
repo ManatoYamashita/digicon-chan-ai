@@ -1,7 +1,9 @@
+"use client";
+
 import axios from 'axios';
 import React, { useState } from 'react';
 
-const Chat = () => {
+function Chat() {
   const [prompt, setPrompt] = useState('');
   const [answer, setAnswer] = useState('');
 
