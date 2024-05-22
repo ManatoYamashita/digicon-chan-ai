@@ -107,7 +107,7 @@ function Menu() {
                 </label>
             </Link>
 
-            <Link href="https://tcu-dc.net" passHref>
+            {/* <Link href="https://tcu-dc.net" passHref>
                 <label
                     title="dc"
                     htmlFor="dc"
@@ -170,7 +170,7 @@ function Menu() {
                         </g>
                     </svg>
                 </label>
-            </Link>
+            </Link> */}
         </section>
     );
 }
