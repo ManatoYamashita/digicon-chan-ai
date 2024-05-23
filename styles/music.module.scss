@@ -1,7 +1,8 @@
   .player {
-    height: fit-content;
-    background-color: #080747;
-    padding: 28px;
+    height: auto;
+    background-color: whitesmoke;
+    color: #080747;
+    padding: 2rem;
     border-radius: 20px;
   }
   
@@ -10,6 +11,7 @@
     height: 84px;
     object-fit: cover;
     border-radius: 10px;
+    margin-right: 1rem;
   }
 
   .player .controls {
@@ -17,24 +19,18 @@
     justify-content: space-around;
   }
   
-  .info {
-   color: #E1E1E6;
-  }
-  
   .info p {
     opacity: 0.68;
     font-size: 19px;
   }
   
-  .info-wrapper {
+  .infoWrapper {
     display: flex;
     align-items: center;
-    gap: 30px;
   }
   
   .player h1 {
     font-size: 27px;
-    color: #E1E1E6;
     padding-bottom: 7px;
   }
   
@@ -56,7 +52,7 @@
     height: 6px;
     width: 100%;
     display: block;
-    background: #D9D9D9;
+    background: #080747;
     opacity: 0.3;
     border-radius: 10px;
     position: absolute;
@@ -67,7 +63,7 @@
     height: 6px;
     width: 85%;
     display: block;
-    background: #D9D9D9;
+    background: #080747;
     border-radius: 10px;
   
   
@@ -76,7 +72,6 @@
   .time {
     opacity: 0.7;
     font-size: 14px;
-    color: gainsboro;
   
     display: flex;
     justify-content: space-between;
