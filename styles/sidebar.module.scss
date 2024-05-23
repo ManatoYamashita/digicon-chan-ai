@@ -97,6 +97,11 @@ $transition: $timing ease all;
     color: $text;
     transition: $transition;
 
+    .icon {
+      width: $spacer * 2;
+      fill: #6a778e;
+    }
+
     span {
       position: absolute;
       left: 100%;
