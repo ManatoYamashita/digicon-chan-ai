@@ -6,7 +6,7 @@ export default function About() {
         <>
             <h1>About</h1>
             <Music title={"title"} description={"description"} />
-            
+            <Profile title={"title"} subtitle={"subtitle"} description={"description"}/>
         </>
     )
 }
