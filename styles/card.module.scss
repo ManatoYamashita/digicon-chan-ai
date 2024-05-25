@@ -1,5 +1,7 @@
+.card { 
+}
 
-.card {
+.container {
   --surface-color: #fff;
   --curve: 40;
   position: relative;
@@ -28,7 +30,7 @@
   transition: .2s ease-in-out;
 }
 
-.card:hover .card__overlay {
+.container:hover .card__overlay {
   transform: translateY(0);
 }
 
@@ -97,4 +99,10 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
-}    
+}
+
+@media (max-width: 480px) {
+  .card {
+    transform: scale(.8);
+  }
+}

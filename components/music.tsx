@@ -4,11 +4,12 @@ import styles from "@/styles/music.module.scss";
 type Props = {
     title: String
     description: String
+    className?: string
 }
 
-function Music({ title, description }: Props) {
+function Music({ title, description, className }: Props) {
     return (
-        <section className={styles.music}>
+        <section className={`${styles.wrap} ${className}`}>
             <div className={`${styles.player} ${styles.horizontal}`}>
                 <div className={styles.wrapper}>
                     <div className={styles.infoWrapper}>

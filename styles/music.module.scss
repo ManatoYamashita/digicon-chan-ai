@@ -1,4 +1,8 @@
-  .player {
+.music { 
+  min-width: 250px;
+}
+
+.player {
     height: auto;
     background-color: whitesmoke;
     color: #080747;
@@ -7,8 +11,8 @@
   }
   
   .player .img {
-    width: 84px;
-    height: 84px;
+    width: 5rem;
+    height: 5rem;
     object-fit: cover;
     border-radius: 10px;
     margin-right: 1rem;
@@ -27,10 +31,12 @@
   .infoWrapper {
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 100%;
   }
   
   .player h1 {
-    font-size: 27px;
+    font-size: 1.5rem;
     padding-bottom: 7px;
   }
   
@@ -78,16 +84,8 @@
     padding-top: 9.6px;
   }
   
-  @media (max-width: 670px) {
+  @media (max-width: 480px) {
     .music {
-      display:flex;
-      flex-direction: column;
-  
-      max-width: 270px;
-      margin: auto;
-  
-  
-      height: auto;
-      padding-block: 60px;
+      transform: scale(.8);
     }
   }

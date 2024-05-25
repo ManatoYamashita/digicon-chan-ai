@@ -3,15 +3,16 @@ import styles from "@/styles/card.module.scss";
 import Link from "next/link";
 
 type Props = {
-    title: String
-    subtitle: String
-    description: String
+    title: string
+    subtitle: string
+    description: string
+    clsasName?: string
 }
 
-function Card({ title, subtitle, description }: Props) {
+function Card({ title, subtitle, description, clsasName }: Props) {
     return (
-        <section>
-            <Link href="" className={styles.card}>
+        <section className={clsasName}>
+            <Link href="" className={styles.container}>
                 <Image src="/images/example.jpg" className={styles.card__image} alt="cover image" width={300} height={300} />
                 <div className={styles.card__overlay}>
                     <div className={styles.card__header}>

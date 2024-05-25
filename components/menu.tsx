@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from '../styles/menu.module.scss';
 
-function Menu() {
+type Props = {
+    className?: string;
+};
+
+function Menu({className}: Props) {
     const [selected, setSelected] = useState<string>('home');
 
     useEffect(() => {
@@ -19,7 +23,7 @@ function Menu() {
     };
 
     return (
-        <section className={styles.wrap}>
+        <section className={`${styles.wrap} ${className}`}>
             <Link href="/" passHref>
                 <label
                     title="home"

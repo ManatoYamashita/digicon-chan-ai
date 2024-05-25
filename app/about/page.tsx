@@ -5,8 +5,6 @@ export default function About() {
     return (
         <>
             <h1>About</h1>
-            <Music title={"title"} description={"description"} />
-            <Profile title={"title"} subtitle={"subtitle"} description={"description"}/>
         </>
     )
 }

@@ -3,12 +3,13 @@ import styles from "@/styles/profile.module.scss";
 
 type Props = {
     title: String,
-    description: String
+    description: String,
+    className?: string
 }
 
-function Profile({ title, description }: Props) {
+function Profile({ title, description, className }: Props) {
     return (
-        <section>
+        <section className={className}>
             <div className={styles.container}>
                 <div className={styles.card}>
                     <h2 className={styles.h2}>{ title }</h2>
