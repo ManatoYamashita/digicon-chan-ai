@@ -13,7 +13,7 @@ function Card({ title, subtitle, description, clsasName }: Props) {
     return (
         <section className={clsasName}>
             <Link href="" className={styles.container}>
-                <Image src="/images/example.jpg" className={styles.card__image} alt="cover image" width={300} height={300} />
+                <Image src="/images/example.jpg" className={styles.card__image} alt="cover image" layout="fill" objectFit="cover" />
                 <div className={styles.card__overlay}>
                     <div className={styles.card__header}>
                         <svg className={styles.card__arc} xmlns="http://www.w3.org/2000/svg"><path /></svg>                     

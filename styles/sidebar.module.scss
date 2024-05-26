@@ -1,7 +1,7 @@
 $borderRadius: 10px;
 $spacer: 1rem;
 $text: #6a778e;
-$linkHeight: $spacer * 3.5;
+$linkHeight: $spacer * 2;
 $timing: 250ms;
 $transition: $timing ease all;
 
@@ -34,7 +34,7 @@ $transition: $timing ease all;
   left: $spacer;
   background: #fff;
   border-radius: 6rem;
-  padding: 2rem 0;
+  padding: 1.5rem 0;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.03);
   // height: calc(100vh - #{$spacer * 4});
   height: auto;
@@ -53,8 +53,8 @@ $transition: $timing ease all;
         position: absolute;
         opacity: 0;
         z-index: -1;
-        top: 0;
-        left: $spacer;
+        bottom: 0;
+        left: 0;
         width: $linkHeight;
         height: $linkHeight;
         background: var(--dc-primary-b);
@@ -99,12 +99,12 @@ $transition: $timing ease all;
     align-items: center;
     justify-content: center;
     height: $linkHeight;
-    width: $spacer * 5.5;
+    width: $spacer * 4;
     color: $text;
     transition: $transition;
 
     .icon {
-      width: $spacer * 2;
+      width: $spacer * 1.2;
       fill: #6a778e;
     }
 

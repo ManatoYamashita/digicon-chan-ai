@@ -46,8 +46,8 @@ function Music({ title, description, className }: Props) {
                     <div className={styles.trackTime}>
                         <div className={styles.track}></div>
                         <div className={styles.time}>
-                            <div className={styles.totalTime}>03:20</div>
-                            <div className={styles.lastTime}>00:12</div>
+                            <div className={styles.totalTime}>20:22</div>
+                            <div className={styles.lastTime}>20:24</div>
                         </div>
                     </div>
                 </div>

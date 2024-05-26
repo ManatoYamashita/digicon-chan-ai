@@ -1,21 +1,22 @@
-.card { 
+.card {
+  width: 50%;
+  height: 100%;
 }
-
 .container {
+  position: relative;
+  height: 33vh;
   --surface-color: #fff;
   --curve: 40;
   position: relative;
   display: block;
-  height: 100%;  
   border-radius: calc(var(--curve) * 1px);
   overflow: hidden;
   text-decoration: none;
 }
 
-.card__image {      
-  width: 100%;
-  height: auto;
+.card__image {
   pointer-events: none;
+  object-fit: cover;
 }
 
 .card__overlay {
@@ -103,6 +104,5 @@
 
 @media (max-width: 480px) {
   .card {
-    transform: scale(.8);
   }
 }
