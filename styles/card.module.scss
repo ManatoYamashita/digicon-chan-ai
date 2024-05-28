@@ -3,7 +3,6 @@
   height: 100%;
 }
 .container {
-  position: relative;
   height: 33vh;
   --surface-color: #fff;
   --curve: 40;
@@ -103,6 +102,8 @@
 }
 
 @media (max-width: 480px) {
-  .card {
+  .card__header {
+    gap: 1rem;
+    padding: 1rem;
   }
 }

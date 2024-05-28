@@ -20,23 +20,15 @@ $transition: $timing ease all;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap');
-
-.sidebar { 
-  grid-area: 3 / 1 / 4 / 2;
+.sidebar {
   position: relative;
 }
-
 .navbar {
   position: absolute;
-  display: flex;
-  align-items: center;
-  top: $spacer;
-  left: $spacer;
   background: #fff;
   border-radius: 6rem;
   padding: 1.5rem 0;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.03);
-  // height: calc(100vh - #{$spacer * 4});
   height: auto;
 
   &_menu {

@@ -1,7 +1,5 @@
 // app/layout.tsx
 
-import { useEffect } from 'react';
-import feather from 'feather-icons';
 import '../styles/globals.css';
 import Menu from '@/components/menu';
 
@@ -13,13 +11,11 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         <title>My Next.js 14 App</title>
       </head>
       <body>
-        <header>
-        </header>
         <main>{children}</main>
-        <nav>
+        <nav className='nav'>
             <Menu />
         </nav>
-        <footer>© 2024 My Next.js 14 App</footer>
+        {/* <footer>© 2024 My Next.js 14 App</footer> */}
       </body>
     </html>
   );

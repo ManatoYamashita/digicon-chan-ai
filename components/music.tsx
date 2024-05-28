@@ -4,19 +4,18 @@ import styles from "@/styles/music.module.scss";
 type Props = {
     title: String
     description: String
-    className?: string
 }
 
-function Music({ title, description, className }: Props) {
+function Music({ title, description }: Props) {
     return (
-        <section className={`${styles.wrap} ${className}`}>
+        <section className={styles.music}>
             <div className={`${styles.player} ${styles.horizontal}`}>
                 <div className={styles.wrapper}>
                     <div className={styles.infoWrapper}>
-                        <Image className={styles.img} src="/images/example.jpg" alt="LogoMusicImage" width={100} height={100} />
+                        <Image className={styles.img} src="/images/example.jpg" alt="dtm" width={100} height={100} priority />
                         <div className={styles.info}>
-                            <h1>{title}</h1>
-                            <p>{description}</p>
+                            <h1 className={styles.h1}>{title}</h1>
+                            <p className={styles.p}>{description}</p>
                         </div>
                     </div>
                     <div className={styles.controls}>
@@ -26,9 +25,12 @@ function Music({ title, description, className }: Props) {
                             </svg>
                         </div>
                         <div className={styles.play}>
-                            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8.32137 25.586C7.9759 25.5853 7.63655 25.4948 7.33669 25.3232C6.66148 24.9406 6.24173 24.1978 6.24173 23.3915V7.07398C6.24173 6.26542 6.66148 5.52494 7.33669 5.14232C7.64369 4.96589 7.99244 4.87516 8.3465 4.87961C8.70056 4.88407 9.04692 4.98354 9.34938 5.16764L23.2952 13.5155C23.5859 13.6977 23.8255 13.9508 23.9916 14.251C24.1577 14.5511 24.2448 14.8886 24.2448 15.2316C24.2448 15.5747 24.1577 15.9121 23.9916 16.2123C23.8255 16.5125 23.5859 16.7655 23.2952 16.9478L9.34713 25.2979C9.0376 25.485 8.68307 25.5846 8.32137 25.586V25.586Z" fill="#808080" />
-                            </svg>
+                        <label className={styles.play_container}>
+                            <input defaultChecked={true} type="checkbox" aria-label="Play/Pause" />
+                                <svg viewBox="0 0 384 512" height="1em" xmlns="http://www.w3.org/2000/svg" className={styles.pl}><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"></path></svg>
+                                <svg viewBox="0 0 320 512" height="1em" xmlns="http://www.w3.org/2000/svg" className={styles.pa}><path d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"></path>
+                                </svg>
+                            </label>
                         </div>
                         <div className={styles.next}>
                             <svg width="29" height="30" viewBox="0 0 29 30" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,7 +1,7 @@
 // pages/_document.tsx 
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 
-class MyDocument extends Document {
+class Doc extends Document {
   render() {
     return (
       <Html lang='ja'>
@@ -14,7 +14,7 @@ class MyDocument extends Document {
         </body>
       </Html>
     )
-  }
+  };
 }
 
-export default MyDocument
+export default Doc

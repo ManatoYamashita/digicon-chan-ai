@@ -6,14 +6,13 @@ type Props = {
     title: string
     subtitle: string
     description: string
-    clsasName?: string
 }
 
-function Card({ title, subtitle, description, clsasName }: Props) {
+function Card({ title, subtitle, description }: Props) {
     return (
-        <section className={clsasName}>
+        <section className={styles.card}>
             <Link href="" className={styles.container}>
-                <Image src="/images/example.jpg" className={styles.card__image} alt="cover image" layout="fill" objectFit="cover" />
+                <Image src="/images/example.jpg" className={styles.card__image} alt="cover image" fill sizes="(max-width: 480px) 100vw, (max-width: 1000px) 50vw" priority />
                 <div className={styles.card__overlay}>
                     <div className={styles.card__header}>
                         <svg className={styles.card__arc} xmlns="http://www.w3.org/2000/svg"><path /></svg>                     

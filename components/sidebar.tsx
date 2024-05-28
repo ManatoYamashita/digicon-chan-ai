@@ -9,13 +9,9 @@ import BskyIcon from "@/public/images/bsky-icon.svg";
 import DiscordIcon from "@/public/images/discord-icon.svg";
 import MailIcon from "@/public/images/mail-icon.svg";
 
-type Props = {
-    className?: string
-}
-
-function Sidebar({ className }: Props) {
+function Sidebar() {
     return (
-        <section className={className}>
+        <section className={styles.sidebar}>
             <nav className={styles.navbar}>
                 <ul className={styles.navbar_menu}>
                     <li className={styles.navbar_item}>
