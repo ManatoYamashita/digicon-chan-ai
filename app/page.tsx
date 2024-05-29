@@ -4,13 +4,14 @@ import Music from "@/components/music";
 import Toggle from "@/components/toggle";
 import Who from "@/components/who";
 import Profile from "@/components/profile";
+import DCchan from "@/components/dc-chan";
 
 import styles from './page.module.scss';
 
 export default function Home() {
   return (
     <>
-      <section className={styles.container}>
+      <section className={styles.back}>
         <div className={styles.row}>
           <Music title="title" description="descriptionn" />
           <Card title="title" subtitle="subtitle" description="description" /> 
@@ -23,6 +24,9 @@ export default function Home() {
         <div className={styles.row3}>
           <Sidebar />
         </div>
+      </section>
+      <section className={styles.front}>
+        <DCchan />
       </section>
     </>
   )

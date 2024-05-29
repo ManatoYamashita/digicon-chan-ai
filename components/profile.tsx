@@ -18,8 +18,8 @@ function Profile({ title, description, className }: Props) {
                         <Image 
                             src="/images/example.jpg"
                             alt="Picture of the author"
-                            objectFit="cover"
-                            layout="fill"
+                            fill
+                            sizes="(max-width: 480px) 100px, (max-width: 768px) 150px, (max-width: 1024px) 200px, 250px"
                             className={styles.profileImg}
                         />
                     </div>
@@ -52,7 +52,6 @@ function Profile({ title, description, className }: Props) {
                         <Image
                             src="/images/dc-logo.webp"
                             alt="デジタルコンテンツ研究会 ロゴ"
-                            objectFit="cover"
                             width={250}
                             height={50}
                             className={styles.logoImg}

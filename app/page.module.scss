@@ -1,4 +1,4 @@
-.container {
+.back {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -19,4 +19,12 @@
         height: auto;
         gap: 1rem;
     }
+}
+
+.front {
+    position: fixed;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    z-index: 2;
 }

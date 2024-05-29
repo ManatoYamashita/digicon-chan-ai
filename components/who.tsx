@@ -14,8 +14,7 @@ function Who({title, description}: Props) {
                 <Image src="/images/example.jpg" 
                     className={styles.image}
                     alt="でじこんちゃん プロフィール"
-                    layout="fill"
-                    objectFit="cover"
+                    fill
                     sizes="(max-width: 480px) 30vw, (max-width: 1000px) 10vw"
                 />
             </div>
