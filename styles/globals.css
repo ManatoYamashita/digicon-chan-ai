@@ -5,6 +5,7 @@
     --dc-primary-b: #0070D9;
 }
 body {
+    position: relative;
     font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     line-height: 1.6;
@@ -12,6 +13,16 @@ body {
     background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
     min-height: 100vh;
     height: 100vh;
+    max-height: 100vh;
+
+    overflow: hidden;
+    -ms-overflow-style: none;
+}
+body::-webkit-scrollbar {
+    display: none;
+}
+main {
+    height: 100%;
 }
 .nav {
     position: fixed;

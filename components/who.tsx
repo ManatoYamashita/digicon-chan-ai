@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import styles from"@/styles/who.module.scss";
+import ImgSrc from "@/public/images/example.jpg";
 
 type Props = {
     title: string,
@@ -11,7 +12,8 @@ function Who({title, description}: Props) {
     return (
         <div className={styles.who}>
             <div className={styles.image_container}>
-                <Image src="/images/example.jpg" 
+                <Image
+                    src={ImgSrc} 
                     className={styles.image}
                     alt="でじこんちゃん プロフィール"
                     fill

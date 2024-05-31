@@ -19,7 +19,7 @@ function Menu() {
     };
 
     return (
-        <section className={styles.wrap}>
+        <section className={styles.menu}>
             <Link href="/" passHref>
                 <label
                     title="home"

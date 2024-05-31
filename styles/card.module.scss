@@ -10,7 +10,6 @@
   display: block;
   border-radius: calc(var(--curve) * 1px);
   overflow: hidden;
-  text-decoration: none;
 }
 
 .card__image {
@@ -23,7 +22,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1;      
+  z-index: 0;      
   border-radius: calc(var(--curve) * 1px);    
   background-color: var(--surface-color);      
   transform: translateY(100%);
@@ -37,6 +36,7 @@
 .card__header {
   position: relative;
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
   gap: 2em;
   padding: 2em;

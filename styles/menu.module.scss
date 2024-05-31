@@ -1,10 +1,11 @@
-.wrap {
+.menu {
   --col-dark: #0c0f14;
   --col-darkGray: #52555a;
   --col-gray: #aeaeae;
 
   background-color: var(--col-dark);
   border-radius: 1rem;
+  z-index: 2;
 }
 
 .label {

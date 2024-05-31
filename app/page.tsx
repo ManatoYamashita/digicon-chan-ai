@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Sidebar from "@/components/sidebar";
 import Card from "@/components/card";
 import Music from "@/components/music";
@@ -17,7 +18,10 @@ export default function Home() {
           <Card title="title" subtitle="subtitle" description="description" /> 
         </div>
         <div className={styles.row2}>
-          <Toggle />
+          <div className={styles.r2_column}>
+            <Toggle />
+            <Image src="/images/dc-logo.webp" alt="東京都市大学 デジコン" fill className={styles.logo} />
+          </div>
           <Who title="title" description="description" />
           {/* <Profile title="でじこんちゃん" description="description" /> */}
         </div>
