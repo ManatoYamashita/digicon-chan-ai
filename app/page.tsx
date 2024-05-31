@@ -6,6 +6,7 @@ import Toggle from "@/components/toggle";
 import Who from "@/components/who";
 import Profile from "@/components/profile";
 import DCchan from "@/components/dc-chan";
+import Hello from "@/components/hello";
 
 import styles from './page.module.scss';
 
@@ -27,6 +28,10 @@ export default function Home() {
         </div>
         <div className={styles.row3}>
           <Sidebar />
+          <Hello
+            greets={["hello", "こんにちは", "안녕하세요", "你好"]}
+            title="でじこんちゃん"
+          />
         </div>
       </section>
       <section className={styles.front}>

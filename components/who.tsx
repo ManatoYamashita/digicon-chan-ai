@@ -31,6 +31,8 @@ function Who({title, description}: Props) {
                     <div className={styles.btnarea}>
                         <button type="button" className={styles.button}>ver1.0</button>
                         <button type="button" className={styles.button}>ver2.0</button>
+                        <button type="button" className={styles.button}>ver3.0</button>
+
                     </div>
                 </div>
             </section>
