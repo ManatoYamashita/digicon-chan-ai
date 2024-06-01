@@ -112,8 +112,17 @@
     transform: translateY(0);
    }
 
-   @media screen and (min-width: 700px){
+   @media screen and (max-width: 700px){
       .who {
         margin-top: 25vw;
+
+        .btnarea {
+          gap: 0;
+
+          .button {
+            font-size: .4rem;
+            margin: 0 .2rem;
+          }
+        }
       }
    }

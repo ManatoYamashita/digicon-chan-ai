@@ -1,29 +1,17 @@
-import styles from "@/styles/hello.module.scss"
-
+import Greets from './greets';
 
 type Props = {
     greets: string[];
-    title: string;
+    msg1: string;
+    msg2: string;
 }
 
-function Hello({greets, title}: Props) {
-
+export default function Hello({ greets, msg1, msg2 }: Props) {
     return (
-        <section className={styles.hello}>
-            <div className={styles.alowbox}>
-                <div className={styles.container}>
-                    <ul className={styles.greets}>
-                        {greets.map((greet: string, index: number) => (
-                            <li className={styles.greet} key={index}>{ greet }</li>
-                        ))}
-                    </ul>
-                </div>
-                <span>！</span>
-            </div>
-            <h1 className={styles.title}>{ title }<span className={styles.desu}>ですっ！</span></h1>
-
+        <section>
+            <Greets greets={ greets } />
+            <Greets greets={msg1} />
+            <Greets greets={msg2} />
         </section>
     );
 }
-
-export default Hello;
