@@ -20,7 +20,7 @@ function Who({title, description}: Props) {
                     sizes="(max-width: 480px) 30vw, (max-width: 1000px) 10vw"
                 />
             </div>
-            <section className={styles.detail}>
+            <section className={styles.details}>
                 <div className={styles.title}>
                     <span>{ title }</span>
                 </div>

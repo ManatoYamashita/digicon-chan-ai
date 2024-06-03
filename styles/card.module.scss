@@ -66,8 +66,8 @@
 
 .card__thumb {
   flex-shrink: 0;
-  width: 50px;
-  height: 50px;      
+  width: 4em;
+  height: 4em;      
   border-radius: 50%;      
 }
 
@@ -80,12 +80,13 @@
 .card__tagline {
   display: block;
   margin: 1em 0;
-  font-family: "MockFlowFont";  
+  font-family: 'Courier New', Courier, monospace;  
   font-size: .8em; 
   color: #D7BDCA;  
 }
 
 .card__status {
+  display: inline-block;
   font-size: .8em;
   color: #D7BDCA;
 }
@@ -93,17 +94,25 @@
 .card__description {
   padding: 0 2em 2em;
   margin: 0;
-  color: #D7BDCA;
-  font-family: "MockFlowFont";   
+  color: #94818a;
+  font-family: 'Nunito', sans-serif;;   
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 620px) {
   .card__header {
     gap: 1rem;
+    padding: 1.3rem;
+
+    .card__status {
+      font-size: .6rem;
+    }
+  }
+  .card__description {
+    font-size: .7rem;
     padding: 1rem;
   }
 }

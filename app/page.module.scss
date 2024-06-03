@@ -11,12 +11,14 @@
         justify-content: space-around;
         gap: 1rem;
         height: 33%;
+        overflow: hidden;
     }
     .row2 {
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 20%;
+        overflow: hidden;
 
         .r2_column {
             height: 100%;
@@ -28,6 +30,9 @@
             .logo {
                 position: relative !important;
                 height: auto !important;
+                max-height: 110px;
+                min-height: 100px;
+                width: auto !important;
                 object-fit: fill;
             }
         }

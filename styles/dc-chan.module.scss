@@ -2,14 +2,17 @@
     position: fixed;
     top: 0;
     left: 0;
+    pointer-events: none;
 
     .image {
+        pointer-events: auto;
         object-fit: cover;
         position: relative !important;
         width: 100vw !important;
         top: 0;
         left: 0;
         z-index: 1;
+        pointer-events: none;
     }
 
     .zoomWindow {
@@ -21,7 +24,6 @@
         width: 30vw;
         height: 30vh;
         border-radius: 1rem;
-        // pointer-events: none;
         z-index: 2;
         background-repeat: no-repeat;
     }
@@ -35,3 +37,5 @@
         }
     }
 }
+
+// ver1.0

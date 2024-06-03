@@ -7,9 +7,11 @@
     gap: 0.75rem;
   
     padding: 1rem;
-    margin-top: 1rem;
+    margin-top: 20vw;
     width: 40vw;
-    min-width: 200px;
+    min-width: 220px;
+    height: 33vh;
+    max-height: 100px;
     background-color: whitesmoke;
   
     border-radius: 1rem;
@@ -36,7 +38,7 @@
   width: 50%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
 
 }
 .title {
@@ -44,9 +46,9 @@
 
   width: 100%;
 
-  font-size: 1rem;
+  font-size: 1em;
   font-weight: 600;
-  color: #27272a;
+  color: #6A515E;
   text-transform: capitalize;
   text-wrap: nowrap;
   text-overflow: ellipsis;
@@ -54,7 +56,7 @@
 
 .size {
   font-size: 0.75rem;
-  color: #27272a;
+  color: #D7BDCA;
 }
 
 .action {
@@ -116,12 +118,19 @@
     .who {
       margin-top: 25vw;
 
+      .title {
+        font-size: .8em;
+      }
+      .size {
+        font-size: .6rem;
+      }
+
       .btnarea {
         gap: 0;
 
         .button {
           font-size: .4rem;
-          margin: 0 .2rem;
+          margin-right: .1rem;
         }
       }
     }

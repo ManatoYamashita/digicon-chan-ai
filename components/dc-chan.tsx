@@ -67,3 +67,5 @@ function DCchan() {
 }
 
 export default DCchan;
+
+// ver1.0
