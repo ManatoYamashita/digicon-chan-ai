@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import Image from "next/image";
 import styles from "@/styles/dc-chan.module.scss";
-import dcchan_default from "@/public/images/dc-chan_hoshi.png";
+import dcchan_default from "@/public/images/dcchan.webp";
 
 function DCchan() {
     const zoomLevel = 2;

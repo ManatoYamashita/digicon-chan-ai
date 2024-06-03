@@ -16,7 +16,7 @@ function Profile({ title, description, className }: Props) {
                     <p className={styles.p}>{ description }</p>
                     <div className={styles.pic}>
                         <Image 
-                            src="/images/example.jpg"
+                            src="/images/dc-loli.jpg"
                             alt="Picture of the author"
                             fill
                             sizes="(max-width: 480px) 100px, (max-width: 768px) 150px, (max-width: 1024px) 200px, 250px"
