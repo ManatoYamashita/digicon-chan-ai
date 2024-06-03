@@ -6,6 +6,11 @@ class Doc extends Document {
     return (
       <Html lang='ja'>
         <Head>
+          <meta property="og:title" content="でじこんちゃん - 東京都市大学デジタルコンテンツ研究会" />
+          <meta property="og:description" content="東京都市大学 デジタルコンテンツ研究会の公式キャラクター「でじこんちゃん」です！" />
+          <meta property="og:image" content="/example.jpg" />
+          <meta property="og:url" content="https://tcu-dc.net" />
+          <meta property="og:type" content="website" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=optional" />
         </Head>
         <body>
