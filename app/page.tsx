@@ -32,9 +32,11 @@ export default function Home() {
             greets={["hello", "こんにちは", "안녕하세요", "你好"]}  // 4つまで
             msg1="東京都市大学 デジタルコンテンツ研究会"
             msg2="公式ヴァーチャルコンシェルジュの"
+            title="でじこんちゃん"
           />
         </div>
       </section>
+      
       <section className={styles.front}>
         <DCchan />
       </section>

@@ -20,7 +20,6 @@ function Greets({ greets }: Props) {
                 </div>
                 <span>！</span>
             </div>
-            {/* <h1 className={styles.title}>{ title }<span className={styles.desu}>ですっ！</span></h1> */}
         </section>
     );
 }

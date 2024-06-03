@@ -41,6 +41,8 @@ function DCchan() {
                 onMouseEnter={handleMouseEnter}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
+                priority
+                draggable={false}
             />
 
             {isHovered && imageRef.current && (
