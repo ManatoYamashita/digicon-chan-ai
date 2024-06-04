@@ -8,15 +8,14 @@ body {
     position: relative;
     font-family: 'Nunito', sans-serif;
     font-size: 1rem;
-    line-height: 1.6;
-    background-color: var(--dc-primary-sb);
-    background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+    line-height: 1;
     min-height: 100vh;
     height: 100vh;
     max-height: 100vh;
 
     overflow: hidden;
     -ms-overflow-style: none;
+    transition: all;
 }
 body::-webkit-scrollbar {
     display: none;
@@ -34,3 +33,29 @@ main {
 img {
     pointer-events: none;
 }
+
+/* styles/globals.css */
+
+.body-default {
+    background-color: var(--dc-primary-sb);
+    background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+
+  }
+  
+  .body-home {
+    background-color: var(--dc-primary-sb);
+    background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+
+  }
+  
+  .body-about {
+    background-color: pink;
+    background-image: linear-gradient(147deg, whitesmoke 0%, white 74%);
+
+  }
+  
+  .body-talk {
+    background-color: orange;
+    background-image: linear-gradient(147deg, orange 0%, yellow 74%);
+  }
+  

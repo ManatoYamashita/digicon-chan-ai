@@ -1,11 +1,14 @@
 import Chat from "@/components/chat"
+import styles from './page.module.scss';
 
 export default function Talk() {
     return (
         <>
-            <h1>Talk</h1>
-            <p>This is the tals page</p>
-            <Chat />
+            <div className={styles.talk}>
+                <h1>Comming Soon...</h1>
+                <p>『AIでじこんちゃん - as a ChatBot（仮）』近日公開予定！</p>
+                {/* <Chat /> */}
+            </div>
         </>
     )
 }

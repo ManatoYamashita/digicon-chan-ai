@@ -85,8 +85,8 @@ export default function Home() {
           <Hello
             greets={["hello", "こんにちは", "안녕하세요", "你好"]}  // 4つまで
             msg1="東京都市大学 デジタルコンテンツ研究会"
-            msg2="公式ヴァーチャルコンシェルジュの"
-            title="でじこんちゃん"
+            msg2="Happy Birthday to you!"
+            title="でじこんちゃん HPB!"
           />
         </div>
       </section>
