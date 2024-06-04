@@ -1,0 +1,194 @@
+.music {
+  height: 100%;
+  max-height: 33vh;
+  width: 50%;
+  overflow: hidden;
+}
+
+.player {
+    height: 100%;
+    position: relative;
+    background-color: whitesmoke;
+    color: #6A515E;
+    padding: 2rem;
+    border-radius: 20px;
+  }
+  
+  .player .img {
+    width: 5rem;
+    height: 5rem;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-right: 1rem;
+  }
+
+  .info {
+    .h1 {
+      margin: 0;
+    }
+    .p {
+      margin: 0;
+      opacity: 0.68;
+      font-size: 1rem;
+    }
+  }
+
+  .player .controls {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  /*------ Settings ------*/
+.play_container {
+  --color: #a5a5b0;
+  --size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  font-size: var(--size);
+  -webkit-user-select: none;
+  user-select: none;
+  fill: var(--color);
+  margin-bottom: .5rem;
+}
+
+.play_container .pl {
+  position: absolute;
+  animation: keyframes-fill .5s;
+}
+
+.play_container .pa {
+  position: absolute;
+  display: none;
+  animation: keyframes-fill .5s;
+}
+
+/* ------ On check event ------ */
+.play_container input:checked ~ .pl {
+  display: none;
+}
+
+.play_container input:checked ~ .pa {
+  display: block;
+}
+
+/* ------ Hide the default checkbox ------ */
+.play_container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* ------ Animation ------ */
+@keyframes keyframes-fill {
+  0% {
+    transform: rotate(-180deg) scale(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: rotate(-10deg) scale(1.2);
+  }
+}
+  
+  .infoWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .player h1 {
+    font-size: 1em;
+    margin-bottom: .5rem;
+  }
+  
+  
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1rem;
+  }
+  
+  .track {
+    padding-top: 1rem;
+   position: relative;
+  
+  }
+  
+  .track::before {
+    content: '';
+    height: 6px;
+    width: 100%;
+    display: block;
+    background: #080747;
+    opacity: 0.3;
+    border-radius: 10px;
+    position: absolute;
+  }
+  
+  .track::after { 
+    content: '';
+    height: 6px;
+    width: 85%;
+    display: block;
+    background: #080747;
+    border-radius: 10px;
+  }
+  
+  .time {
+    opacity: 0.7;
+    font-size: 14px;
+  
+    display: flex;
+    justify-content: space-between;
+    padding-top: 9.6px;
+  }
+  
+  @media (max-width: 480px) {
+    .music {
+      .player {
+        padding: 0 0 2rem 0;
+
+        .infoWrapper {
+          flex-direction: column;
+          align-items: normal;
+
+          .img {
+            width: inherit;
+            margin: 0;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+          }
+          .info {
+            padding: .5rem 1rem;
+            h1 {
+              font-size: 1.1rem;
+              margin: 0;
+            }
+            p {
+              margin: 0;
+            }
+          }
+        }
+        .controls, .trackTime {
+          padding: 0 1rem;
+          transform: scale(.8);
+          margin: 0;
+
+          .track {
+            padding: 0;
+          }
+
+          .time {
+            display: none;
+          }
+        }
+      }
+    }
+  }

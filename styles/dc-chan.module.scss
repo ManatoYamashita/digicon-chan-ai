@@ -1,0 +1,41 @@
+.dcchan{
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+
+    .image {
+        pointer-events: auto;
+        object-fit: cover;
+        position: relative !important;
+        width: 100vw !important;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .zoomWindow {
+        position: absolute;
+        top: 40vh;
+        left: 5rem;
+        border: 3px solid #ccc;
+        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+        width: 30vw;
+        height: 30vh;
+        border-radius: 1rem;
+        z-index: 2;
+        background-repeat: no-repeat;
+    }
+}
+
+@media screen and (max-width: 600px){
+    .dcchan {
+        .image {
+            width: 100vw;
+            height: 100vh !important;
+        }
+    }
+}
+
+// ver1.0

@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+
+:root {
+    --dc-primary-sb: #06C0FF;
+    --dc-primary-b: #0070D9;
+}
+body {
+    position: relative;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    line-height: 1;
+    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
+
+    overflow: hidden;
+    -ms-overflow-style: none;
+    transition: all;
+}
+body::-webkit-scrollbar {
+    display: none;
+}
+main {
+    height: 100%;
+}
+.nav {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 2;
+}
+
+img {
+    pointer-events: none;
+}
+
+/* styles/globals.css */
+
+.body-default {
+    background-color: var(--dc-primary-sb);
+    background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+
+  }
+  
+  .body-home {
+    background-color: var(--dc-primary-sb);
+    background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+
+  }
+  
+  .body-about {
+    background-color: pink;
+    background-image: linear-gradient(147deg, whitesmoke 0%, white 74%);
+
+  }
+  
+  .body-talk {
+    background-color: orange;
+    background-image: linear-gradient(147deg, orange 0%, yellow 74%);
+  }
+  

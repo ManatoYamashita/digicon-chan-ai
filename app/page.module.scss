@@ -1,0 +1,51 @@
+.back {
+    position: relative;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+    .row {
+        display: flex;
+        justify-content: space-around;
+        gap: 1rem;
+        height: 33%;
+        overflow: hidden;
+    }
+    .row2 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 20%;
+        overflow: hidden;
+
+        .r2_column {
+            height: 100%;
+            display: flex;
+            position: relative;
+            flex-direction: column;
+            justify-content: center;
+
+            .logo {
+                position: relative !important;
+                height: auto !important;
+                max-height: 110px;
+                min-height: 100px;
+                width: auto !important;
+                object-fit: fill;
+            }
+        }
+    }
+    .row3 {
+        display: flex;
+        height: auto;
+        gap: 1rem;
+    }
+}
+
+.front {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
