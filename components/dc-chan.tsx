@@ -4,6 +4,8 @@ import React, { useState, useRef } from 'react';
 import Image from "next/image";
 import styles from "@/styles/dc-chan.module.scss";
 import dcchan_default from "@/public/images/dcchan.webp";
+import dcchanMov from "@/public/images/v.mov";
+import dcchanWebm from "@/public/images/v.webm";
 
 function DCchan() {
     const zoomLevel = 2;
@@ -11,13 +13,13 @@ function DCchan() {
 
     const [isHovered, setIsHovered] = useState(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
-    const imageRef = useRef<HTMLImageElement>(null);
+    const imageRef = useRef<HTMLVideoElement>(null);
 
     const handleMouseEnter = () => {
         setIsHovered(true);
     };
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLImageElement>) => {
+    const handleMouseMove = (e: React.MouseEvent<HTMLVideoElement>) => {
         if (imageRef.current) {
           const rect = imageRef.current.getBoundingClientRect();
           const x = e.clientX - rect.left;
@@ -32,7 +34,7 @@ function DCchan() {
 
     return(
         <section className={styles.dcchan}>
-            <Image
+            {/* <Image
                 ref={imageRef}
                 src={dcchan_default}
                 alt="dc-chan"
@@ -43,7 +45,20 @@ function DCchan() {
                 onMouseLeave={handleMouseLeave}
                 priority
                 draggable={false}
-            />
+            /> */}
+            <video 
+                playsInline 
+                autoPlay 
+                muted 
+                ref={imageRef} 
+                className={styles.image} 
+                onMouseEnter={handleMouseEnter} 
+                onMouseMove={handleMouseMove} 
+                onMouseLeave={handleMouseLeave}
+            >
+                <source src={dcchanMov} type='video/mov' />
+                <source src={dcchanWebm} type='video/webm' />
+            </video>
 
             {isHovered && imageRef.current && (
                 <div
