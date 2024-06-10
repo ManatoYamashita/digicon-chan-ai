@@ -4,16 +4,19 @@ import withSvgr from "next-plugin-svgr";
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.module.rules.push({
-        test: /\.(mov|webm)$/, // .mov と .webm の両方の拡張子にマッチ
-        use: 'file-loader',
-        options: {
-          name: '[name].[ext]', // オリジナルのファイル名と拡張子を保持
-          // 必要に応じてその他のオプションを追加 (例: ファイルサイズの制限)
+    config.module.rules.push({
+      test: /\.(mov|webm)$/i,
+      use: [
+        {
+          loader: 'file-loader',
+          options: {
+            publicPath: '/_next/static/videos/',
+            outputPath: 'static/videos/',
+            name: '[name].[ext]',
+          },
         },
-      });
-    }
+      ],
+    });
 
     return config;
   },

@@ -1,46 +1,37 @@
-// app/layout.tsx
 "use client";
 
-import '../styles/globals.css';
-import Menu from '@/components/menu';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from "react";
+import "@/styles/globals.css";
+import Menu from "@/components/menu";
 
-const RootLayout = ({ children }: { children: React.ReactNode }) => {
-  const pathname = usePathname();
-  const [bodyClass, setBodyClass] = useState('body-default');
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const getBodyClass = () => {
-      switch (pathname) {
-        case '/':
-          return 'body-home';
-        case '/about':
-          return 'body-about';
-        case '/talk':
-          return 'body-talk';
-        default:
-          return 'body-default';
-      }
-    };
+    const body = document.body;
+    body.classList.add("body-default");
 
-    setBodyClass(getBodyClass());
-  }, [pathname]);
+    // 任意の他のクラス名を追加する例
+    // body.classList.add("additional-class");
+
+    return () => {
+      body.classList.remove("body-default");
+
+      // 任意の他のクラス名を削除する例
+      // body.classList.remove("additional-class");
+    };
+  }, []);
 
   return (
-    <html lang="en">
-      <head>
-        <title>でじこんちゃん HPB 2024</title>
-      </head>
-      <body className={bodyClass}>
-        <main>{children}</main>
-        <nav className='nav'>
-          <Menu />
-        </nav>
-        <footer>© 2024 でじこんちゃん HPB / Designed by ヤマシタマナト</footer>
-      </body>
-    </html>
+        <html lang="ja">
+          <head>
+            <title>でじこんちゃん</title>
+          </head>
+          <body >
+            <main>{children}</main>
+            <nav className='nav'>
+              <Menu />
+            </nav>
+            <footer>© 2024 でじこんちゃん / Designed by ヤマシタマナト</footer>
+          </body>
+        </html>
   );
-};
-
-export default RootLayout;
+}

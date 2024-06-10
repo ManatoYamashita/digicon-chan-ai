@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import dynamic from 'next/dynamic';
 import Image from "next/image";
 import gsap from "gsap";
 import Sidebar from "@/components/sidebar";
@@ -8,14 +9,13 @@ import Card from "@/components/card";
 import Music from "@/components/music";
 import Toggle from "@/components/toggle";
 import Who from "@/components/who";
-// import Profile from "@/components/profile";
-import DCchan from "@/components/dc-chan";
 import Hello from "@/components/hello";
-
 import styles from './page.module.scss';
 
-export default function Home() {
+// DCchanコンポーネントを動的にインポート
+const DynamicDCchan = dynamic(() => import('@/components/dc-chan'), { ssr: false });
 
+export default function Home() {
   const r1Ref = useRef<HTMLDivElement>(null);
   const r2Ref = useRef<HTMLDivElement>(null);
   const r3Ref = useRef<HTMLDivElement>(null);
@@ -75,10 +75,9 @@ export default function Home() {
         <div className={styles.row2} ref={r2Ref}>
           <div className={styles.r2_column}>
             <Toggle />
-            <Image src="/images/dc-logo.webp" alt="東京都市大学 デジコン" fill className={styles.logo} />
+            <Image src="/images/dc-logo.webp" alt="東京都市大学 デジコン" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className={styles.logo} />
           </div>
           <Who title="でじこんちゃん" description="東京都市大学 デジタルコンテンツ研究会" />
-          {/* <Profile title="でじこんちゃん" description="description" /> */}
         </div>
         <div className={styles.row3} ref={r3Ref}>
           <Sidebar />
@@ -92,7 +91,7 @@ export default function Home() {
       </section>
       
       <section className={styles.front}>
-        <DCchan />
+        <DynamicDCchan />
       </section>
     </>
   )

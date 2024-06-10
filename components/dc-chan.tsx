@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import Image from "next/image";
+import React, { useState, useRef, useEffect } from 'react';
 import styles from "@/styles/dc-chan.module.scss";
 import dcchan_default from "@/public/images/dcchan.webp";
 import dcchanMov from "@/public/images/v.mov";
@@ -14,6 +13,11 @@ function DCchan() {
     const [isHovered, setIsHovered] = useState(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const imageRef = useRef<HTMLVideoElement>(null);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -32,20 +36,12 @@ function DCchan() {
         setIsHovered(false);
     };
 
+    if (!isMounted) {
+        return null;
+    }
+
     return(
         <section className={styles.dcchan}>
-            {/* <Image
-                ref={imageRef}
-                src={dcchan_default}
-                alt="dc-chan"
-                fill
-                className={styles.image}
-                onMouseEnter={handleMouseEnter}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-                priority
-                draggable={false}
-            /> */}
             <video 
                 playsInline 
                 autoPlay 
@@ -64,9 +60,6 @@ function DCchan() {
                 <div
                 className={styles.zoomWindow}
                 style={{
-                    // width: zoomWindowSize,
-                    // height: zoomWindowSize,
-                    // top: position.y - zoomWindowSize / 2,
                     backgroundImage: `url(${dcchan_default.src})`,
                     backgroundSize: `${imageRef.current.width * zoomLevel}px ${
                     imageRef.current.height * zoomLevel
@@ -82,5 +75,3 @@ function DCchan() {
 }
 
 export default DCchan;
-
-// ver1.0

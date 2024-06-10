@@ -7,7 +7,7 @@ type Props = {
     className?: string
 }
 
-function Profile({ title, description, className }: Props) {
+function Ticket({ title, description, className }: Props) {
     return (
         <section className={className}>
             <div className={styles.container}>
@@ -18,8 +18,8 @@ function Profile({ title, description, className }: Props) {
                         <Image 
                             src="/images/dc-loli.jpg"
                             alt="Picture of the author"
-                            fill
-                            sizes="(max-width: 480px) 100px, (max-width: 768px) 150px, (max-width: 1024px) 200px, 250px"
+                            width={400}
+                            height={160}
                             className={styles.profileImg}
                         />
                     </div>
@@ -64,4 +64,4 @@ function Profile({ title, description, className }: Props) {
     );
 }
 
-export default Profile;
+export default Ticket;
