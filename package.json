@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "vercel-build": "./vercel-build.sh",
+    "vercel-build": "sh ./vercel-build.sh",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
