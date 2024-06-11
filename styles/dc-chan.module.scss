@@ -9,6 +9,7 @@
         object-fit: cover;
         position: relative !important;
         width: 100vw !important;
+        height: 170vh;
         top: 0;
         left: 0;
         z-index: 1;
@@ -27,6 +28,15 @@
         z-index: 2;
         background-repeat: no-repeat;
     }
+}
+
+@media screen and (max-width: 1000px){
+    .dcchan {
+        .image {
+            height: 130vh !important;
+        }
+    }
+    
 }
 
 @media screen and (max-width: 600px){
