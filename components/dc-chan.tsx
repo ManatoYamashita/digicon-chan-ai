@@ -6,6 +6,9 @@ import dcchan_default from "@/public/images/dcchan.webp";
 import dcchanMov from "@/public/images/v.mov";
 import dcchanWebm from "@/public/images/v.webm";
 
+const dcchanMovURL = `/images/v.mov`;
+const dcchanWebmURL = `/images/v.webm`;
+
 function DCchan() {
     const zoomLevel = 2;
     const zoomWindowSize = 200;
@@ -54,6 +57,8 @@ function DCchan() {
             >
                 <source src={dcchanMov} type='video/mov' />
                 <source src={dcchanWebm} type='video/webm' />
+                <source src={dcchanMovURL} type='video/mov' />
+                <source src={dcchanWebmURL} type='video/webm' />
             </video>
 
             {isHovered && imageRef.current && (

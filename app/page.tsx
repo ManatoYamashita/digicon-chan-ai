@@ -29,6 +29,7 @@ export default function Home() {
           duration: .5,
           stagger: 0.2,
           ease: 'Circ.inOut',
+          delay: 2.7,
         }    
       );
     }
@@ -43,7 +44,7 @@ export default function Home() {
           opacity: 1,
           duration: 1,
           stagger: 0.2,
-          delay: .2,
+          delay: 3,
           ease: 'power4.inOut',
         }    
       );
@@ -58,7 +59,7 @@ export default function Home() {
           x: '0%',
           duration: .5,
           stagger: 0.1,
-          delay: .4,
+          delay: 3.2,
           ease: 'power4.Out',
         }    
       );
