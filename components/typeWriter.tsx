@@ -1,21 +1,29 @@
 import { useState, useEffect } from 'react';
 
-const useTypewriter = (text: string, speed: number) => {
+const useTypewriter = (text: string, speed: number, reset: boolean) => {
   const [displayedText, setDisplayedText] = useState('');
 
   useEffect(() => {
-    setDisplayedText(''); // Reset displayed text on new input
-    let index = 0;
-    const intervalId = setInterval(() => {
-      setDisplayedText((prev) => prev + text.charAt(index));
-      index += 1;
-      if (index === text.length) {
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (reset) {
+      setDisplayedText('');
+      let index = 0;
+      intervalId = setInterval(() => {
+        setDisplayedText((prev) => prev + text.charAt(index));
+        index += 1;
+        if (index === text.length) {
+          clearInterval(intervalId!);
+        }
+      }, speed);
+    }
+
+    return () => {
+      if (intervalId) {
         clearInterval(intervalId);
       }
-    }, speed);
-
-    return () => clearInterval(intervalId);
-  }, [text, speed]);
+    };
+  }, [text, speed, reset]);
 
   return displayedText;
 };

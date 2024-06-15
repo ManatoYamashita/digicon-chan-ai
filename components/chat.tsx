@@ -3,7 +3,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import styles from '@/styles/chat.module.scss'; // Import the CSS module
-import useTypewriter from '@/components/TypeWriter'; // Import the custom hook from the components directory
 
 type Message = {
   role: 'user' | 'bot';
@@ -16,16 +15,30 @@ function Chat() {
   const [emotion, setEmotion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
   const [currentMessage, setCurrentMessage] = useState('');
-  const displayedAnswer = useTypewriter(currentMessage, 50);
+  const [displayedAnswer, setDisplayedAnswer] = useState('');
 
   useEffect(() => {
     if (!isLoading && currentMessage) {
       setMessages((prev) => [...prev, { role: 'bot', content: currentMessage }]);
       setCurrentMessage('');
+      setDisplayedAnswer('');
     }
   }, [isLoading, currentMessage]);
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < currentMessage.length) {
+        setDisplayedAnswer((prev) => prev + currentMessage[index]);
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [currentMessage]);
 
   const generateAnswer = async () => {
     setIsLoading(true);
@@ -57,20 +70,30 @@ function Chat() {
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      generateAnswer();
+    }
+  };
+
   return (
     <div className={styles.wrap}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>でじこんちゃん Talk</h2>
+      </div>
       <div className={styles.chatContainer}>
         {isLoading && (
           <div className={styles.loading}>読み込み中...</div>
         )}
         {error && <div className={styles.error}>{error}</div>}
-        {messages.map((msg, index) => (
+        {messages.slice(-2).map((msg, index) => (
           <div key={index} className={`${styles.bubble} ${msg.role === 'bot' ? styles.bot : styles.user}`}>
             <div className={styles.label}>{msg.role === 'bot' ? 'Response from ChatGPT' : 'Your request'}</div>
             <p>{msg.content}</p>
           </div>
         ))}
-        {currentMessage && (
+        {!isLoading && currentMessage && (
           <div className={`${styles.bubble} ${styles.bot}`}>
             <div className={styles.label}>Response from ChatGPT</div>
             <p>{displayedAnswer}</p>
@@ -85,6 +108,7 @@ function Chat() {
           rows={1}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={handleKeyPress}
         />
         <button
           type="button"
