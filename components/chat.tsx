@@ -8,11 +8,14 @@ type Message = {
   role: 'user' | 'bot';
   content: string;
 };
+type EmotionProps = {
+  setEmotion: (value: string) => void;
+}
 
-function Chat() {
+function Chat({ setEmotion }: EmotionProps) {
   const [prompt, setPrompt] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [emotion, setEmotion] = useState('');
+  // const [emotion, setEmotion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [currentMessage, setCurrentMessage] = useState('');
@@ -78,10 +81,7 @@ function Chat() {
   };
 
   return (
-    <div className={styles.wrap}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>でじこんちゃん Talk</h2>
-      </div>
+    <div className={styles.chat}>
       <div className={styles.chatContainer}>
         {isLoading && (
           <div className={styles.loading}>読み込み中...</div>
@@ -89,14 +89,14 @@ function Chat() {
         {error && <div className={styles.error}>{error}</div>}
         {messages.slice(-2).map((msg, index) => (
           <div key={index} className={`${styles.bubble} ${msg.role === 'bot' ? styles.bot : styles.user}`}>
-            <div className={styles.label}>{msg.role === 'bot' ? 'Response from ChatGPT' : 'Your request'}</div>
-            <p>{msg.content}</p>
+            <div className={styles.label}>{msg.role === 'bot' ? 'でじこんちゃん' : 'あなた'}</div>
+            <p className={styles.text}>{msg.content}</p>
           </div>
         ))}
         {!isLoading && currentMessage && (
           <div className={`${styles.bubble} ${styles.bot}`}>
             <div className={styles.label}>Response from ChatGPT</div>
-            <p>{displayedAnswer}</p>
+            <p className={styles.text}>{displayedAnswer}</p>
           </div>
         )}
       </div>

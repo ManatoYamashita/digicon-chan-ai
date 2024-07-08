@@ -1,25 +1,27 @@
-.wrap {
+.chat {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 80vh;
-    padding: 2rem;
+    height: 90%;
+    padding: 1rem;
+    border-radius: 3rem 3rem 0 0;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+    background: whitesmoke;
+    transition: all 0.3s;
   }
-  
-  .header {
-    text-align: center;
-    margin-bottom: 16px;
-  }
-  
-  .title {
-    font-size: 24px;
-    font-weight: bold;
+  .chatContainer {
+    flex-grow: 1;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow-y: scroll;
   }
   
   .textareaContainer {
     display: flex;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 1.5rem;
+    width: 70%;
   }
   
   .textarea {
@@ -37,23 +39,50 @@
   }
   
   .button {
-    background-color: #0070f3;
-    color: white;
-    font-weight: bold;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 25px;
+    appearance: none;
+    background-color: transparent;
+    border: 0.125em solid #1A1A1A;
+    border-radius: 0.9375em;
+    box-sizing: border-box;
+    color: #3B3B3B;
     cursor: pointer;
-    height: 100%;
-  }
-  
-  .button:disabled {
-    background-color: #ccc;
-  }
-  
-  .button:hover:enabled {
-    background-color: #005bb5;
-  }
+    display: inline-block;
+    font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0;
+    min-height: 3.75em;
+    min-width: 0;
+    outline: none;
+    padding: 1em 2.3em;
+    text-align: center;
+    text-decoration: none;
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    will-change: transform;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: all 0.3s;
+   }
+   
+   .button:disabled {
+    pointer-events: all;
+   }
+   
+   .button:hover {
+    color: #fff;
+    background-color: #1A1A1A;
+    // box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+    transform: translateY(-2px);
+   }
+   
+   .button:active {
+    box-shadow: none;
+    transform: translateY(0);
+   }
   
   .loading {
     text-align: center;
@@ -66,34 +95,59 @@
     margin-bottom: 16px;
   }
   
-  .chatContainer {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-  }
-  
   .bubble {
     background-color: #f1f1f1;
-    padding: 12px;
-    border-radius: 16px;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
     margin-bottom: 8px;
-    max-width: 75%;
+    max-width: 85%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+  .text {
+    font-size: 1rem;
+    color: white;
+  }
   .bubble.user {
     align-self: flex-end;
-    background-color: #ffeb3b;
+    background: rgb(11,134,221);
+    background: linear-gradient(45deg, rgba(11,134,221,1) 0%, rgba(69,198,245,1) 100%);
+    border-bottom-right-radius: 0;
   }
   
   .bubble.bot {
     align-self: flex-start;
-    background-color: #ffeb3b;
+    background: rgb(11,134,221);
+    background: linear-gradient(45deg, rgba(11,134,221,1) 0%, rgba(69,198,245,1) 100%);
+    border-bottom-left-radius: 0;
   }
   
   .bubble .label {
     font-weight: bold;
     margin-bottom: 4px;
+    color: white;
   }
   
+  @media screen and (max-width: 700px){
+    .textareaContainer {
+      margin-bottom: 5rem;
+      width: 100%;
+    }
+    .label {
+      font-size: .8rem;
+    }
+    .text {
+      font-size: .7rem;
+      color: white;
+    }
+    .button {
+      padding: .5em 1rem;
+      font-size: .8rem;
+    }
+    .bubble {
+      padding: .6rem 1.2rem;
+      border-radius: 1rem;
+      margin-bottom: 8px;
+      max-width: 85%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }

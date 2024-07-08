@@ -12,6 +12,7 @@ body {
     min-height: 100vh;
     height: 100vh;
     max-height: 100vh;
+    margin: 0;
 
     overflow: hidden;
     -ms-overflow-style: none;

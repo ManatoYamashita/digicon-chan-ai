@@ -69,10 +69,12 @@ export default function Home() {
   return (
     <>
       <section className={styles.back}>
+        
         <div className={styles.row} ref={r1Ref}>
           <Music title="DeskTop Musics" description="でじこんちゃん" />
           <Card title="Graphics" subtitle="Illustration / Animation / CG / GraphicsDesign" description="Origin:あいしろ / 3D:Garnet,ほし / Design(Animation):山下マナト,shika" /> 
         </div>
+
         <div className={styles.row2} ref={r2Ref}>
           <div className={styles.r2_column}>
             <Toggle />
@@ -80,13 +82,14 @@ export default function Home() {
           </div>
           <Who title="でじこんちゃん" description="東京都市大学 デジタルコンテンツ研究会" />
         </div>
+
         <div className={styles.row3} ref={r3Ref}>
           <Sidebar />
           <Hello
             greets={["hello", "こんにちは", "안녕하세요", "你好"]}  // 4つまで
             msg1="東京都市大学 デジタルコンテンツ研究会"
-            msg2="Happy Birthday to you!"
-            title="でじこんちゃん HPB!"
+            msg2="公式ヴァーチャルコンシェルジュの..."
+            title="でじこんちゃん"
           />
         </div>
       </section>
