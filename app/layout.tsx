@@ -9,14 +9,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     const body = document.body;
     body.classList.add("body-default");
 
-    // 任意の他のクラス名を追加する例
-    // body.classList.add("additional-class");
-
     return () => {
       body.classList.remove("body-default");
-
-      // 任意の他のクラス名を削除する例
-      // body.classList.remove("additional-class");
     };
   }, []);
 

@@ -1,28 +1,33 @@
 .chat {
-    display: flex;
-    flex-direction: column;
-    height: 90%;
-    padding: 1rem;
-    border-radius: 3rem 3rem 0 0;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-    background: whitesmoke;
-    transition: all 0.3s;
-  }
-  .chatContainer {
-    flex-grow: 1;
-    height: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    overflow-y: scroll;
-  }
-  
-  .textareaContainer {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    width: 70%;
-  }
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+  border-radius: 3rem 0 0 3rem;
+  background: whitesmoke;
+  padding: 1rem;
+  transform: translateY(100%);
+  transition: all 0.3s;
+  animation: SlideIn 0.5s ease-in-out forwards;
+  animation-delay: .5s;
+}
+.chatContainer {
+  height: 70%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow-y: scroll;
+}
+
+.textareaContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3.5rem;
+  width: 100%;
+}
   
   .textarea {
     flex-grow: 1;
@@ -102,10 +107,12 @@
     margin-bottom: 8px;
     max-width: 85%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
   }
   .text {
     font-size: 1rem;
     color: white;
+    
   }
   .bubble.user {
     align-self: flex-end;
@@ -127,11 +134,30 @@
     color: white;
   }
   
-  @media screen and (max-width: 700px){
+  @media screen and (max-width: 768px){
+    .chat {
+      display: flex;
+      flex-direction: column;
+      height: 90%;
+      padding: 1rem;
+      border-radius: 3rem 3rem 0 0;
+    }
+    .chatContainer {
+      flex-grow: 1;
+      height: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow-y: scroll;
+    }
+    
     .textareaContainer {
+      display: flex;
+      align-items: center;
       margin-bottom: 5rem;
       width: 100%;
     }
+
     .label {
       font-size: .8rem;
     }
@@ -149,5 +175,26 @@
       margin-bottom: 8px;
       max-width: 85%;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  // アニメーションを設定する
+  @keyframes SlideIn {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes typing {
+    from {
+      opacity: 0;
+      width: 0;
+    }
+    to {
+      opacity: 1;
+      width: 100%;
     }
   }

@@ -13,6 +13,7 @@ body {
     height: 100vh;
     max-height: 100vh;
     margin: 0;
+    padding: 0;
 
     overflow: hidden;
     -ms-overflow-style: none;
@@ -38,25 +39,36 @@ img {
 /* styles/globals.css */
 
 .body-default {
-    background-color: var(--dc-primary-sb);
-    background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
-
-  }
-  
-  .body-home {
-    background-color: var(--dc-primary-sb);
-    background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
-
-  }
+  background-color: var(--dc-primary-sb);
+  background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+  animation: In .3s ease-in-out forwards;
+  transition: all 0.5s;
+}
   
   .body-about {
-    background-color: pink;
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
     background-image: linear-gradient(147deg, whitesmoke 0%, white 74%);
-
+    animation: In .3s ease-in-out forwards;
+    transition: all 0.3s;
   }
   
   .body-talk {
+    width: 100vw;
+    height: 100vh;
     background-color: orange;
     background-image: linear-gradient(147deg, orange 0%, yellow 74%);
+    animation: In .3s ease-in-out forwards;
+    transition: all 0.3s;
   }
   
+  /* アニメーションを設定 */
+  @keyframes In {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }

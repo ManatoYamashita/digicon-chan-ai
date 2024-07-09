@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import styles from "@/styles/dc-chan.module.scss";
 import dcchan_default from "@/public/images/dcchan.webp";
+import dcchan_hoshi from "@/public/images/dc-chan_hoshi.png";
 import dcchanMov from "@/public/images/v.mov";
 import dcchanWebm from "@/public/images/v.webm";
 
@@ -15,7 +17,7 @@ function DCchan() {
 
     const [isHovered, setIsHovered] = useState(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
-    const imageRef = useRef<HTMLVideoElement>(null);
+    const imageRef = useRef<HTMLImageElement>(null);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -26,7 +28,7 @@ function DCchan() {
         setIsHovered(true);
     };
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLVideoElement>) => {
+    const handleMouseMove = (e: React.MouseEvent<HTMLImageElement>) => {
         if (imageRef.current) {
           const rect = imageRef.current.getBoundingClientRect();
           const x = e.clientX - rect.left;
@@ -45,7 +47,7 @@ function DCchan() {
 
     return(
         <section className={styles.dcchan}>
-            <video 
+            {/* <video 
                 playsInline 
                 autoPlay 
                 muted 
@@ -59,7 +61,19 @@ function DCchan() {
                 <source src={dcchanWebm} type='video/webm' />
                 <source src={dcchanMovURL} type='video/mov' />
                 <source src={dcchanWebmURL} type='video/webm' />
-            </video>
+            </video> */}
+            <Image
+                src={dcchan_hoshi}
+                alt="dcchan"
+                priority
+                width={700}
+                height={393}
+                ref={imageRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                className={styles.image}
+                onMouseEnter={handleMouseEnter}
+            />
 
             {isHovered && imageRef.current && (
                 <div

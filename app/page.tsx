@@ -19,6 +19,7 @@ export default function Home() {
   const r1Ref = useRef<HTMLDivElement>(null);
   const r2Ref = useRef<HTMLDivElement>(null);
   const r3Ref = useRef<HTMLDivElement>(null);
+  const r4Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (r1Ref.current?.children) {
@@ -29,7 +30,7 @@ export default function Home() {
           duration: .5,
           stagger: 0.2,
           ease: 'Circ.inOut',
-          delay: 2.7,
+          delay: 1,
         }    
       );
     }
@@ -44,7 +45,7 @@ export default function Home() {
           opacity: 1,
           duration: 1,
           stagger: 0.2,
-          delay: 3,
+          delay: 1.2,
           ease: 'power4.inOut',
         }    
       );
@@ -54,22 +55,38 @@ export default function Home() {
   useEffect(() => {
     if (r3Ref.current?.children) {
       gsap.fromTo(r3Ref.current.children,
-        { x: '-100%' }, 
+        { x: '-100%', opacity: 0}, 
         {
           x: '0%',
+          opacity: 1,
           duration: .5,
           stagger: 0.1,
-          delay: 3.2,
+          delay: 1.4,
           ease: 'power4.Out',
         }    
       );
     }
   }, [r3Ref]);
 
+  useEffect(() => {
+    if (r4Ref.current?.children) {
+      gsap.fromTo(r4Ref.current.children,
+        { y: '100%' }, 
+        {
+          y: '0%',
+          duration: .5,
+          stagger: 0.2,
+          delay: 0,
+          ease: 'Circ.inOut',
+        }    
+      );
+    }
+  }, [r4Ref]);
+
   return (
     <>
       <section className={styles.back}>
-        
+
         <div className={styles.row} ref={r1Ref}>
           <Music title="DeskTop Musics" description="でじこんちゃん" />
           <Card title="Graphics" subtitle="Illustration / Animation / CG / GraphicsDesign" description="Origin:あいしろ / 3D:Garnet,ほし / Design(Animation):山下マナト,shika" /> 
@@ -95,7 +112,9 @@ export default function Home() {
       </section>
       
       <section className={styles.front}>
-        <DynamicDCchan />
+        <div ref={r4Ref}>
+          <DynamicDCchan />
+        </div>
       </section>
     </>
   )

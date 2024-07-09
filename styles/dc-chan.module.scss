@@ -3,13 +3,14 @@
     top: 0;
     left: 0;
     pointer-events: none;
+    animation: fadeIn 1s ease-in-out forwards;
 
     .image {
         pointer-events: auto;
         object-fit: cover;
         position: relative !important;
         width: 100vw !important;
-        height: 170vh;
+        height: 200vh;
         top: 0;
         left: 0;
         z-index: 1;
@@ -48,4 +49,14 @@
     }
 }
 
-// ver1.0
+// アニメーションを設定
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
