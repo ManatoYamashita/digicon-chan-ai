@@ -4,18 +4,21 @@
     align-items: center;
     justify-content: space-between;
     min-height: calc(100vh - 80px);
+    transition: all .5s;
   }
   .landingPage .h1 {
     color: #5d5d5d;
     font-size: 44px;
     width: 100%;
     margin: .5rem 0;
+    opacity: 0;
     animation: fadeIn 1s ease-in-out forwards;
   }
   .landingPage .content .info .h2 {
     color: #7c7c7c;
     font-size: 24px;
     margin: 1rem 0;
+    opacity: 0;
     animation: fadeIn 1s ease-in-out forwards;
     animation-delay: .5s;
   }
@@ -24,6 +27,7 @@
     line-height: 1.6;
     font-size: 15px;
     color: #5d5d5d;
+    opacity: 0;
     animation: fadeIn 1s ease-in-out forwards;
     animation-delay: 1s;
   }
@@ -38,6 +42,7 @@
     cursor: pointer;
     color: #FFF;
     background-color: var(--dc-primary-sb);
+    opacity: 0;
     animation: fadeIn 1s ease-in-out forwards;
     animation-delay: 1.5s;
   }
@@ -46,6 +51,7 @@
   }
 .image {
   width: 40%;
+  opacity: 0;
   animation: fadeIn 1s ease-in-out forwards;
 }
 
