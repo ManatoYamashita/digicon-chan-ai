@@ -1,12 +1,17 @@
 .about {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 80vh;
-    padding: 3rem;
+    height: 100vh;
+    width: auto;
+    overflow: hidden;
+    padding: 1rem;
+    animation: In .3s ease-in-out forwards;
+}
 
-    .ticket {
-        transform: scale(.8);
+// アニメーションを追加する
+@keyframes In {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
     }
 }

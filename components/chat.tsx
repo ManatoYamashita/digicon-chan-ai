@@ -75,8 +75,10 @@ function Chat({ setEmotion }: EmotionProps) {
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      generateAnswer();
+      if (prompt.trim().length > 0) {
+        e.preventDefault();
+        generateAnswer();
+      }
     }
   };
 
@@ -84,7 +86,7 @@ function Chat({ setEmotion }: EmotionProps) {
     <div className={styles.chat}>
       <div className={styles.chatContainer}>
         {isLoading && (
-          <div className={styles.loading}>読み込み中...</div>
+          <div className={styles.loading}>考えちゅう...</div>
         )}
         {error && <div className={styles.error}>{error}</div>}
         {messages.slice(-2).map((msg, index) => (
@@ -103,7 +105,7 @@ function Chat({ setEmotion }: EmotionProps) {
       <div className={styles.textareaContainer}>
         <textarea
           className={styles.textarea}
-          placeholder="textbox"
+          placeholder="おしゃべりしよう！"
           maxLength={500}
           rows={1}
           value={prompt}
@@ -113,7 +115,7 @@ function Chat({ setEmotion }: EmotionProps) {
         <button
           type="button"
           className={styles.button}
-          disabled={isLoading || prompt.length === 0}
+          disabled={isLoading || prompt.trim().length > 0}
           onClick={generateAnswer}
         >
           Talk!

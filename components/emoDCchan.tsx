@@ -22,29 +22,31 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
         if (emotion === '["普通"]') {
             setEmotionImage(normal);
         }
-        else if (emotion == '["喜"]') {
+        else if (emotion == ('["楽"]' || '["楽"] ' || '["楽"]  ' || '["楽"]\n')) {
             setEmotionImage(happy);
-        } else if (emotion === '["怒"]') {
+        } else if (emotion == ('["怒"]' || '["怒"] ' || '["怒"]  ' || '["怒"]\n')) {
             setEmotionImage(angry);
-        } else if (emotion === '["哀"]') {
+        } else if (emotion == ('["哀"]' || '["哀"] ' || '["哀"]  ' || '["哀"]\n')) {
             setEmotionImage(sad);
-        } else if (emotion == '["楽"]') {
-            setEmotionImage(happy);
-        } else if (emotion === '["驚"]') {
+        } else if (emotion == ('["困惑"]' || '["困惑"] ' || '["困惑"]  ' || '["困惑"]\n')) {
             setEmotionImage(sad);
-        } else if (emotion === '["照"]') {
+        } else if (emotion == ('["照"]' || '["照"] ' || '["照"]  ' || '["照"]\n')) {
             setEmotionImage(sad);
         }
         else {
             console.log('undefined');
             setEmotionImage(undefined);
         }
+
+        setTimeout(() => {
+            setEmotionImage(normal);
+        }, 15000);
     }, [emotion]);
 
     return (
         <div className={styles.emo}>
             <section className={styles.detail}>
-                <h1 className={styles.title}>Talk with でじこんちゃん!</h1>
+                <h1 className={styles.title}>&quot;でじこんちゃん&quot;とおしゃべりしよう！</h1>
                 <p className={styles.p}>今の感情: {emotion}</p>
             </section>
             <Image 

@@ -22,6 +22,22 @@ body {
 body::-webkit-scrollbar {
     display: none;
 }
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  background-color: gainsboro;
+  padding: 0.2rem;
+  border-radius: 0.2rem;
+  color: #000;
+}
 main {
     height: 100%;
 }
