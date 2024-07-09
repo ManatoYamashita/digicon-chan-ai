@@ -47,12 +47,22 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
         <div className={styles.emo}>
             <section className={styles.detail}>
                 <h1 className={styles.title}>&quot;でじこんちゃん&quot;とおしゃべりしよう！</h1>
-                <p className={styles.p}>今の感情: {emotion}</p>
+                <p className={styles.p}>
+                    {/* {emotionの値によって表示する文章を変える} */}
+                    {emotion === '["普通"]' ? '（╹◡╹）' : ''}
+                    {emotion === '["楽"]' ? '(● ˃̶͈̀ロ˂̶͈́)੭ꠥ⁾⁾♪' : ''}
+                    {emotion === '["怒"]' ? '( *｀ω´)' : ''}
+                    {emotion === '["哀"]' ? '(T ^ T)' : ''}
+                    {emotion === '["困惑"]' ? '(・∀・)' : ''}
+                    {emotion === '["照"]' ? '(*≧∀≦*)' : ''}
+                    {emotion === '' ? '(｀・ω・´)' : '...??'}
+                </p>
             </section>
             <Image 
                 className={styles.dcChan} 
                 src={emotionImage} 
-                alt="emotion" 
+                alt="emotion"
+                priority
                 width={700}
                 height={393}
             />
