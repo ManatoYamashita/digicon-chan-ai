@@ -40,7 +40,7 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
 
         setTimeout(() => {
             setEmotionImage(normal);
-        }, 15000);
+        }, 20000);
     }, [emotion]);
 
     return (
