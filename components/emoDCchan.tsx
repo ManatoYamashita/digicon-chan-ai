@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import Image, { StaticImageData } from "next/image";
 import normal from "/public/images/dcchan-default.gif";
+import undefined from "/public/images/dcchan-undefined.gif";
 import happy from "/public/images/dcchan-ki.gif";
 import angry from "/public/images/dcchan-do.gif";
 import sad from "/public/images/dcchan-ai.gif";
@@ -18,7 +19,10 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
     // 受け取ったemotionの値によって表示する画像を変える
     useEffect(() => {
         console.log('emotion: ', emotion);
-        if (emotion == '["喜"]') {
+        if (emotion === '["普通"]') {
+            setEmotionImage(normal);
+        }
+        else if (emotion == '["喜"]') {
             setEmotionImage(happy);
         } else if (emotion === '["怒"]') {
             setEmotionImage(angry);
@@ -32,8 +36,8 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
             setEmotionImage(sad);
         }
         else {
-            console.log('normal');
-            setEmotionImage(normal);
+            console.log('undefined');
+            setEmotionImage(undefined);
         }
     }, [emotion]);
 

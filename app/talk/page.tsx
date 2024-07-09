@@ -7,7 +7,7 @@ import styles from './page.module.scss';
 
 export default function Talk() {
 
-    const [emotion, setEmotion] = useState<string>('普通');
+    const [emotion, setEmotion] = useState<string>('["普通"]');
 
     return (
         <div className={styles.talk}>
