@@ -11,6 +11,7 @@ import Toggle from "@/components/toggle";
 import Sounds from "@/components/sounds";
 import Hello from "@/components/hello";
 import styles from './page.module.scss';
+import "@/styles/globals.css";
 
 // DCchanコンポーネントを動的にインポート
 const DynamicDCchan = dynamic(() => import('@/components/dc-chan'), { ssr: false });
@@ -82,6 +83,15 @@ export default function Home() {
       );
     }
   }, [r4Ref]);
+
+  useEffect(() => {
+      const body = document.body;
+      body.classList.add("body-default");
+
+      return () => {
+        body.classList.remove("body-default");
+      };
+  }, []);
 
   return (
     <>
