@@ -4,6 +4,7 @@ import { ProfilePage, WithContext } from 'schema-dts';
 import { Metadata } from "next";
 import Head from 'next/head'
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -88,12 +89,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="ja">
           <Head>
             <title>でじこんちゃん</title>
-            <script
+          </Head>
+          <head>
+            <Script
+              id="json-ld"
               key="json-ld"
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-          </Head>
+          </head>
+          
           <body >
             <main>{children}</main>
             <nav className='nav'>

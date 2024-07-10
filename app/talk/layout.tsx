@@ -2,7 +2,8 @@ import React from 'react';
 import "@/styles/globals.css";
 import { WithContext, ProfilePage } from 'schema-dts';
 import { Metadata } from 'next';
-import Head from 'next/head';
+import Script from 'next/script';
+
 
 export const metadata: Metadata = {
   title: '『でじこんちゃん』とおしゃべり！',
@@ -85,16 +86,17 @@ export default function TalkLayout({ children }: { children: React.ReactNode }) 
     
     return (
       <>
-      <Head>
-        <script
-          key="json-ld"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </Head>
-      <div className="body-talk">
-        {children}
-      </div>
-    </>
+        <head>
+          <Script
+            id="json-ld"
+            key="json-ld"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
+        </head>
+        <div className="body-talk">
+          {children}
+        </div>
+      </>
     );
 }

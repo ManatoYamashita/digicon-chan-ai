@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import { WithContext, ProfilePage } from "schema-dts";
 import { Metadata } from "next";
-import Head from "next/head";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -65,7 +64,7 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
   const jsonLd: WithContext<ProfilePage> = {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
-    "dateCreated": "2024-07-10",
+    "dateCreated": "2024-07-10T20:30:00-05:00",
     "dateModified": "2024-07-10T20:53:00-05:00",
     "mainEntity": {
       "@type": "Person",
