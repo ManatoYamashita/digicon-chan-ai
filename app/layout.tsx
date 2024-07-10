@@ -67,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const jsonLd: WithContext<ProfilePage> = {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
-    "dateCreated": "2024-07-10",
+    "dateCreated": "2024-07-10T20:30:00-05:00",
     "dateModified": "2024-07-10T20:53:00-05:00",
     "mainEntity": {
       "@type": "Person",
@@ -98,7 +98,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
           </head>
-          
+
           <body >
             <main>{children}</main>
             <nav className='nav'>
