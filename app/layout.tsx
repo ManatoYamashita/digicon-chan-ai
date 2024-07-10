@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import Menu from "@/components/menu";
 import { Person, WithContext } from 'schema-dts';
 import { Metadata } from "next";
+import Head from 'next/head'
 
 export const metadata: Metadata = {
   title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -75,14 +76,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
         <html lang="ja">
-          <head>
+          <Head>
             <title>でじこんちゃん</title>
             <script
               key="json-ld"
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-          </head>
+          </Head>
           <body >
             <main>{children}</main>
             <nav className='nav'>

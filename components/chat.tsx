@@ -115,7 +115,7 @@ function Chat({ setEmotion }: EmotionProps) {
         <button
           type="button"
           className={styles.button}
-          disabled={isLoading || prompt.trim().length > 0}
+          disabled={isLoading || prompt.trim().length === 0}
           onClick={generateAnswer}
         >
           Talk!

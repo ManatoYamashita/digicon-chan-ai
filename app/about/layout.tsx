@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { WithContext, Person } from "schema-dts";
 import { Metadata } from "next";
+import Head from "next/head";
 
 export const metadata: Metadata = {
   title: 'でじこんちゃん - About',
@@ -73,13 +74,17 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
   };
   
   return (
-      <div className="body-about">
+    <>
+      <Head>
         <script
           key="json-ld"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+      </Head>
+      <div className="body-about">
         {children}
       </div>
+    </>
   );
 }

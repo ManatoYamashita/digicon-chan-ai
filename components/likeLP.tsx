@@ -39,6 +39,7 @@ export default function LikeLP( { title, subtitle, button }: { title: string, su
                             priority
                             style={{ objectFit: 'cover' }}
                             fill
+                            sizes="100vw"
                         />
                     </div>
                 </div>
