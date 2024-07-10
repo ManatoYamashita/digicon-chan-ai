@@ -1,5 +1,8 @@
 import Image from "next/image";
 import styles from "@/styles/music.module.scss";
+import { useState, useRef, useEffect } from "react";
+
+import jacketImg from "@/public/images/jacket.webp";
 
 type Props = {
     title: String
@@ -7,12 +10,31 @@ type Props = {
 }
 
 function Music({ title, description }: Props) {
+
+    const [isPlaying, setIsPlaying] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+    useEffect(() => {
+      if (audioRef.current) {
+        if (isPlaying) {
+          audioRef.current.play().catch(error => console.error("Failed to play sound:", error));
+        } else {
+          audioRef.current.pause();
+        }
+      }
+    }, [isPlaying]);
+  
+    const handleCheckboxChange = () => {
+      setIsPlaying(!isPlaying);
+    };
+
+    
     return (
         <section className={styles.music}>
             <div className={`${styles.player} ${styles.horizontal}`}>
                 <div className={styles.wrapper}>
                     <div className={styles.infoWrapper}>
-                        <Image className={styles.img} src="/images/example.jpg" alt="dtm" width={100} height={100} priority />
+                        <Image className={styles.img} src={jacketImg} alt="dtm" width={75} height={75} priority />
                         <div className={styles.info}>
                             <h1 className={styles.h1}>{title}</h1>
                             <p className={styles.p}>{description}</p>
@@ -26,11 +48,11 @@ function Music({ title, description }: Props) {
                         </div>
                         <div className={styles.play}>
                         <label className={styles.play_container}>
-                            <input defaultChecked={true} type="checkbox" aria-label="Play/Pause" />
-                                <svg viewBox="0 0 384 512" height="1em" xmlns="http://www.w3.org/2000/svg" className={styles.pl}><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"></path></svg>
-                                <svg viewBox="0 0 320 512" height="1em" xmlns="http://www.w3.org/2000/svg" className={styles.pa}><path d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"></path>
-                                </svg>
-                            </label>
+                            <input defaultChecked={false} type="checkbox" aria-label="Play/Pause" onChange={handleCheckboxChange} />
+                            <svg viewBox="0 0 384 512" height="1em" xmlns="http://www.w3.org/2000/svg" className={styles.pl}><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"></path></svg>
+                            <svg viewBox="0 0 320 512" height="1em" xmlns="http://www.w3.org/2000/svg" className={styles.pa}><path d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"></path></svg>
+                            <audio ref={audioRef} src="/sounds/dengen-girl.mp3" />
+                        </label>
                         </div>
                         <div className={styles.next}>
                             <svg width="29" height="30" viewBox="0 0 29 30" fill="none" xmlns="http://www.w3.org/2000/svg">

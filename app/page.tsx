@@ -8,7 +8,7 @@ import Sidebar from "@/components/sidebar";
 import Card from "@/components/card";
 import Music from "@/components/music";
 import Toggle from "@/components/toggle";
-import Who from "@/components/who";
+import Sounds from "@/components/sounds";
 import Hello from "@/components/hello";
 import styles from './page.module.scss';
 
@@ -88,7 +88,7 @@ export default function Home() {
       <section className={styles.back}>
 
         <div className={styles.row} ref={r1Ref}>
-          <Music title="DeskTop Musics" description="でじこんちゃん" />
+          <Music title="DeskTop Musics" description="Kunimaly feat:でじこんちゃん(ver0)" />
           <Card title="Graphics" subtitle="Illustration / Animation / CG / GraphicsDesign" description="Origin:あいしろ / 3D:Garnet,ほし / Design(Animation):山下マナト,shika" /> 
         </div>
 
@@ -97,7 +97,7 @@ export default function Home() {
             <Toggle />
             <Image src="/images/dc-logo.webp" alt="東京都市大学 デジコン" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className={styles.logo} />
           </div>
-          <Who title="でじこんちゃん" description="東京都市大学 デジタルコンテンツ研究会" />
+          <Sounds title="Voices" description="ボタンを押すとでじこんちゃんの音声が再生されます" />
         </div>
 
         <div className={styles.row3} ref={r3Ref}>

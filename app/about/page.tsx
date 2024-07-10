@@ -1,5 +1,5 @@
 import styles from './page.module.scss';
-import Ticket from '@/components/ticket';
+// import Ticket from '@/components/ticket';
 import LikeLP from '@/components/likeLP';
 
 export default function About() {

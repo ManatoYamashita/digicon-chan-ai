@@ -1,6 +1,6 @@
 import Image from "next/image";
 import styles from '@/styles/likeLP.module.scss';
-import dcchanImage from '@/public/images/dcchan.webp';
+import img3d from '@/public/images/dcchan-3d.webp';
 import Link from "next/link";
 
 export default function LikeLP( { title, subtitle, button }: { title: string, subtitle: string, button: string }) {
@@ -33,12 +33,12 @@ export default function LikeLP( { title, subtitle, button }: { title: string, su
                     </div>
                     <div className={styles.image}>
                         <Image 
-                            src={dcchanImage}
+                            src={img3d}
                             alt="でじこんちゃん"
                             className={styles.img}
                             priority
-                            style={{ objectFit: 'contain' }}
-                            // fill
+                            style={{ objectFit: 'cover' }}
+                            fill
                         />
                     </div>
                 </div>

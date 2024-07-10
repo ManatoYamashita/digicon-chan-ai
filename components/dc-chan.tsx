@@ -3,8 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import styles from "@/styles/dc-chan.module.scss";
-import dcchan_default from "@/public/images/dcchan.webp";
-import dcchan_hoshi from "@/public/images/dc-chan_hoshi.png";
+// import dcchan_default from "@/public/images/dcchan.webp";
+import dcchan from "@/public/images/dcchan-ill.webp";
 import dcchanMov from "@/public/images/v.mov";
 import dcchanWebm from "@/public/images/v.webm";
 
@@ -63,7 +63,7 @@ function DCchan() {
                 <source src={dcchanWebmURL} type='video/webm' />
             </video> */}
             <Image
-                src={dcchan_hoshi}
+                src={dcchan}
                 alt="dcchan"
                 priority
                 width={700}
@@ -79,7 +79,7 @@ function DCchan() {
                 <div
                 className={styles.zoomWindow}
                 style={{
-                    backgroundImage: `url(${dcchan_default.src})`,
+                    backgroundImage: `url(${dcchan.src})`,
                     backgroundSize: `${imageRef.current.width * zoomLevel}px ${
                     imageRef.current.height * zoomLevel
                     }px`,
