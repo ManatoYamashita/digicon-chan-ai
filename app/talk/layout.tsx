@@ -1,6 +1,6 @@
 import React from 'react';
 import "@/styles/globals.css";
-import { WithContext, Person } from 'schema-dts';
+import { WithContext, ProfilePage } from 'schema-dts';
 import { Metadata } from 'next';
 import Head from 'next/head';
 
@@ -62,16 +62,25 @@ export const metadata: Metadata = {
 
 export default function TalkLayout({ children }: { children: React.ReactNode }) {
     
-  const jsonLd: WithContext<Person> = {
-      '@context': 'https://schema.org',
-      '@type': 'Person',
-      name: 'でじこんちゃんとおしゃべりしよう！',
-      image: '/ogp.jpg',
-      description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」AIとおしゃべり！',
-      disambiguatingDescription: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！',
-      birthDate: '2014-06-04',
-      birthPlace: '東京都市大学 横浜キャンパス',
-      url: 'https://dc.tus.ac.jp/',
+  const jsonLd: WithContext<ProfilePage> = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "dateCreated": "2024-07-10",
+    "dateModified": "2024-07-10T20:53:00-05:00",
+    "mainEntity": {
+      "@type": "Person",
+      "name": "でじこんちゃん（Digicon-chan）",
+      "alternateName": "tcu_dc_bot22",
+      "identifier": "https://tcu-dc.net",
+      "url": "https://tcu-dc.net",
+      "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ / Tokyo City University Digital Content Study Society's official virtual concierge",
+      "image": "https://dc-chan.vercel.app/ogp.jpg",
+      "sameAs": [
+        "https://tcu-dc.net",
+        "https://manapuraza.com",
+        "https://twitter.com/tcu_dc",
+      ]
+    }
   };
     
     return (

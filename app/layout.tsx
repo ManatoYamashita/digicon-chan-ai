@@ -1,8 +1,9 @@
 import "@/styles/globals.css";
 import Menu from "@/components/menu";
-import { Person, WithContext } from 'schema-dts';
+import { ProfilePage, WithContext } from 'schema-dts';
 import { Metadata } from "next";
 import Head from 'next/head'
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -62,17 +63,26 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   
-  const jsonLd: WithContext<Person> = {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: 'でじこんちゃん - 東京都市大学 デジタルコンテンツ研究会',
-    image: '/ogp.jpg',
-    description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！',
-    disambiguatingDescription: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！',
-    birthDate: '2014-06-04',
-    birthPlace: '東京都市大学 横浜キャンパス',
-    url: 'https://dc.tus.ac.jp/',
-};
+  const jsonLd: WithContext<ProfilePage> = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "dateCreated": "2024-07-10",
+    "dateModified": "2024-07-10T20:53:00-05:00",
+    "mainEntity": {
+      "@type": "Person",
+      "name": "でじこんちゃん（Digicon-chan）",
+      "alternateName": "tcu_dc_bot22",
+      "identifier": "https://tcu-dc.net",
+      "url": "https://tcu-dc.net",
+      "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ / Tokyo City University Digital Content Study Society's official virtual concierge",
+      "image": "https://dc-chan.vercel.app/ogp.jpg",
+      "sameAs": [
+        "https://tcu-dc.net",
+        "https://manapuraza.com",
+        "https://twitter.com/tcu_dc",
+      ]
+    }
+  };
 
   return (
         <html lang="ja">
@@ -89,7 +99,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav className='nav'>
               <Menu />
             </nav>
-            <footer>© 2024 でじこんちゃん / Designed by ヤマシタマナト</footer>
+            <footer>© 2024 でじこんちゃん / Designed by <Link href="https://manapuraza.com">ヤマシタマナト</Link></footer>
           </body>
         </html>
   );
