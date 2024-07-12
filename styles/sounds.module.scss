@@ -115,7 +115,20 @@
   transform: translateY(0);
   }
 
-  @media screen and (max-width: 700px){
+  @media screen and (max-width: 845px) {
+    .sounds {
+      .btnarea {
+        gap: 0;
+
+        .button {
+          font-size: .6rem;
+          margin-right: .5rem;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 780px){
     .sounds {
       margin-top: 25vw;
 

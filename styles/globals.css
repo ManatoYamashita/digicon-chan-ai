@@ -9,8 +9,7 @@ body {
     font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     line-height: 1;
-    min-height: 100vh;
-    height: 100vh;
+    min-block-size: 100svb;
     max-height: 100vh;
     margin: 0;
     padding: 0;
@@ -43,9 +42,10 @@ main {
 }
 .nav {
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
     z-index: 2;
+    top: 1rem;
+    right: 1rem;
+    inset-block-start: 90%;
 }
 
 img {

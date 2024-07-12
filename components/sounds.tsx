@@ -29,6 +29,7 @@ function Sounds({title, description}: Props) {
                     src={ImgSrc} 
                     className={styles.image}
                     alt="でじこんちゃん"
+                    unoptimized
                     fill
                     sizes="(max-width: 480px) 30vw, (max-width: 1000px) 10vw"
                 />
