@@ -20,6 +20,9 @@ const nextConfig = {
 
     return config;
   },
+  // experimental: {
+  //   optimizeCss: true,
+  // },
 };
 
 export default withSvgr(nextConfig);

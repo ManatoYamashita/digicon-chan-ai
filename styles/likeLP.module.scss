@@ -43,6 +43,7 @@ $fade-in-delay: .5s;
 }
 
 .image {
+  position: relative;
   width: 100%;
   @include fadeIn;
 }

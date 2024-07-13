@@ -16,6 +16,10 @@ body {
 
     overflow: hidden;
     -ms-overflow-style: none;
+    -ms-overflow-style: none;
+    /* scrollbar-width: none; */
+    scroll-behavior: none;
+    transition: all;    scroll-behavior: none;
     transition: all;
 }
 body::-webkit-scrollbar {
@@ -41,18 +45,26 @@ main {
     height: 100%;
 }
 .nav {
-    position: fixed;
-    z-index: 2;
-    top: 1rem;
-    right: 1rem;
-    inset-block-start: 90%;
+  position: fixed;
+  z-index: 2;
+  top: 1rem;
+  right: 1rem;
+  inset-block-start: 90%;
 }
 
 img {
     pointer-events: none;
 }
 
-/* styles/globals.css */
+footer {
+    position: fixed;
+    z-index: 2;
+    bottom: 0;
+    text-align: center;
+    color: rgb(119, 119, 119);
+    font-size: 0.6rem;
+    inset-block-start: auto;
+}
 
 .body-default {
   background-color: black;
@@ -86,5 +98,11 @@ img {
     }
     100% {
       transform: translateX(0);
+    }
+  }
+
+  @media screen and (max-width: 480px){
+    .nav {
+      inset-block-start: 80%;
     }
   }
