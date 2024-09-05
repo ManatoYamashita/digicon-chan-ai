@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！！！',
-    url: 'https://dc-chan.vercel.app',
+    url: 'https://でじこんちゃん.net',
     siteName: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
     images: [
       {
-        url: 'https://dc-chan.vercel.app/ogp.jpg',
+        url: 'https://でじこんちゃん.net/ogp.jpg',
         width: 600,
         height: 600,
         alt: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！！！！',
     creator: '@tcu_dc',
     images: {
-      url: 'https://dc-chan.vercel.app/ogp.jpg',
+      url: 'https://でじこんちゃん.net/ogp.jpg',
       alt: 'dc-chan',
     },
     app: {
@@ -55,8 +55,8 @@ export const metadata: Metadata = {
         googleplay: 'twitter_app://googleplay',
       },
       url: {
-        iphone: 'https://iphone_url',
-        ipad: 'https://ipad_url',
+        iphone: 'https://でじこんちゃん.net',
+        ipad: 'https://でじこんちゃん.net',
       },
     },
   },
@@ -88,7 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
         <html lang="ja">
           <Head>
-            <title>でじこんちゃん</title>
+            <title>でじこんちゃん.net</title>
           </Head>
           <head>
             <Script
@@ -100,11 +100,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </head>
 
           <body >
-            <main>{children}</main>
-            <nav className='nav'>
-              <Menu />
-            </nav>
-            <footer>© 2024 でじこんちゃん / Designed by <Link href="https://manapuraza.com">ヤマシタマナト</Link></footer>
+            <main>
+              {children}
+              <nav className='nav'>
+                <Menu />
+              </nav>
+              <footer>© 2024 でじこんちゃん.net / Designed by <Link href="https://manapuraza.com">ヤマシタマナト</Link></footer>
+            </main>
           </body>
         </html>
   );

@@ -15,11 +15,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: '『でじこんちゃん』とおしゃべり！',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」のAIとおしゃべりしよう!!',
-    url: 'https://dc-chan.vercel.app',
+    url: 'https://でじこちゃん.net/talk',
     siteName: '「でじこんちゃん」とおしゃべり！',
     images: [
       {
-        url: 'https://dc-chan.vercel.app/ogp.jpg',
+        url: 'https://でじこちゃん.net/ogp.jpg',
         width: 600,
         height: 600,
         alt: '『でじこんちゃん』とおしゃべりしよう！',
@@ -39,11 +39,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'app',
-    title: 'でじこんちゃん - AIとおしゃべりしよう!',
+    title: 'でじこんちゃん AI',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」のAIとおしゃべりしよう!!!',
     creator: '@tcu_dc',
     images: {
-      url: 'https://dc-chan.vercel.app/ogp.jpg',
+      url: 'https://でじこちゃん.net/ogp.jpg',
       alt: 'dc-chan',
     },
     app: {
@@ -54,8 +54,8 @@ export const metadata: Metadata = {
         googleplay: 'twitter_app://googleplay',
       },
       url: {
-        iphone: 'https://iphone_url',
-        ipad: 'https://ipad_url',
+        iphone: 'https://でじこちゃん.net',
+        ipad: 'https://でじこちゃん.net',
       },
     },
   },
@@ -72,8 +72,8 @@ export default function TalkLayout({ children }: { children: React.ReactNode }) 
       "@type": "Person",
       "name": "でじこんちゃん（Digicon-chan）",
       "alternateName": "tcu_dc_bot22",
-      "identifier": "https://tcu-dc.net",
-      "url": "https://tcu-dc.net",
+      "identifier": "https://でじこちゃん.net",
+      "url": "https://でじこちゃん.net",
       "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ / Tokyo City University Digital Content Study Society's official virtual concierge",
       "image": "https://dc-chan.vercel.app/ogp.jpg",
       "sameAs": [

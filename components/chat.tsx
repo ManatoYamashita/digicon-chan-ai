@@ -105,9 +105,9 @@ function Chat({ setEmotion }: EmotionProps) {
       <div className={styles.textareaContainer}>
         <textarea
           className={styles.textarea}
-          placeholder="おしゃべりしよう！"
+          placeholder="おしゃべりしよう！（⌘/ctrl+Enterで送信！）"
           maxLength={500}
-          rows={1}
+          rows={3}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={handleKeyPress}

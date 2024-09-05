@@ -1,7 +1,8 @@
 .about {
-    height: 100vh;
-    width: auto;
-    overflow: hidden;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 1rem;
     animation: In .3s ease-in-out forwards;
 }

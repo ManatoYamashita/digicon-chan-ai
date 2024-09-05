@@ -4,12 +4,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import styles from "@/styles/dc-chan.module.scss";
 // import dcchan_default from "@/public/images/dcchan.webp";
-import dcchan from "@/public/images/dcchan-ill.webp";
-import dcchanMov from "@/public/images/v.mov";
-import dcchanWebm from "@/public/images/v.webm";
+import dcchan from "@/public/images/dcchan.webp";
+// import dcchanMov from "@/public/images/v.mov";
+// import dcchanWebm from "@/public/images/v.webm";
 
-const dcchanMovURL = `/images/v.mov`;
-const dcchanWebmURL = `/images/v.webm`;
+// const dcchanMovURL = `/images/v.mov`;
+// const dcchanWebmURL = `/images/v.webm`;
 
 function DCchan() {
     const zoomLevel = 2;

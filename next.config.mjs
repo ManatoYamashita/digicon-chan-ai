@@ -3,6 +3,8 @@ import withSvgr from "next-plugin-svgr";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // output: 'export',
+  
   webpack: (config, { isServer }) => {
     config.module.rules.push({
       test: /\.(mov|webm)$/i,

@@ -15,37 +15,37 @@ function Sidebar() {
             <nav className={styles.navbar}>
                 <ul className={styles.navbar_menu}>
                     <li className={styles.navbar_item}>
-                        <Link href="/" className={styles.navbar_link} passHref>
+                        <Link href="https://www.tcu.ac.jp" className={styles.navbar_link} passHref>
                             <TcuIcon className={styles.icon} /><span>TCU</span>
                         </Link>
                     </li>
                     <li className={styles.navbar_item}>
-                        <Link href="/" className={styles.navbar_link} passHref>
+                        <Link href="https://tcu-dc.net" className={styles.navbar_link} passHref>
                             <DcIcon className={styles.icon} /><span>TCU-DC</span>
                         </Link>
                     </li>
                     <li className={styles.navbar_item}>
-                        <Link href="/" className={styles.navbar_link} passHref>
+                        <Link href="https://x.com/tcu_dc_bot22" className={styles.navbar_link} passHref>
                             <XIcon className={styles.icon} /><span>X</span>
                         </Link>
                     </li>
                     <li className={styles.navbar_item}>
-                        <Link href="/" className={styles.navbar_link} passHref>
+                        <Link href="https://instagram.com/manapuraza_com" className={styles.navbar_link} passHref>
                             <InstagramIcon className={styles.icon} /><span>Instagram</span>
                         </Link>
                     </li>
                     <li className={styles.navbar_item}>
-                        <Link href="/" className={styles.navbar_link} passHref>
+                        <Link href="https://bsky.app/profile/tcudc.bsky.social" className={styles.navbar_link} passHref>
                             <BskyIcon className={styles.icon} /><span>Bsky</span>
                         </Link>
                     </li>
                     <li className={styles.navbar_item}>
-                        <Link href="/" className={styles.navbar_link} passHref>
+                        <Link href="https://discord.gg/5EsKCEgdR2" className={styles.navbar_link} passHref>
                             <DiscordIcon className={styles.icon} /><span>Discord</span>
                         </Link>
                     </li>
                     <li className={styles.navbar_item}>
-                        <Link href="/" className={styles.navbar_link} passHref>
+                        <Link href="mailto:tcu.dcs@gmail.com" className={styles.navbar_link} passHref>
                             <MailIcon className={styles.icon} /><span>Mail</span>
                         </Link>
                     </li>

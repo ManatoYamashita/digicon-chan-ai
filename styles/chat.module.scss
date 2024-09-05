@@ -4,9 +4,13 @@
   height: 100vh;
   justify-content: space-around;
   align-items: center;
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+  // box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+  background: rgba( 255, 255, 255, 0.25 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 10px );
+  -webkit-backdrop-filter: blur( 10px );
   border-radius: 3rem 0 0 3rem;
-  background: whitesmoke;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
   padding: 1rem;
   transform: translateY(100%);
   transition: all 0.3s;
@@ -25,7 +29,7 @@
 .textareaContainer {
   display: flex;
   align-items: center;
-  margin-bottom: 3.5rem;
+  margin-bottom: 5rem;
   width: 100%;
 }
   

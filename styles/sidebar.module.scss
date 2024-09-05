@@ -22,6 +22,7 @@ $transition: $timing ease all;
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap');
 .sidebar {
   position: relative;
+  z-index: 2;
 }
 .navbar {
   background: #fff;

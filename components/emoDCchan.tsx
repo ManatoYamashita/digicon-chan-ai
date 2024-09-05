@@ -59,9 +59,9 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
     return (
         <div className={styles.emo}>
             <section className={styles.detail}>
-                <h1 className={styles.title}>&quot;でじこんちゃん&quot;とおしゃべりしよう！</h1>
+                <h1 className={styles.title}>Let&apos;s talk with DC-chan AI!</h1>
                 <p className={styles.p}>
-                    {emotionMap[emotion] || '...?'}
+                    {emotionMap[emotion] || '『でじこんちゃんAIです！何でも聞いてね！』'}
                 </p>
             </section>
             <Image 
@@ -71,6 +71,7 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
                 priority
                 width={700}
                 height={393}
+                unoptimized
             />
         </div>
     )

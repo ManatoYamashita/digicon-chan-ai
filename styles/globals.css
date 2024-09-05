@@ -34,15 +34,15 @@ a {
     text-decoration: none;
     color: inherit;
 }
-code {
+/* code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
   background-color: gainsboro;
   padding: 0.2rem;
   border-radius: 0.2rem;
   color: #000;
-}
+} */
 main {
-    height: 100%;
+    height: 100dvh;
 }
 .nav {
   position: fixed;
@@ -61,7 +61,7 @@ footer {
     z-index: 2;
     bottom: 0;
     text-align: center;
-    color: rgb(119, 119, 119);
+    color: rgb(200, 200, 200);
     font-size: 0.6rem;
     inset-block-start: auto;
 }
@@ -75,20 +75,27 @@ footer {
   
   .body-about {
     width: 100vw;
-    height: 100vh;
-    background-color: black;
-    background-image: linear-gradient(147deg, whitesmoke 0%, white 74%);
+    height: 100dvh;
+    background-color: #111111;
+    /* background-image: linear-gradient(147deg, whitesmoke 0%, white 74%); */
     animation: In .3s ease-in-out forwards;
     transition: all 0.3s;
+    overflow: hidden;
   }
   
   .body-talk {
     width: 100vw;
-    height: 100vh;
-    background-color: black;
-    background-image: linear-gradient(147deg, orange 0%, yellow 74%);
+    height: 100dvh;
+    /* background-color: black;
+    background-image: linear-gradient(147deg, orange 0%, yellow 74%); */
+    background-image: linear-gradient(rgba(210, 210, 210, 0.4) 1px, transparent 1px), linear-gradient(to right, rgba(210, 210, 210, 0.4) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: #fff;
+    background-position: -14px 14px;
+    
     animation: In .3s ease-in-out forwards;
     transition: all 0.3s;
+    overflow: hidden;
   }
   
   /* アニメーションを設定 */
@@ -101,8 +108,8 @@ footer {
     }
   }
 
-  @media screen and (max-width: 480px){
+  /* @media screen and (max-width: 480px){
     .nav {
       inset-block-start: 80%;
     }
-  }
+  } */
