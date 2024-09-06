@@ -18,9 +18,10 @@ export const metadata: Metadata = {
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！！！',
     url: 'https://でじこんちゃん.net',
     siteName: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
+
     images: [
       {
-        url: 'https://でじこんちゃん.net/ogp.jpg',
+        url: 'http://でじこんちゃん.net/ogp.jpg',
         width: 600,
         height: 600,
         alt: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -39,26 +40,14 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    card: 'app',
-    title: 'でじこんちゃん - About',
+    card: 'summary_large_image',
+    title: 'でじこんちゃん.net',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！！！！',
     creator: '@tcu_dc',
     images: {
-      url: 'https://でじこんちゃん.net/ogp.jpg',
+      url: 'http://でじこんちゃん.net/ogp.jpg',
       alt: 'dc-chan',
-    },
-    app: {
-      name: 'twitter_app',
-      id: {
-        iphone: 'twitter_app://iphone',
-        ipad: 'twitter_app://ipad',
-        googleplay: 'twitter_app://googleplay',
-      },
-      url: {
-        iphone: 'https://でじこんちゃん.net',
-        ipad: 'https://でじこんちゃん.net',
-      },
-    },
+    }
   },
 }
 

@@ -9,7 +9,7 @@
     height: 100vh;
     background-color: var(--dc-primary-sb);
     clip-path: polygon(0 0, 20% 0, 50% 100%, 0% 100%);
-    animation: slideIn 1.3s ease-in-out forwards;
+    animation: slideInLeft 1.3s ease-in-out forwards;
   }
 }
 
@@ -162,7 +162,7 @@
   
 }
 
-@keyframes slideIn {
+@keyframes slideInLeft {
   from {
     transform: translateX(-100%);
   }
@@ -171,11 +171,21 @@
   }
 }
 
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @media screen and (max-width: 768px) {
 .container {
   .triangle {
     clip-path: polygon(0 0, 100% 0, 100% 25%, 0 10%);
     width: 100vw;
+    animation: slideInDown 1.3s ease-in-out forwards;
   }
   .content {
     flex-direction: column;

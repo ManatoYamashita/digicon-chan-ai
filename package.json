@@ -10,7 +10,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@next/font": "^14.2.3",
     "axios": "^1.6.9",
     "feather-icons": "^4.29.2",
     "gsap": "^3.12.5",

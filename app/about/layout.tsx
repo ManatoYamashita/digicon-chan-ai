@@ -4,14 +4,14 @@ import { Metadata } from "next";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: 'でじこんちゃん - About',
+  title: 'でじこんちゃん とは',
   description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」について紹介',
   keywords: ['でじこんちゃん', '東京都市大学', 'デジタルコンテンツ研究会', 'TCU', '山下マナト', 'デジコン', 'ginkiha', 'tcu-dc', 'デジコンちゃん'],
   authors: [{name: '山下マナト', url: 'https://manapuraza.com'}],
   creator: '山下マナト', 
   publisher: '山下マナト',
   openGraph: {
-    title: 'でじこんちゃん - About',
+    title: 'でじこんちゃん とは',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」について紹介',
     url: 'https://でじこちゃん.net/about',
     siteName: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         url: 'https://でじこちゃん.net/ogp.jpg',
         width: 600,
         height: 600,
-        alt: 'でじこんちゃん - About',
+        alt: 'でじこんちゃん とは',
       },
     ],
     locale: 'ja_JP',
@@ -36,26 +36,14 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    card: 'app',
-    title: 'でじこんちゃん - About',
+    card: 'summary_large_image',
+    title: 'でじこんちゃん とは',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」について紹介',
     creator: '@tcu_dc',
     images: {
       url: 'https://でじこちゃん.net/ogp.jpg',
       alt: 'dc-chan',
-    },
-    app: {
-      name: 'twitter_app',
-      id: {
-        iphone: 'twitter_app://iphone',
-        ipad: 'twitter_app://ipad',
-        googleplay: 'twitter_app://googleplay',
-      },
-      url: {
-        iphone: 'https://でじこちゃん.net',
-        ipad: 'https://でじこちゃん.net',
-      },
-    },
+    }
   },
 }
 

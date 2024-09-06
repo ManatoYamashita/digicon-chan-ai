@@ -6,7 +6,7 @@ import Script from 'next/script';
 
 
 export const metadata: Metadata = {
-  title: '『でじこんちゃん』とおしゃべり！',
+  title: '『でじこんちゃん』AIとおしゃべり！',
   description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」のAIとおしゃべりしよう!',
   keywords: ['でじこんちゃん', '東京都市大学', 'デジタルコンテンツ研究会', 'TCU', '山下マナト', 'デジコン', 'ginkiha', 'tcu-dc', 'デジコンちゃん', 'AI', 'でじこんちゃんAI', 'chatGPT'],
   authors: [{name: '山下マナト', url: 'https://manapuraza.com'}],
@@ -38,25 +38,13 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    card: 'app',
+    card: 'summary_large_image',
     title: 'でじこんちゃん AI',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」のAIとおしゃべりしよう!!!',
     creator: '@tcu_dc',
     images: {
       url: 'https://でじこちゃん.net/ogp.jpg',
       alt: 'dc-chan',
-    },
-    app: {
-      name: 'twitter_app',
-      id: {
-        iphone: 'twitter_app://iphone',
-        ipad: 'twitter_app://ipad',
-        googleplay: 'twitter_app://googleplay',
-      },
-      url: {
-        iphone: 'https://でじこちゃん.net',
-        ipad: 'https://でじこちゃん.net',
-      },
     },
   },
 }
