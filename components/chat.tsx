@@ -82,44 +82,61 @@ function Chat({ setEmotion }: EmotionProps) {
     }
   };
 
+  const [isTabVisible, setIsTabVisible] = useState(false);
+
+  // ボタンクリック時にタブの表示/非表示を切り替える関数
+  const toggleTabVisibility = () => {
+    setIsTabVisible((prev) => !prev);
+  };
+
   return (
-    <div className={styles.chat}>
-      <div className={styles.chatContainer}>
-        {isLoading && (
-          <div className={styles.loading}>考えちゅう...</div>
-        )}
-        {error && <div className={styles.error}>{error}</div>}
-        {messages.slice(-2).map((msg, index) => (
-          <div key={index} className={`${styles.bubble} ${msg.role === 'bot' ? styles.bot : styles.user}`}>
-            <div className={styles.label}>{msg.role === 'bot' ? 'でじこんちゃん' : 'あなた'}</div>
-            <p className={styles.text}>{msg.content}</p>
-          </div>
-        ))}
-        {!isLoading && currentMessage && (
-          <div className={`${styles.bubble} ${styles.bot}`}>
-            <div className={styles.label}>Response from ChatGPT</div>
-            <p className={styles.text}>{displayedAnswer}</p>
-          </div>
-        )}
-      </div>
-      <div className={styles.textareaContainer}>
-        <textarea
-          className={styles.textarea}
-          placeholder="おしゃべりしよう！（⌘/ctrl+Enterで送信！）"
-          maxLength={500}
-          rows={3}
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={handleKeyPress}
-        />
-        <button
-          type="button"
-          className={styles.button}
-          disabled={isLoading || prompt.trim().length === 0}
-          onClick={generateAnswer}
-        >
-          Talk!
+    <div className={isTabVisible ? styles.tabVisible : styles.tabHidden}>
+      <div className={styles.chat}>
+        <button className={styles.toggleBtn} type="button" onClick={toggleTabVisibility}>
+          {isTabVisible ? 
+            <span className={styles.toVisible}></span>
+           : 
+            <span className={styles.toHidden}></span>
+           }
         </button>
+
+        <div className={styles.chatContainer}>
+          {isLoading && (
+            <div className={styles.loading}>考えちゅう...</div>
+          )}
+          {error && <div className={styles.error}>{error}</div>}
+          {messages.slice(-2).map((msg, index) => (
+            <div key={index} className={`${styles.bubble} ${msg.role === 'bot' ? styles.bot : styles.user}`}>
+              <div className={styles.label}>{msg.role === 'bot' ? 'でじこんちゃん' : 'あなた'}</div>
+              <p className={styles.text}>{msg.content}</p>
+            </div>
+          ))}
+          {!isLoading && currentMessage && (
+            <div className={`${styles.bubble} ${styles.bot}`}>
+              <div className={styles.label}>でじこんちゃん</div>
+              <p className={styles.text}>{displayedAnswer}</p>
+            </div>
+          )}
+        </div>
+        <div className={styles.textareaContainer}>
+          <textarea
+            className={styles.textarea}
+            placeholder="おしゃべりしよう！（⌘/ctrl+Enterで送信！）"
+            maxLength={500}
+            rows={3}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyPress}
+          />
+          <button
+            type="button"
+            className={styles.button}
+            disabled={isLoading || prompt.trim().length === 0}
+            onClick={generateAnswer}
+          >
+            Talk!
+          </button>
+        </div>
       </div>
     </div>
   );

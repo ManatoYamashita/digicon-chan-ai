@@ -1,7 +1,21 @@
+.tabVisible {
+  transform: translateX(0%);
+}
+.tabHidden {
+  transform: translateX(0%);
+}
+.toggleBtn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  display: none;
+}
+
 .chat {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   justify-content: space-around;
   align-items: center;
   // box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
@@ -33,113 +47,148 @@
   width: 100%;
 }
   
-  .textarea {
-    flex-grow: 1;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 25px;
-    resize: none;
-    outline: none;
-    margin-right: 8px;
-    font-size: 16px;
+.textarea {
+  flex-grow: 1;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  resize: none;
+  outline: none;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.textarea:focus {
+  border-color: #0070f3;
+}
+
+.button {
+  appearance: none;
+  background-color: transparent;
+  border: 0.125em solid #1A1A1A;
+  border-radius: 0.9375em;
+  box-sizing: border-box;
+  color: #3B3B3B;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0;
+  min-height: 3.75em;
+  min-width: 0;
+  outline: none;
+  padding: 1em 2.3em;
+  text-align: center;
+  text-decoration: none;
+  transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  will-change: transform;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: all 0.3s;
   }
   
-  .textarea:focus {
-    border-color: #0070f3;
+  .button:disabled {
+  pointer-events: all;
   }
   
-  .button {
-    appearance: none;
-    background-color: transparent;
-    border: 0.125em solid #1A1A1A;
-    border-radius: 0.9375em;
-    box-sizing: border-box;
-    color: #3B3B3B;
-    cursor: pointer;
-    display: inline-block;
-    font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-    font-size: 16px;
-    font-weight: 600;
-    line-height: normal;
-    margin: 0;
-    min-height: 3.75em;
-    min-width: 0;
-    outline: none;
-    padding: 1em 2.3em;
-    text-align: center;
-    text-decoration: none;
-    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    will-change: transform;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    transition: all 0.3s;
-   }
-   
-   .button:disabled {
-    pointer-events: all;
-   }
-   
-   .button:hover {
-    color: #fff;
-    background-color: #1A1A1A;
-    // box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
-    transform: translateY(-2px);
-   }
-   
-   .button:active {
-    box-shadow: none;
-    transform: translateY(0);
-   }
-  
-  .loading {
-    text-align: center;
-    color: #777;
+  .button:hover {
+  color: #fff;
+  background-color: #1A1A1A;
+  // box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
   }
   
-  .error {
-    text-align: center;
-    color: red;
-    margin-bottom: 16px;
+  .button:active {
+  box-shadow: none;
+  transform: translateY(0);
   }
+
+.loading {
+  text-align: center;
+  color: #777;
+}
+
+.error {
+  text-align: center;
+  color: red;
+  margin-bottom: 16px;
+}
+
+.bubble {
+  background-color: #f1f1f1;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  margin-bottom: 8px;
+  max-width: 85%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+.text {
+  font-size: 1rem;
+  color: white;
   
-  .bubble {
-    background-color: #f1f1f1;
-    padding: 1rem 2rem;
-    border-radius: 1rem;
-    margin-bottom: 8px;
-    max-width: 85%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s;
-  }
-  .text {
-    font-size: 1rem;
-    color: white;
-    
-  }
-  .bubble.user {
-    align-self: flex-end;
-    background: rgb(11,134,221);
-    background: linear-gradient(45deg, rgba(11,134,221,1) 0%, rgba(69,198,245,1) 100%);
-    border-bottom-right-radius: 0;
-  }
-  
-  .bubble.bot {
-    align-self: flex-start;
-    background: rgb(11,134,221);
-    background: linear-gradient(45deg, rgba(11,134,221,1) 0%, rgba(69,198,245,1) 100%);
-    border-bottom-left-radius: 0;
-  }
-  
-  .bubble .label {
-    font-weight: bold;
-    margin-bottom: 4px;
-    color: white;
-  }
+}
+.bubble.user {
+  align-self: flex-end;
+  background: rgb(11,134,221);
+  background: linear-gradient(45deg, rgba(11,134,221,1) 0%, rgba(69,198,245,1) 100%);
+  border-bottom-right-radius: 0;
+}
+
+.bubble.bot {
+  align-self: flex-start;
+  background: rgb(11,134,221);
+  background: linear-gradient(45deg, rgba(11,134,221,1) 0%, rgba(69,198,245,1) 100%);
+  border-bottom-left-radius: 0;
+}
+
+.bubble .label {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: white;
+}
   
   @media screen and (max-width: 768px){
+    .tabVisible {
+      transform: translateY(0);
+      transition: all 0.3s;
+      height: 100%;
+    }
+    .tabHidden {
+      transform: translateY(75%);
+      transition: all 0.3s;
+      height: 100%;
+    }
+    .toggleBtn {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      display: block;
+    
+      .toVisible {
+        display: inline-block;
+        width: 20px;
+        height: 15px;
+        background: #333;
+        background-color: none;
+        clip-path: polygon(0 0, 100% 0%, 50% 100%);
+      }
+      .toHidden {
+        display: inline-block;
+        width: 20px;
+        height: 15px;
+        background: #333;
+        background-color: none;
+        clip-path: polygon(0 100%, 50% 0, 100% 100%);
+      }
+    }
+
     .chat {
       display: flex;
       flex-direction: column;

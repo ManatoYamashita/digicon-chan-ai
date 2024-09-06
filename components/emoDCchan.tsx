@@ -10,10 +10,18 @@ import happy from "/public/images/happy.webp";
 import angry from "/public/images/angry.webp";
 import confused from "/public/images/confuse.webp";
 import styles from '@/styles/emoDCchan.module.scss';
+import { Dela_Gothic_One } from 'next/font/google';
 
 type EmotionProps = {
     emotion: string;
 }
+
+const delaGothicOne = Dela_Gothic_One({
+    weight: '400',
+    style: 'normal',
+    subsets: ['latin'],
+    display: 'swap',
+});
 
 export default function EmoDCchan({ emotion }: EmotionProps) {
 
@@ -47,7 +55,7 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
     }, [emotion]);
 
     const emotionMap: { [key: string]: string } = {
-        '["普通"]': '（╹◡╹）',
+        '["普通"]': '（╹◡╹）（前髪が気になる）',
         '["楽"]': '(● ˃̶͈̀ロ˂̶͈́)੭ꠥ⁾⁾♪',
         '["怒"]': '( *｀ω´)',
         '["哀"]': '(T ^ T)',
@@ -59,8 +67,11 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
     return (
         <div className={styles.emo}>
             <section className={styles.detail}>
-                <h1 className={styles.title}>Let&apos;s talk with DC-chan AI!</h1>
-                <p className={styles.p}>
+                <h1 className={`${styles.title} ${delaGothicOne.className}`}>
+                    Let&apos;s talk with <br />
+                    <span className={styles.titleSpan}>でじこんちゃんAI!!</span>
+                </h1>
+                <p className={styles.kaomoji}>
                     {emotionMap[emotion] || '『でじこんちゃんAIです！何でも聞いてね！』'}
                 </p>
             </section>

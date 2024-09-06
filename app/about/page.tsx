@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import styles from './page.module.scss';
 // import Ticket from '@/components/ticket';
 import Discription from '@/components/dispription';
@@ -22,8 +22,8 @@ export default function About() {
             {/* <Ticket title="2024/06/04" description="under constraction" className={styles.ticket}/> */}
             <Discription
                 title='"でじこんちゃん"について'
-                subtitle='About DC-chan'
-                button='おしゃべりする'
+                subtitle='略歴'
+                button='おしゃべりする!'
             />
         </div>
     );

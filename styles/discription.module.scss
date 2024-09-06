@@ -30,11 +30,13 @@
   overflow: hidden;
   display: flex;
   justify-content: center;
+  align-items: center;
 
   .image {
     position: absolute;
     min-height: 100%;
     width: auto;
+    min-width: 100%;
   }
 }
 
@@ -166,5 +168,41 @@
   }
   to {
     transform: translateX(0);
+  }
+}
+
+@media screen and (max-width: 768px) {
+.container {
+  .triangle {
+    clip-path: polygon(0 0, 100% 0, 100% 25%, 0 10%);
+    width: 100vw;
+  }
+  .content {
+    flex-direction: column;
+    gap: 20px;
+    padding: 0;
+  }
+  .imageContainer {
+    width: 100%;
+    min-height: 20vh;
+  }
+
+  .discriptionContainer {
+    width: 100%;
+
+    .title {
+      font-size: 1.5rem;
+    }
+    .subtitle {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+    .paraContainer {
+      max-height: 33vh;
+      .p {
+        font-size: .8rem;
+      }
+    }
+  }
   }
 }

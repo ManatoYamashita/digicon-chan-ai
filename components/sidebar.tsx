@@ -40,12 +40,12 @@ function Sidebar() {
                         </Link>
                     </li>
                     <li className={styles.navbar_item}>
-                        <Link href="https://discord.gg/5EsKCEgdR2" className={styles.navbar_link} passHref>
+                        <Link href="https://tcu-dc.net/joinus" className={styles.navbar_link} passHref>
                             <DiscordIcon className={styles.icon} /><span>Discord</span>
                         </Link>
                     </li>
                     <li className={styles.navbar_item}>
-                        <Link href="mailto:tcu.dcs@gmail.com" className={styles.navbar_link} passHref>
+                        <Link href="mailto:g2172117@tcu.ac.jp" className={styles.navbar_link} passHref>
                             <MailIcon className={styles.icon} /><span>Mail</span>
                         </Link>
                     </li>
