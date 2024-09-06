@@ -7,7 +7,7 @@
 
     .image {
         pointer-events: auto;
-        object-fit: cover;
+        object-fit: contain;
         position: relative !important;
         width: 100vw !important;
         height: 200vh;
@@ -31,7 +31,7 @@
     }
 }
 
-@media screen and (max-width: 1000px){
+@media screen and (max-width: 900px){
     .dcchan {
         .image {
             height: 130vh !important;
@@ -45,6 +45,7 @@
         .image {
             width: 100vw;
             height: 100vh !important;
+            object-fit: cover;
         }
     }
 }

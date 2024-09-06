@@ -82,7 +82,7 @@ function Chat({ setEmotion }: EmotionProps) {
     }
   };
 
-  const [isTabVisible, setIsTabVisible] = useState(false);
+  const [isTabVisible, setIsTabVisible] = useState(true);
 
   // ボタンクリック時にタブの表示/非表示を切り替える関数
   const toggleTabVisibility = () => {

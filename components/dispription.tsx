@@ -1,6 +1,6 @@
 import Image from "next/image";
 import styles from '@/styles/discription.module.scss';
-import SelfieImage from '@/public/images/dcchan-stucard.webp';
+import SelfieImage from '@/public/images/dcchan-studentcard.webp';
 import Link from "next/link";
 
 export default function Discription( { title, subtitle, button }: { title: string, subtitle: string, button: string }) {
@@ -11,12 +11,12 @@ export default function Discription( { title, subtitle, button }: { title: strin
 
             <div className={styles.imageContainer}>
                 <Image
-                className={styles.image}
-                src={SelfieImage}
-                width={600}
-                height={600}
-                alt="でじこんちゃん"
-            />
+                    className={styles.image}
+                    src={SelfieImage}
+                    width={600}
+                    height={600}
+                    alt="でじこんちゃん"
+                />
             </div>
 
             <div className={styles.discriptionContainer}>
