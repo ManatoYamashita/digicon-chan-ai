@@ -2,4 +2,4 @@ User-agent: Googlebot
 Disallow: /api/
 User-agent: *
 Allow: /
-Sitemap: http://でじこんちゃん.net/sitemap.xml
+Sitemap: https://www.でじこんちゃん.net/sitemap.xml
