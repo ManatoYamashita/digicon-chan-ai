@@ -48,10 +48,6 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
             console.log('undefined');
             setEmotionImage(undefined);
         }
-
-        setTimeout(() => {
-            setEmotionImage(normal);
-        }, 7000);
     }, [emotion]);
 
     const emotionMap: { [key: string]: string } = {

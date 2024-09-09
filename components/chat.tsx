@@ -61,6 +61,9 @@ function Chat({ setEmotion }: EmotionProps) {
 
       setEmotion(emotion);
       setCurrentMessage(content);
+      setTimeout(() => {
+        setEmotion('["普通"]');
+    }, 7000);
     } catch (e: any) {
       if (e.code === 'ECONNABORTED') {
         setError('タイムアウト: 15秒以内に回答が返ってきませんでした。');
