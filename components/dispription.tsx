@@ -25,7 +25,7 @@ export default function Discription( { title, subtitle, button }: { title: strin
                 <div className={styles.paraContainer}>
 
                     <p className={styles.p}>
-                        <em className={styles.em}>東京都市大学デジタルコンテンツ研究会</em> の公式キャラクターである。<br />
+                        <em className={styles.em}>東京都市大学デジタルコンテンツ研究会</em> の公式キャラクターです！&ldquo;<strong>デジコンちゃん</strong>&ldquo;じゃなくて、&ldquo;<strong>でじこんちゃん</strong>&ldquo;だよ！！<br />
                         <strong>2014年</strong>に当時のイラスト班会員である&ldquo;<code>あいしろ</code>&ldquo;氏によってデザインされ、
                         無名のキャラとしてキャラクタ原案が公開。DTM班のCDのパッケージに飾られた。<br />
                     </p>
