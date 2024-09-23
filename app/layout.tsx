@@ -6,6 +6,8 @@ import Head from 'next/head'
 import Link from "next/link";
 import Script from "next/script";
 
+import Analytics from './analytics';
+
 export const metadata: Metadata = {
   title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
   description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！',
@@ -52,6 +54,8 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
+  const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   
   const jsonLd: WithContext<ProfilePage> = {
     "@context": "https://schema.org",
@@ -86,10 +90,32 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+
+            {GA_MEASUREMENT_ID && (
+              <>
+                {/* Global Site Tag (gtag.js) - Google Analytics */}
+                <Script
+                  src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+                  strategy="afterInteractive"
+                />
+                <Script id="ga-init" strategy="afterInteractive">
+                  {`
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+
+                    gtag('config', '${GA_MEASUREMENT_ID}', {
+                      page_path: window.location.pathname,
+                    });
+                  `}
+                </Script>
+              </>
+              )}
           </head>
 
           <body >
             <main>
+              <Analytics />
               {children}
               <nav className='nav'>
                 <Menu />
