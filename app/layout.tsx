@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import Head from 'next/head'
 import Link from "next/link";
 import Script from "next/script";
+import { Suspense } from 'react';
 
 import Analytics from './analytics';
 
@@ -115,7 +116,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           <body >
             <main>
-              <Analytics />
+              <Suspense fallback={<div>Loading...</div>}>
+                <Analytics />
+              </Suspense>
               {children}
               <nav className='nav'>
                 <Menu />

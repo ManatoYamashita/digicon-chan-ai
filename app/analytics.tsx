@@ -1,4 +1,3 @@
-// app/analytics.jsx
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -6,7 +5,7 @@ import { useEffect } from 'react';
 
 declare global {
     interface Window {
-      gtag: (...args: any[]) => void; // gtagの型を定義
+      gtag: (...args: any[]) => void;
     }
 }
 
