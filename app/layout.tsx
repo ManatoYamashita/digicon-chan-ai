@@ -81,7 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
         <html lang="ja">
           <Head>
-            <title>でじこんちゃん.net</title>
+            <title>でじこんちゃん - 東京都市大学デジタルコンテンツ研究会</title>
           </Head>
           <head>
             <Script
