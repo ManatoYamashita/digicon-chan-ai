@@ -67,8 +67,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "mainEntity": {
       "@type": "Person",
       "name": "でじこんちゃん",
-      "alternateName": "デジコンちゃん",
-      "additionalName": "Digicon-chan",
+      "alternateName": ["デジコンちゃん", "Digicon-chan", "DC-chan", "デジコン"],
+      "additionalName": "でじこんちゃん",
       "identifier": "https://でじこんちゃん.net",
       "url": "https://でじこんちゃん.net",
       "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ / Tokyo City University Digital Content Study Society's official virtual concierge",
