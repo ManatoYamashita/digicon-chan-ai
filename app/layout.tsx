@@ -58,23 +58,47 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   
-  const jsonLd: WithContext<ProfilePage> = {
+  const jsonLd: WithContext<ProfilePage> = 
+  {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
     "dateCreated": "2024-07-10T20:30:00-05:00",
     "dateModified": "2024-07-10T20:53:00-05:00",
     "mainEntity": {
       "@type": "Person",
-      "name": "でじこんちゃん（Digicon-chan）",
-      "alternateName": "tcu_dc_bot22",
-      "identifier": "https://tcu-dc.net",
-      "url": "https://tcu-dc.net",
+      "name": "でじこんちゃん",
+      "alternateName": "デジコンちゃん",
+      "additionalName": "Digicon-chan",
+      "identifier": "https://でじこんちゃん.net",
+      "url": "https://でじこんちゃん.net",
       "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ / Tokyo City University Digital Content Study Society's official virtual concierge",
-      "image": "https://dc-chan.vercel.app/ogp.jpg",
+      "image": "https://でじこんちゃん.net/ogp.jpg",
+      "birthDate": "2014-06-04",
+      "gender": "female",
+      "knowsAbout": [
+        "Tokyo City University - Digital Content Study Society",
+        "Official Virtual Concierge",
+        "Tokyo City University virtual student",
+        "Creator"
+      ],
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "Tokyo City University",
+        "url": "https://www.tcu.ac.jp/"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Support",
+        "email": "tcu.dcs@gmail.com",
+        "url": "https://tcu-dc.net/contact",
+        "availableLanguage": ["Japanese", "English"]
+      },
       "sameAs": [
         "https://tcu-dc.net",
         "https://manapuraza.com",
         "https://twitter.com/tcu_dc",
+        "https://x.com/tcu_dc",
+        "https://x.com/tcu_dc_bot22"
       ]
     }
   };
