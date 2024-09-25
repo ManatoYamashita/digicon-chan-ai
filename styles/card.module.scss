@@ -81,13 +81,13 @@
   display: block;
   margin: 1em 0;
   font-family: 'Courier New', Courier, monospace;  
-  font-size: .8em; 
+  font-size: 1em; 
   color: #D7BDCA;  
 }
 
 .card__status {
   display: inline-block;
-  font-size: .8em;
+  font-size: 1em;
   color: #D7BDCA;
 }
 
@@ -108,11 +108,11 @@
     padding: 1.3rem;
 
     .card__status {
-      font-size: .6rem;
+      font-size: 1rem;
     }
   }
   .card__description {
-    font-size: .7rem;
+    font-size: 1rem;
     padding: 1rem;
   }
 }

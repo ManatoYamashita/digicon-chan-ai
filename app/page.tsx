@@ -107,13 +107,13 @@ export default function Home() {
             <Toggle />
             <Image src="/images/dc-logo.webp" alt="東京都市大学 デジコン" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className={styles.logo} />
           </div>
-          <Sounds title="Voices" description="ボタンを押すとでじこんちゃんの音声が再生されます" />
+          <Sounds title="Voices" description="Press to listen to voices." />
         </div>
 
         <div className={styles.row3} ref={r3Ref}>
           <Sidebar />
           <Hello
-            greets={["hello", "こんにちは", "안녕하세요", "你好"]}  // 4つまで
+            greets={["Hello", "こんにちは", "안녕하세요", "你好"]}  // 4つまで
             msg1="東京都市大学 デジタルコンテンツ研究会"
             msg2="公式ヴァーチャルコンシェルジュの..."
             title="でじこんちゃん"

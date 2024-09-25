@@ -28,7 +28,7 @@ function Sounds({title, description}: Props) {
                 <Image
                     src={ImgSrc} 
                     className={styles.image}
-                    alt="でじこんちゃん"
+                    alt="デジコン DTM班"
                     unoptimized
                     fill
                     sizes="(max-width: 480px) 30vw, (max-width: 1000px) 10vw"

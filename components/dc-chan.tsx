@@ -66,6 +66,7 @@ function DCchan() {
                 src={dcchan}
                 alt="dcchan"
                 priority
+                loading='eager'
                 width={700}
                 height={393}
                 ref={imageRef}
