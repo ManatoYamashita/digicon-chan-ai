@@ -147,7 +147,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <nav className='nav'>
                 <Menu />
               </nav>
-              <footer>© 2024 でじこんちゃん.net / Designed by <Link href="https://manapuraza.com">ヤマシタマナト</Link></footer>
+              <footer>© 2024 でじこんちゃん.net / Designed/Dev by <Link href="https://manapuraza.com">ヤマシタマナト(TCU-DC)</Link></footer>
             </main>
           </body>
         </html>

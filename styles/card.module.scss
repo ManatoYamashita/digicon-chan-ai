@@ -68,10 +68,12 @@
   flex-shrink: 0;
   width: 4em;
   height: 4em;      
-  border-radius: 50%;      
+  border-radius: 50%;  
+  aspect-ratio: 1 / 1 ;
 }
 
 .card__title {
+  text-align: end;
   font-size: 1em;
   margin: 0 0 .3em;
   color: #6A515E;
@@ -87,6 +89,7 @@
 
 .card__status {
   display: inline-block;
+  text-align: end;
   font-size: 1em;
   color: #D7BDCA;
 }
@@ -100,6 +103,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
+  text-align: end;
 }
 
 @media (max-width: 620px) {

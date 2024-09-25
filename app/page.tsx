@@ -14,7 +14,7 @@ import styles from './page.module.scss';
 import "@/styles/globals.css";
 
 // DCchanコンポーネントを動的にインポート
-const DynamicDCchan = dynamic(() => import('@/components/dc-chan'), { ssr: false });
+const DynamicDCchan = dynamic(() => import('@/components/dc-chan'), { ssr: true });
 
 export default function Home() {
   const r1Ref = useRef<HTMLDivElement>(null);
@@ -99,15 +99,21 @@ export default function Home() {
 
         <div className={styles.row} ref={r1Ref}>
           <Music title="DeskTop Musics" description="Kunimaly feat:でじこんちゃん(ver0)" />
-          <Card title="Graphics" subtitle="Illustration / Animation / CG / GraphicsDesign" description="Origin:あいしろ / 3D:Garnet,ほし / Design(Animation):山下マナト,shika" /> 
+          <Card title="Graphics" subtitle="Illu/Anime/Design: 山下マナト" description="WebDesignはこちらのtweetを元にしています。" /> 
         </div>
 
         <div className={styles.row2} ref={r2Ref}>
           <div className={styles.r2_column}>
             <Toggle />
-            <Image src="/images/dc-logo.webp" alt="東京都市大学 デジコン" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className={styles.logo} />
+            <Image 
+              src="/images/dc-logo.webp" 
+              alt="都市大 デジコン" 
+              fill 
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" 
+              className={styles.logo} 
+            />
           </div>
-          <Sounds title="Voices" description="Press to listen to voices." />
+          <Sounds title="DC-chan" description="Press to listen to voices." />
         </div>
 
         <div className={styles.row3} ref={r3Ref}>

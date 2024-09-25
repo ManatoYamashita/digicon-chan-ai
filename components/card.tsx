@@ -33,7 +33,7 @@ function Card({ title, subtitle, description }: Props) {
                             width={100} 
                             height={100}
                             sizes="(max-width: 480px) 100vw, (max-width: 1000px) 50vw"
-                            style={{ aspectRatio: 1 / 1 }}
+                            objectFit="cover"
                         />
                         <div className={styles.card__header_text}>
                             <h2 className={styles.card__title}>
