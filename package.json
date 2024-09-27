@@ -13,7 +13,7 @@
     "axios": "^1.6.9",
     "feather-icons": "^4.29.2",
     "gsap": "^3.12.5",
-    "next": "14.2.3",
+    "next": "^14.2.13",
     "next-plugin-svgr": "^1.1.10",
     "openai": "^4.47.1",
     "react": "^18",

@@ -9,7 +9,7 @@ class Doc extends Document {
           <meta property="og:title" content="でじこんちゃん" />
           <meta property="og:description" content="東京都市大学 デジタルコンテンツ研究会の公式キャラクター「でじこんちゃん」です！" />
           <meta property="og:image" content="/ogp.jpg" />
-          <meta property="og:url" content="https://tcu-dc.net" />
+          <meta property="og:url" content="https://でじこんちゃん.net" />
           <meta property="og:type" content="website" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=optional" />
         </Head>

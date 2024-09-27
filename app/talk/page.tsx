@@ -8,16 +8,7 @@ import "@/styles/globals.css";
 
 export default function Talk() {
 
-    const [emotion, setEmotion] = useState<string>('["普通"]');
-
-    useEffect(() => {
-        const body = document.body;
-        body.classList.add("body-talk");
-    
-        return () => {
-          body.classList.remove("body-talk");
-        };
-    }, []);
+    const [emotion, setEmotion] = useState<string>('普通');
       
     return (
         <div className={styles.talk}>
