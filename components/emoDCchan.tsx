@@ -44,7 +44,7 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
             image: confused,
             kaomoji: '(T ^ T)',
         },
-        '困惑': {
+        '困': {
             image: confused,
             kaomoji: '(・∀・)',
         },
