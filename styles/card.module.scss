@@ -65,11 +65,8 @@
 }
 
 .card__thumb {
-  flex-shrink: 0;
-  width: 4em;
-  height: 4em;      
-  border-radius: 50%;  
-  aspect-ratio: 1 / 1 ;
+  flex-shrink: 0;    
+  border-radius: 50%; 
 }
 
 .card__title {
@@ -109,7 +106,7 @@
 @media (max-width: 620px) {
   .card__header {
     gap: 1rem;
-    padding: 1.3rem;
+    padding: 1rem 1rem 2rem 1rem;
 
     .card__status {
       font-size: 1rem;
@@ -118,5 +115,10 @@
   .card__description {
     font-size: 1rem;
     padding: 1rem;
+  }
+  .card__thumb {
+    width: 40px;
+    height: 40px;
+    aspect-ratio: 1/1;
   }
 }

@@ -1,11 +1,11 @@
 "use client";
 
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styles from '@/styles/chat.module.scss';
 
 type Message = {
-  role: 'user' | 'bot';
+  role: 'user' | 'assistant';
   content: string;
 };
 type EmotionProps = {
@@ -17,66 +17,72 @@ function Chat({ setEmotion }: EmotionProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [currentMessage, setCurrentMessage] = useState('');
   const [displayedAnswer, setDisplayedAnswer] = useState('');
-
-  useEffect(() => {
-    if (!isLoading && currentMessage) {
-      setMessages((prev) => [...prev, { role: 'bot', content: currentMessage }]);
-      setCurrentMessage('');
-      setDisplayedAnswer('');
-    }
-  }, [isLoading, currentMessage]);
-
-  // useEffect(() => {
-  //   let index = 0;
-  //   const interval = setInterval(() => {
-  //     if (index < currentMessage.length) {
-  //       setDisplayedAnswer((prev) => prev + currentMessage[index]);
-  //       index++;
-  //     } else {
-  //       clearInterval(interval);
-  //     }
-  //   }, 50);
-
-  //   return () => clearInterval(interval);
-  // }, [currentMessage]);
 
   const generateAnswer = async () => {
     setIsLoading(true);
     setError('');
-    setMessages((prev) => [...prev, { role: 'user', content: prompt }]);
+
+    // ユーザーのメッセージを追加
+    let newMessages = [...messages, { role: 'user' as 'user', content: prompt }];
+
+    // ユーザーメッセージ数を計算
+    const numUserMessages = newMessages.filter(msg => msg.role === 'user').length;
+
+    if (numUserMessages > 5) {
+      // メッセージ履歴をリセットし、現在のユーザーメッセージを新しい会話の開始として扱う
+      newMessages = [{ role: 'user' as 'user', content: prompt }];
+    }
+
+    setMessages(newMessages);
     setPrompt('');
 
     try {
-      const res = await axios.post('/api/chatgpt', { prompt }, { timeout: 15000 });
+      const res = await axios.post('/api/chatgpt', { messages: newMessages }, { timeout: 15000 });
       console.log('ChatGPTからのresponse: ', res.data);
     
-      // emotionとcontentを分割
-      const [emotionStr, ...contentArr] = res.data.text.split('\n');
-      const content = contentArr.join('\n');
-      console.log('分割されたでじこんちゃんの感情(未パース): 『', emotionStr, '』');
-      console.log('分割されたでじこんちゃんの回答: 『', content, '』');
-    
-      // emotionをパース
-      let emotion = emotionStr.trim(); // 余分な空白を削除
-      if (emotion.startsWith('[') && emotion.endsWith(']')) {
-        // JSON形式の場合のみパース
-        try {
-          const parsedEmotion = JSON.parse(emotion);
-          if (Array.isArray(parsedEmotion)) {
-            emotion = parsedEmotion[0];
-          }
-        } catch (e) {
-          console.log('JSON形式からStringへのパースに失敗。返答された感情をそのまま使用します。', e);
-          // パースに失敗した場合は、そのままemotionを使用
-        }
+      // レスポンスを行ごとに分割し、空行を削除
+      const responseLines = res.data.text.split('\n').filter((line: string) => line.trim() !== '');
+      let emotion = '';
+      let content = '';
+
+      // 感情の候補リスト
+      const emotionCandidates = ['楽', '怒', '哀', '困', '照'];
+
+      if (responseLines.length === 0) {
+        // レスポンスが空の場合の処理
+        setError('回答が取得できませんでした。');
+        return;
       }
-    
+
+      // 最初の行から感情情報を抽出
+      const firstLine = responseLines[0].trim();
+
+      // 正規表現を使用して感情文字を抽出（感情文字の後に句読点がある場合に対応）
+      const emotionRegex = new RegExp(`^(${emotionCandidates.join('|')})[、。,．,]?$`);
+      const emotionMatch = firstLine.match(emotionRegex);
+
+      if (emotionMatch) {
+        emotion = emotionMatch[1]; // 感情文字を取得
+        content = responseLines.slice(1).join('\n'); // 2行目以降を本文として結合
+      } else {
+        // 感情情報がない場合
+        emotion = '楽(error)'; // デフォルトの感情を設定
+        content = responseLines.join('\n'); // 全ての行を本文として結合
+      }
+
       console.log('最終的なでじこんちゃんの感情(パース済): 『', emotion, '』');
+      console.log('最終的なでじこんちゃんの回答: 『', content, '』');
     
       setEmotion(emotion);
-      setCurrentMessage(content);
+      setDisplayedAnswer(content);
+
+      // ボットのメッセージを追加
+      setMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages, { role: 'assistant' as 'assistant', content }];
+        return updatedMessages;
+      });
+
       setTimeout(() => {
         setEmotion('普通');
       }, 7000);
@@ -88,9 +94,8 @@ function Chat({ setEmotion }: EmotionProps) {
       } else {
         setError('エラーが発生しました。');
       }
-      setIsLoading(false);
     } finally {
-      setIsLoading(false); // Ensure loading state is turned off
+      setIsLoading(false);
     }
   };
 
@@ -110,10 +115,13 @@ function Chat({ setEmotion }: EmotionProps) {
     setIsTabVisible((prev) => !prev);
   };
 
+  // ユーザーメッセージ数を計算
+  const numUserMessages = 5 - messages.filter(msg => msg.role === 'user').length;
+
   return (
     <div className={isTabVisible ? styles.tabVisible : styles.tabHidden}>
       <div className={styles.chat}>
-        <button className={styles.toggleBtn} type="button" onClick={toggleTabVisibility}>
+        <button type="button" className={styles.toggleBtn} onClick={toggleTabVisibility}>
           {isTabVisible ? 
             <span className={styles.toVisible}></span>
            : 
@@ -121,23 +129,19 @@ function Chat({ setEmotion }: EmotionProps) {
            }
         </button>
 
+        <div className={styles.messageCount}>あと<span className={styles.numUserMessages}>{numUserMessages}</span>回の会話で会話履歴をリセットします！</div>
+
         <div className={styles.chatContainer}>
           {isLoading && (
             <div className={styles.loading}>考えちゅう...</div>
           )}
           {error && <div className={styles.error}>{error}</div>}
-          {messages.slice(-2).map((msg, index) => (
-            <div key={index} className={`${styles.bubble} ${msg.role === 'bot' ? styles.bot : styles.user}`}>
-              <div className={styles.label}>{msg.role === 'bot' ? 'でじこんちゃん' : 'あなた'}</div>
+          {messages.slice(-4).map((msg, index) => (
+            <div key={index} className={`${styles.bubble} ${msg.role === 'assistant' ? styles.bot : styles.user}`}>
+              <div className={styles.label}>{msg.role === 'assistant' ? 'でじこんちゃん' : 'あなた'}</div>
               <p className={styles.text}>{msg.content}</p>
             </div>
           ))}
-          {!isLoading && currentMessage && (
-            <div className={`${styles.bubble} ${styles.bot}`}>
-              <div className={styles.label}>でじこんちゃん</div>
-              <p className={styles.text}>{displayedAnswer}</p>
-            </div>
-          )}
         </div>
         <div className={styles.textareaContainer}>
           <textarea

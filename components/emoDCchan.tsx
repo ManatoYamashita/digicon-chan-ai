@@ -4,10 +4,12 @@ import React from "react";
 import Image, { StaticImageData } from "next/image";
 
 import normal from "/public/images/default.webp";
-import noEmotion from "/public/images/undefined.webp";
 import happy from "/public/images/happy.webp";
 import angry from "/public/images/angry.webp";
 import confused from "/public/images/confuse.webp";
+import embarrassed from "/public/images/embarrassed.webp";
+import noEmotion from "/public/images/undefined.webp";
+
 import styles from '@/styles/emoDCchan.module.scss';
 import { Dela_Gothic_One } from 'next/font/google';
 
@@ -49,15 +51,19 @@ export default function EmoDCchan({ emotion }: EmotionProps) {
             kaomoji: '(・∀・)',
         },
         '照': {
-            image: confused,
-            kaomoji: '(*≧∀≦*)',
+            image: embarrassed,
+            kaomoji: '(//∇//)',
         },
+        '楽(error)': {
+            image: happy,
+            kaomoji: '(≧▽≦)',
+        }
     };
 
     // emotionに対応する画像と顔文字を取得、なければデフォルトを使用
     const { image: emotionImage, kaomoji } = emotionAssets[trimmedEmotion] || {
         image: noEmotion,
-        kaomoji: '...!!?',
+        kaomoji: '...!!?（繰り返す場合は再読み込みしてみよう）',
     };
 
     return (

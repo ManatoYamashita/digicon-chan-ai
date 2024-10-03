@@ -58,7 +58,7 @@ img {
 
 footer {
     position: fixed;
-    z-index: 2;
+    z-index: 0;
     bottom: 0;
     text-align: center;
     color: rgb(200, 200, 200);
@@ -108,8 +108,8 @@ footer {
     }
   }
 
-  /* @media screen and (max-width: 480px){
-    .nav {
-      inset-block-start: 80%;
+  @media screen and (max-width: 480px){
+    footer {
+      font-size: 10px;
     }
-  } */
+  }

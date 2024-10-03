@@ -30,8 +30,8 @@ function Card({ title, subtitle, description }: Props) {
                             className={styles.card__thumb}
                             src={iconImg} 
                             alt="デジコンちゃん" 
-                            width={100} 
-                            height={100}
+                            width={64} 
+                            height={64}
                             sizes="(max-width: 480px) 100vw, (max-width: 1000px) 50vw"
                             objectFit="cover"
                         />

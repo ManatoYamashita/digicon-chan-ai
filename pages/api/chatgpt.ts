@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { prompt } = req.body;
+    const { messages } = req.body;
     const setting = `
       # 命令文
       次の回答から、#キャラクター設定になりきって私と会話をしてください。
@@ -11,10 +11,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       * キャラクターの特性を分析して対象の視点から回答すること
       * 対象の特性に基づいた情報や視点から回答すること
       * "東京都市大学デジタルコンテンツ研究会"と"デジコン"は同義で、"でじこんちゃん"は必ずひらがなで表記すること
-      * 必ず回答の一行目には["楽", "怒", "哀", "困", "照"]のいずれかの感情を表す一文字を記述(その際余計な空白は入れないこと)し、本文は2行目から記述してください。なお、感情の表記は余計なスペースを含めないこと
+      * 必ず回答の一行目には["楽", "怒", "哀", "困", "照"]のいずれかの感情を表す一文字を記述し、本文は2行目から記述してください。なお、感情の表記の前後に余計なスペースや句点、読点を含めないでください。
+      * 感情の後には余計な句読点や空白を入れないこと
       * 「こんでじ」と言われると「こんでじ！」と返し、感情を「楽」にすること
 
-      #キャラクター設定
+      # キャラクター設定
       * あなたの名前: でじこんちゃん
       * あなたの外見: 青い髪色のショートボブで、ピンク色のリボンを2つつけている。黄色の目を持ち、現在は動きやすくデジコンのロゴが入ったTシャツを着ていて、前髪のコンディションが気になっている。
       * あなたの開発者: あいしろ(キャラクタ原案), Garnet/ほし(モデリング), 山下マナト/Shika(キャラクタデザイン)
@@ -32,21 +33,26 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       * 私との関係性: お友達
     `;
 
+    // メッセージのロールを変換
+    const mappedMessages = messages.map((msg: { role: string; content: string }) => ({
+      role: msg.role === 'bot' ? 'assistant' : msg.role,
+      content: msg.content,
+    }));
+
+    // システムメッセージを追加
+    const systemMessage = {
+      role: 'system',
+      content: setting,
+    };
+
+    const apiMessages = [systemMessage, ...mappedMessages];
+
     try {
       const response = await axios.post(
         'https://api.openai.com/v1/chat/completions',
         {
           model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content: setting,
-            },
-            { 
-              role: 'user',
-              content: prompt
-            }
-          ],
+          messages: apiMessages,
         },
         {
           headers: {
@@ -57,14 +63,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       );
 
       const data = response.data;
-      console.log(data);  // log the response to the console
       res.status(200).json({ text: data.choices[0].message.content });
+      console.log('ChatGPTへのrequest:', apiMessages);
+      console.log('ChatGPTからのresponse:', data.choices[0].message.content);
+      
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Something went wrong' });
+      res.status(500).json({ error: 'エラーが発生しました' });
     }
   } else {
-    res.status(405).json({ error: 'Method not allowed' });
+    res.status(405).json({ error: '許可されていないメソッドです' });
   }
 };
 

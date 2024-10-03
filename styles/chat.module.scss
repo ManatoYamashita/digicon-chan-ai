@@ -30,6 +30,19 @@
   transition: all 0.3s;
   animation: SlideIn 0.5s ease-in-out forwards;
   animation-delay: .5s;
+
+  .messageCount {
+    font-size: 13px;
+    color: #333;
+    margin: .5rem 0;
+
+    .numUserMessages {
+      color: var(--dc-primary-b);
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin: .5rem;
+    }
+  }
 }
 .chatContainer {
   height: 70%;
@@ -56,6 +69,30 @@
   outline: none;
   margin-right: 8px;
   font-size: 16px;
+
+    /* プレースホルダーのスタイル */
+    &::placeholder {
+      font-size: 16px;
+      color: #999; 
+    }
+
+    // ベンダープレフィックスをつける
+    &::-webkit-input-placeholder {
+      font-size: 13px;
+      color: #999;
+    }
+    &::-moz-placeholder {
+      font-size: 13px;
+      color: #999;
+    }
+    &:-ms-input-placeholder {
+      font-size: 13px;
+      color: #999;
+    }
+    &:-moz-placeholder {
+      font-size: 13px;
+      color: #999;
+    }
 }
 
 .textarea:focus {
@@ -175,7 +212,7 @@
         display: inline-block;
         width: 20px;
         height: 15px;
-        background: #333;
+        background: #666;
         background-color: none;
         clip-path: polygon(0 0, 100% 0%, 50% 100%);
       }
@@ -208,8 +245,13 @@
     .textareaContainer {
       display: flex;
       align-items: center;
-      margin-bottom: 5rem;
+      margin-bottom: 4rem;
       width: 100%;
+
+      .textarea {
+        padding: .5rem;
+        font-size: 13px;
+      }
     }
 
     .label {
