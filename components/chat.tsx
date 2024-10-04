@@ -160,7 +160,7 @@ function Chat({ setEmotion }: EmotionProps) {
             disabled={isLoading || prompt.trim().length === 0}
             onClick={generateAnswer}
           >
-            Talk!
+            {numUserMessages === 0 || numUserMessages === 5 ? "New Talk!" : "Submit"}
           </button>
         </div>
       </div>
