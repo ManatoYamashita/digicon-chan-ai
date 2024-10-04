@@ -190,107 +190,97 @@
   color: white;
 }
   
-  @media screen and (max-width: 768px){
-    .tabVisible {
-      transform: translateY(0);
-      transition: all 0.3s;
-      height: 100%;
+@media screen and (max-width: 768px), 
+       screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
+  .tabVisible {
+    transform: translateY(0);
+    transition: all 0.3s;
+    height: 100%;
+  }
+  .tabHidden {
+    transform: translateY(75%);
+    transition: all 0.3s;
+    height: 100%;
+  }
+  .toggleBtn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    display: block;
+  
+    .toVisible {
+      display: inline-block;
+      width: 20px;
+      height: 15px;
+      background: #666;
+      background-color: none;
+      clip-path: polygon(0 0, 100% 0%, 50% 100%);
     }
-    .tabHidden {
-      transform: translateY(75%);
-      transition: all 0.3s;
-      height: 100%;
-    }
-    .toggleBtn {
-      background-color: transparent;
-      border: none;
-      cursor: pointer;
-      width: 100%;
-      display: block;
-    
-      .toVisible {
-        display: inline-block;
-        width: 20px;
-        height: 15px;
-        background: #666;
-        background-color: none;
-        clip-path: polygon(0 0, 100% 0%, 50% 100%);
-      }
-      .toHidden {
-        display: inline-block;
-        width: 20px;
-        height: 15px;
-        background: #333;
-        background-color: none;
-        clip-path: polygon(0 100%, 50% 0, 100% 100%);
-      }
-    }
-
-    .chat {
-      display: flex;
-      flex-direction: column;
-      height: 90%;
-      padding: 1rem;
-      border-radius: 3rem 3rem 0 0;
-    }
-    .chatContainer {
-      flex-grow: 1;
-      height: 50%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      overflow-y: scroll;
-    }
-    
-    .textareaContainer {
-      display: flex;
-      align-items: center;
-      margin-bottom: 4rem;
-      width: 100%;
-
-      .textarea {
-        padding: .5rem;
-        font-size: 13px;
-      }
-    }
-
-    .label {
-      font-size: .8rem;
-    }
-    .text {
-      font-size: .7rem;
-      color: white;
-    }
-    .button {
-      padding: .5em 1rem;
-      font-size: .8rem;
-    }
-    .bubble {
-      padding: .6rem 1.2rem;
-      border-radius: 1rem;
-      margin-bottom: 8px;
-      max-width: 85%;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    .toHidden {
+      display: inline-block;
+      width: 20px;
+      height: 15px;
+      background: #333;
+      background-color: none;
+      clip-path: polygon(0 100%, 50% 0, 100% 100%);
     }
   }
 
-  // アニメーションを設定する
-  @keyframes SlideIn {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
+  .chat {
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+    padding: 1rem;
+    border-radius: 3rem 3rem 0 0;
+  }
+  .chatContainer {
+    flex-grow: 1;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow-y: scroll;
+  }
+  
+  .textareaContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4rem;
+    width: 100%;
+
+    .textarea {
+      padding: .5rem;
+      font-size: 13px;
     }
   }
 
-  @keyframes typing {
-    from {
-      opacity: 0;
-      width: 0;
-    }
-    to {
-      opacity: 1;
-      width: 100%;
-    }
+  .label {
+    font-size: .8rem;
   }
+  .text {
+    font-size: .7rem;
+    color: white;
+  }
+  .button {
+    padding: .5em 1rem;
+    font-size: .8rem;
+  }
+  .bubble {
+    padding: .6rem 1.2rem;
+    border-radius: 1rem;
+    margin-bottom: 8px;
+    max-width: 85%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// アニメーションを設定する
+@keyframes SlideIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

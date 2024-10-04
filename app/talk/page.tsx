@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Chat from "@/components/chat"
 import EmoDCchan from "@/components/emoDCchan"
 import styles from './page.module.scss';
