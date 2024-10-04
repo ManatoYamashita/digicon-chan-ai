@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！！！',
     url: 'https://でじこんちゃん.net',
-    siteName: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
+    siteName: 'でじこんちゃん',
 
     images: [
       {
         url: 'http://でじこんちゃん.net/ogp.jpg',
-        width: 600,
-        height: 600,
+        width: 1200,
+        height: 630,
         alt: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
       },
     ],

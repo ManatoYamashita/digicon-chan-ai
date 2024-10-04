@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     title: '『でじこんちゃん』とおしゃべり！',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」のAIとおしゃべりしよう!!',
     url: 'https://でじこちゃん.net/talk',
-    siteName: '「でじこんちゃん」とおしゃべり！',
+    siteName: 'でじこんちゃん AI',
     images: [
       {
         url: 'https://でじこちゃん.net/ogp.jpg',
-        width: 600,
-        height: 600,
+        width: 1200,
+        height: 630,
         alt: '『でじこんちゃん』とおしゃべりしよう！',
       },
     ],
