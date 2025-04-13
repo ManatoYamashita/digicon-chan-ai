@@ -11,6 +11,7 @@ class Doc extends Document {
           <meta property="og:image" content="/ogp.jpg" />
           <meta property="og:url" content="https://でじこんちゃん.net" />
           <meta property="og:type" content="website" />
+          <meta name="thumbnail" content="https://www.xn--28jj2av7lwdc.net/images/dcchan-studentcard.webp" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=optional" />
         </Head>
         <body>

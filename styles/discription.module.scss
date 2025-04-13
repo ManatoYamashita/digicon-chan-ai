@@ -1,5 +1,8 @@
 .container {
   color: #fff;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
 
   .triangle {
     position: absolute;
@@ -8,71 +11,117 @@
     width: 50vw;
     height: 100vh;
     background-color: var(--dc-primary-sb);
-    clip-path: polygon(0 0, 20% 0, 50% 100%, 0% 100%);
-    animation: slideInLeft 1.3s ease-in-out forwards;
+    clip-path: polygon(0 0, 30% 0, 60% 100%, 0% 100%);
+    animation: slideInLeft 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    box-shadow: 0 0 30px rgba(6, 192, 255, 0.3);
   }
 }
 
 .content {
   display: flex;
   flex-direction: row;
-  gap: 40px;
+  gap: 60px;
   align-items: center;
-  max-width: 1200px;
-  padding: 20px;
+  max-width: 1440px;
+  padding: 30px;
+  position: relative;
+  z-index: 1;
 }
 
 .imageContainer {
   position: relative;
-  width: 40%;
-  min-height: 80dvh;
-  border-radius: 1rem;
+  width: 45%;
+  min-height: 75dvh;
+  border-radius: 1.5rem;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
 
   .image {
     position: absolute;
     min-height: 100%;
     width: auto;
     min-width: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    transition: transform 0.5s ease;
   }
 }
 
 .discriptionContainer {
-  width: 60%;
+  width: 55%;
 
   .title {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     color: var(--dc-primary-sb);
+    line-height: 1.2;
+  }
+  
+  .divider {
+    width: 60px;
+    height: 4px;
+    background-color: var(--dc-primary-sb);
+    margin-bottom: 20px;
+    border-radius: 2px;
+    box-shadow: 0 2px 10px rgba(6, 192, 255, 0.3);
   }
   
   .subtitle {
     font-size: 1.5rem;
-    margin-bottom: 20px;
-    color: rgb(110, 110, 110);
+    margin-bottom: 25px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 300;
   }
   
   .paraContainer {
     max-height: 50vh;
     overflow-y: auto;
-    margin: 20px 0;
-    padding: 10px;
-    border-radius: 10px;
+    margin: 25px 0;
+    padding: 20px;
+    padding-bottom: 50px;
+    border-radius: 16px;
+    background-color: rgba(30, 30, 30, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    scroll-behavior: smooth;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--dc-primary-sb);
+      border-radius: 3px;
+    }
 
     .p {
-      margin-bottom: 1.2rem;
-      font-size: .9rem;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
       line-height: 1.8;
-      color: #ccc;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .em {
+      color: var(--dc-primary-sb);
+      font-style: normal;
+      font-weight: 600;
     }
   }
 
-  /* From Uiverse.io by cssbuttons-io */ 
+  /* ボタンスタイルを刷新 */ 
   .button {
     position: relative;
     display: inline-block;
@@ -85,10 +134,12 @@
     padding: 0;
     font-size: inherit;
     font-family: inherit;
+    margin-top: 20px;
+    transition: all 0.3s ease;
   }
   
   .button {
-    width: 12rem;
+    width: 14rem;
     height: auto;
   }
   
@@ -101,6 +152,7 @@
     height: 3rem;
     background: var(--dc-primary-sb);
     border-radius: 1.625rem;
+    box-shadow: 0 5px 15px rgba(6, 192, 255, 0.3);
   }
   
   .button .circle .icon {
@@ -157,8 +209,8 @@
     transform: translate(1rem, 0);
   }
   
-  .button:hover .button-text {
-    color: var(--dc-primary-sb);
+  .button:hover .buttonText {
+    color: whitesmoke;
   }
   
 }
@@ -166,54 +218,122 @@
 @keyframes slideInLeft {
   from {
     transform: translateX(-100%);
+    opacity: 0;
   }
   to {
     transform: translateX(0);
+    opacity: 1;
   }
 }
 
 @keyframes slideInDown {
   from {
     transform: translateY(-100%);
+    opacity: 0;
   }
   to {
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
-@media screen and (max-width: 540px) {
-.container {
-  .triangle {
-    clip-path: polygon(0 0, 100% 0, 100% 25%, 0 10%);
-    width: 100vw;
-    animation: slideInDown 1.3s ease-in-out forwards;
+@media screen and (max-width: 960px) {
+  .container {
+    .triangle {
+      clip-path: polygon(0 0, 100% 0, 100% 20%, 0 30%);
+      width: 100vw;
+      height: 30vh;
+      animation: slideInDown 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
   }
+  
   .content {
     flex-direction: column;
-    gap: 20px;
-    padding: 0;
+    gap: 30px;
+    padding: 15px;
   }
+  
   .imageContainer {
-    width: 100%;
-    min-height: 20vh;
+    width: 90%;
+    min-height: 30vh;
+    margin: 0 auto;
+    margin-top: 3rem;
   }
 
   .discriptionContainer {
     width: 100%;
+    margin-top: 1rem;
+    padding-bottom: 3rem;
 
+    .title {
+      font-size: 1.8rem;
+    }
+    .subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+    .paraContainer {
+      max-height: 30vh;
+      .p {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    .triangle {
+      height: 20vh;
+    }
+  }
+  
+  .content {
+    padding: 10px;
+    gap: 20px;
+  }
+  
+  .imageContainer {
+    min-height: 25vh;
+    margin-top: 0rem;
+    width: 100%;
+    border-radius: 12px;
+  }
+  
+  .discriptionContainer {
     .title {
       font-size: 1.5rem;
     }
     .subtitle {
-      font-size: 1.2rem;
-      margin: 0;
+      font-size: 1rem;
     }
     .paraContainer {
-      max-height: 33vh;
+      padding: 15px;
+      margin: 15px 0;
+      // max-height: 45vh;
+      
       .p {
-        font-size: .8rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.2rem;
       }
     }
-  }
+    
+    .button {
+      width: 100%;
+      max-width: 12rem;
+      margin: 0 auto;
+      display: block;
+      
+      .circle {
+        width: 3.2rem;
+        height: 3.2rem;
+      }
+      
+      .buttonText {
+        font-size: 0.9rem;
+        padding: 1rem 0;
+      }
+    }
   }
 }

@@ -3,59 +3,212 @@
   --col-darkGray: #52555a;
   --col-gray: #aeaeae;
 
-  background-color: var(--col-dark);
-  border-radius: 1rem;
-  position: relative;
+  background-color: rgba(12, 15, 20, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 1.2rem;
+  position: fixed;
+  padding: 0.5rem;
+  width: auto;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* デフォルト位置: home */
+  bottom: 1.5rem;
+  right: 1.5rem;
+  left: auto;
+  transform: none;
+  
+  /* レイアウト設定 */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+/* homeページ時の位置 - 右下 */
+.home {
+  bottom: 1.5rem;
+  right: 1.5rem;
+  left: auto;
+}
+
+/* aboutページ時の位置 - 左下 */
+.about {
+  bottom: 1.5rem;
+  left: 1.5rem;
+  right: auto;
+}
+
+/* talkページ時の位置 - 左下 */
+.talk {
+  bottom: 1.5rem;
+  left: 1.5rem;
+  right: auto;
+}
+
+.menuItem {
+  display: block;
+  margin: 0 0.4rem;
 }
 
 .label {
-  padding: 8px 18px;
+  padding: 0.6rem;
   transition: all 200ms;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-
-  & input[type="radio"] {
-    display: none;
-  }
+  position: relative;
+  color: var(--col-gray);
+  text-decoration: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
 
   & > svg {
-    transition: all 200ms;
+    transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
     fill: var(--col-gray);
-    width: 1rem;
+    width: 1.2rem;
+    height: auto;
   }
 
   &:hover:not(.selected) > svg {
-    fill: var(--dc-primary-b);
-    opacity: 0.6;
+    fill: var(--dc-primary-sb);
+    opacity: 0.8;
+    transform: translateY(-2px);
   }
 
-  &::before {
+  &::after {
     content: "";
     display: block;
     width: 0;
-    height: 2px;
-    border-radius: 5px;
-    position: relative;
-    left: 50%;
-    top: 20px;
+    height: 3px;
+    border-radius: 8px;
     background: var(--dc-primary-sb);
-    transition: all 200ms;
+    transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: absolute;
+    bottom: 0.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px rgba(6, 192, 255, 0.5);
+    opacity: 0;
   }
 
-  &.selected::before {
-    width: 100%;
-    left: 0;
-    top: 25px;
+  &.selected::after {
+    width: 40%;
+    opacity: 1;
+  }
+
+  &::before {
+    content: attr(title);
+    position: absolute;
+    bottom: -1.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--dc-primary-sb);
+    opacity: 0;
+    transition: opacity 200ms ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  &:hover::before {
+    opacity: 0.8;
   }
 }
 
 .selected > svg {
   fill: var(--dc-primary-sb);
   transform: scale(1.2);
-  margin-top: -5px;
+  filter: drop-shadow(0 0 3px rgba(6, 192, 255, 0.3));
+}
+
+.labelText {
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  transition: all 200ms;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.selected .labelText {
+  opacity: 1;
+  height: auto;
 }
 
 .label > .dcicon {
   fill: var(--col-gray);
   width: 25px;
+}
+
+/* タッチデバイス対応 */
+@media (hover: none) {
+  .label::before {
+    display: none;
+  }
+}
+
+/* スマートフォン対応 */
+@media screen and (max-width: 480px) {
+  .menu {
+    bottom: 0.8rem;
+    padding: 0.3rem;
+    border-radius: 1rem;
+    
+    &.home, &.about, &.talk {
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+    }
+  }
+
+  .menuItem {
+    margin: 0 0.2rem;
+  }
+
+  .label {
+    padding: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    
+    & > svg {
+      width: 1rem;
+    }
+  }
+
+  .selected > svg {
+    transform: scale(1.2);
+  }
+  
+  /* アクティブ状態のタッチフィードバック */
+  .label:active > svg {
+    transform: scale(0.9);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* iPhone SEなどの小型デバイス対応 */
+@media screen and (max-width: 360px) {
+  .menu {
+    padding: 0.2rem;
+  }
+
+  .menuItem {
+    margin: 0 0.15rem;
+  }
+  
+  .label {
+    padding: 0.4rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    
+    & > svg {
+      width: 0.9rem;
+    }
+  }
 }

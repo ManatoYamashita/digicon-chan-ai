@@ -78,9 +78,24 @@ footer {
     height: 100dvh;
     background-color: #111111;
     /* background-image: linear-gradient(147deg, whitesmoke 0%, white 74%); */
-    animation: In .3s ease-in-out forwards;
+    animation: In .3s ease-out forwards;
     transition: all 0.3s;
     overflow: hidden;
+    position: relative;
+    background-image: radial-gradient(circle at 10% 20%, rgba(6, 192, 255, 0.05) 0%, rgba(0, 0, 0, 0) 80%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .about-main {
+    width: 100%;
+    height: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    z-index: 1;
   }
   
   .body-talk {
@@ -105,6 +120,21 @@ footer {
     }
     100% {
       transform: translateX(0);
+    }
+  }
+
+  /* スマートフォン対応 */
+  @media screen and (max-width: 480px) {
+    .body-about {
+      align-items: flex-start;
+      height: 100svh; /* モバイルブラウザのビューポート高さに対応 */
+      overflow-y: auto; /* スクロールを許可 */
+      -webkit-overflow-scrolling: touch; /* iOSでのスムーズスクロール */
+    }
+    
+    .about-main {
+      height: auto;
+      min-height: 100%;
     }
   }
 

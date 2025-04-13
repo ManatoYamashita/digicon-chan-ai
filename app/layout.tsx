@@ -103,10 +103,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
   };
 
+  // PageMapの内容
+  const pageMapContent = `
+  <PageMap>
+    <DataObject type="thumbnail">
+      <Attribute name="src" value="https://www.xn--28jj2av7lwdc.net/images/dcchan-studentcard.webp"/>
+      <Attribute name="width" value="1200"/>
+      <Attribute name="height" value="630"/>
+    </DataObject>
+  </PageMap>
+  `;
+
   return (
         <html lang="ja">
           <Head>
             <title>でじこんちゃん - 東京都市大学デジタルコンテンツ研究会</title>
+            <meta name="thumbnail" content="https://www.xn--28jj2av7lwdc.net/images/dcchan-studentcard.webp" />
           </Head>
           <head>
             <Script
@@ -114,6 +126,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               key="json-ld"
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+
+            {/* PageMapの追加 */}
+            <Script
+              id="page-map"
+              key="page-map"
+              dangerouslySetInnerHTML={{ __html: pageMapContent }}
             />
 
             {GA_MEASUREMENT_ID && (

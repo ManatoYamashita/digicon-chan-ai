@@ -1,24 +1,47 @@
 .about {
-    height: 90%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem;
-    animation: In .3s ease-in-out forwards;
+    padding: 1.5rem;
+    animation: fadeIn 0.5s ease-out forwards;
+    position: relative;
 }
 
-// アニメーションを追加する
-@keyframes In {
+@keyframes fadeIn {
     from {
-        transform: translateX(-100%);
+        opacity: 0;
+        transform: translateY(20px);
     }
     to {
-        transform: translateX(0);
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
+// モバイルレスポンシブ対応を改善
 @media screen and (max-width: 768px) {
     .about {
         align-items: flex-start;
+        padding: 1rem 1rem 2rem;
+        height: 100%;
+        overflow-y: auto;
+        justify-content: flex-start;
+    }
+}
+
+// スマートフォン向け最適化
+@media screen and (max-width: 480px) {
+    .about {
+        padding: 0.8rem;
+        overflow-y: auto;
+        justify-content: flex-start;
+    }
+}
+
+// タブレット向け最適化
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .about {
+        padding: 2rem;
     }
 }

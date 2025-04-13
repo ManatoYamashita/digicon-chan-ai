@@ -38,11 +38,12 @@ function Chat({ setEmotion }: EmotionProps) {
     setPrompt('');
 
     try {
-      const res = await axios.post('/api/chatgpt', { messages: newMessages }, { timeout: 15000 });
-      console.log('ChatGPTからのresponse: ', res.data);
+      const res = await axios.post('/api/gemini', { messages: newMessages }, { timeout: 15000 });
+      console.log('Geminiからのresponse: ', res.data);
     
       // レスポンスを行ごとに分割し、空行を削除
-      const responseLines = res.data.text.split('\n').filter((line: string) => line.trim() !== '');
+      const responseText = res.data.content || '';
+      const responseLines = responseText.split('\n').filter((line: string) => line.trim() !== '');
       let emotion = '';
       let content = '';
 

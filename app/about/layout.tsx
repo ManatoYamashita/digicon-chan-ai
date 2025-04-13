@@ -53,7 +53,9 @@ export default function AboutLayout({ children }: { children: React.ReactNode })
     <>
       <Head />
       <div className="body-about">
-        {children}
+        <main className="about-main">
+          {children}
+        </main>
       </div>
     </>
   );

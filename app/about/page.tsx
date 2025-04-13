@@ -12,7 +12,6 @@ export default function About() {
             {/* <Ticket title="2024/06/04" description="under constraction" className={styles.ticket}/> */}
             <Discription
                 title='"でじこんちゃん"について'
-                subtitle='略歴'
                 button='おしゃべりする!'
             />
         </div>
