@@ -2,7 +2,7 @@
 
 import styles from './page.module.scss';
 // import Ticket from '@/components/ticket';
-import Discription from '@/components/dispription';
+import Discription from '@/components/discription';
 import "@/styles/globals.css";
 
 export default function About() {
