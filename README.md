@@ -103,6 +103,6 @@ npm run start
 
 ## 📧 連絡先
 
-山下 愛斗 - g2172117[at]tcu.ac.jp
+山下マナト - g2172117[at]tcu.ac.jp
 
 プロジェクトリンク: [https://github.com/ManatoYamashita/dcchan-ai](https://github.com/ManatoYamashita/dcchan-ai)
