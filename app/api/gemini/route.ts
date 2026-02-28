@@ -40,13 +40,83 @@ type Message = {
     content: string;
 };
 
+// --- インメモリレート制限 (スライディングウィンドウ) ---
+const RATE_LIMIT_RPM = 12; // Gemini Free Tier 15RPM に対して余裕枠
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const requestTimestamps: number[] = [];
+
+function isRateLimited(): boolean {
+    const now = Date.now();
+    // ウィンドウ外のタイムスタンプを除去
+    while (requestTimestamps.length > 0 && requestTimestamps[0] < now - RATE_LIMIT_WINDOW_MS) {
+        requestTimestamps.shift();
+    }
+    return requestTimestamps.length >= RATE_LIMIT_RPM;
+}
+
+function recordRequest(): void {
+    requestTimestamps.push(Date.now());
+}
+
+// --- リトライ + エクスポネンシャルバックオフ ---
+const MAX_RETRIES = 2;
+const BASE_DELAY_MS = 1000;
+const JITTER_MS = 500;
+
+async function callGeminiWithRetry(apiMessages: Message[]) {
+    let lastError: any;
+
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const completion = await openai.chat.completions.create({
+                model: "gemini-2.0-flash",
+                messages: apiMessages,
+                temperature: 0.7,
+            });
+            return completion;
+        } catch (error: any) {
+            lastError = error;
+            const status = error.status || error.statusCode;
+
+            // 429/503 のみリトライ対象
+            if ((status === 429 || status === 503) && attempt < MAX_RETRIES) {
+                const delay = BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * JITTER_MS;
+                if (process.env.NODE_ENV === 'development') {
+                    console.log(`Gemini API retry ${attempt + 1}/${MAX_RETRIES} after ${Math.round(delay)}ms (status: ${status})`);
+                }
+                await new Promise(resolve => setTimeout(resolve, delay));
+                continue;
+            }
+
+            throw error;
+        }
+    }
+
+    throw lastError;
+}
+
+const isDev = process.env.NODE_ENV === 'development';
+
 export async function POST(request: Request) {
     try {
-        // リクエストボディの解析
+        // レート制限チェック
+        if (isRateLimited()) {
+            const retryAfter = 30;
+            return NextResponse.json(
+                { error: 'ただいま混み合っています。しばらく待ってから再度お試しください。', retryAfter },
+                {
+                    status: 429,
+                    headers: { 'Retry-After': String(retryAfter) },
+                }
+            );
+        }
+
         let body;
         try {
             body = await request.json();
-            console.log('受信したリクエストデータ:', JSON.stringify(body, null, 2));
+            if (isDev) {
+                console.log('受信したリクエストデータ:', JSON.stringify(body, null, 2));
+            }
         } catch (e) {
             console.error('Request body parsing error:', e);
             return NextResponse.json(
@@ -58,14 +128,12 @@ export async function POST(request: Request) {
         const { messages } = body;
 
         if (!messages || !Array.isArray(messages)) {
-            console.error('Invalid messages format:', messages);
             return NextResponse.json(
                 { error: 'メッセージの形式が不正です。' },
                 { status: 400 }
             );
         }
 
-        // メッセージのロールを変換
         const mappedMessages: Message[] = messages.map((msg: { role: string; content: string }) => {
             if (!msg.role || !msg.content) {
                 throw new Error('メッセージの形式が不正です。roleとcontentが必要です。');
@@ -76,16 +144,13 @@ export async function POST(request: Request) {
             };
         });
 
-        // システムメッセージを追加
         const systemMessage: Message = {
             role: 'system',
             content: setting,
         };
 
         const apiMessages = [systemMessage, ...mappedMessages];
-        console.log('Gemini APIに送信するメッセージ:', JSON.stringify(apiMessages, null, 2));
 
-        // APIキーの確認
         if (!process.env.GEMINI_API_KEY) {
             console.error('Gemini API key is not set');
             return NextResponse.json(
@@ -94,13 +159,13 @@ export async function POST(request: Request) {
             );
         }
 
-        const completion = await openai.chat.completions.create({
-            model: "gemini-2.0-flash",
-            messages: apiMessages,
-            temperature: 0.7,
-        });
+        // リクエスト記録 & リトライ付きAPI呼び出し
+        recordRequest();
+        const completion = await callGeminiWithRetry(apiMessages);
 
-        console.log('Gemini APIからのレスポンス:', JSON.stringify(completion, null, 2));
+        if (isDev) {
+            console.log('Gemini APIからのレスポンス:', JSON.stringify(completion, null, 2));
+        }
 
         if (!completion.choices[0]?.message) {
             console.error('Invalid completion response:', completion);
@@ -111,22 +176,26 @@ export async function POST(request: Request) {
         }
 
         const response = completion.choices[0].message;
-        console.log('クライアントに返すレスポンス:', JSON.stringify(response, null, 2));
+        if (isDev) {
+            console.log('クライアントに返すレスポンス:', JSON.stringify(response, null, 2));
+        }
 
         return NextResponse.json(response);
     } catch (error: any) {
-        console.error('Gemini API Error:', error);
-        console.error('Error details:', {
+        console.error('Gemini API Error:', {
             message: error.message,
             status: error.status,
             code: error.code,
-            type: error.type,
         });
 
         if (error.status === 429) {
+            const retryAfter = 30;
             return NextResponse.json(
-                { error: 'APIの使用制限に達しました。しばらく待ってから再度お試しください。' },
-                { status: 429 }
+                { error: 'APIの使用制限に達しました。しばらく待ってから再度お試しください。', retryAfter },
+                {
+                    status: 429,
+                    headers: { 'Retry-After': String(retryAfter) },
+                }
             );
         }
 
@@ -138,11 +207,11 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json(
-            { 
+            {
                 error: 'サーバーエラーが発生しました。',
-                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+                details: isDev ? error.message : undefined
             },
             { status: 500 }
         );
     }
-} 
+}

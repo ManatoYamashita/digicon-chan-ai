@@ -34,19 +34,8 @@ export const metadata: Metadata = {
   },
   
   icons: {
-    icon: [
-      { url: '/favicon.ico' },
-      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
+    icon: [{ url: '/favicon.ico' }],
     shortcut: '/favicon.ico',
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    other: [
-      { rel: 'apple-touch-icon-precomposed', url: '/apple-touch-icon-precomposed.png' },
-      { rel: 'mask-icon', url: '/safari-pinned-tab.svg', color: '#5bbad5' },
-    ],
   },
   
   twitter: {

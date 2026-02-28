@@ -118,28 +118,47 @@
   
   .track {
     padding-top: 1rem;
-   position: relative;
-  
+    position: relative;
   }
-  
-  .track::before {
-    content: '';
-    height: 6px;
+
+  .seekbar {
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
-    display: block;
-    background: #080747;
-    opacity: 0.3;
-    border-radius: 10px;
-    position: absolute;
-  }
-  
-  .track::after { 
-    content: '';
     height: 6px;
-    width: 85%;
-    display: block;
-    background: #080747;
     border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+    background: linear-gradient(
+      to right,
+      #080747 var(--progress, 0%),
+      rgba(8, 7, 71, 0.3) var(--progress, 0%)
+    );
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #080747;
+      cursor: pointer;
+    }
+
+    &::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border: none;
+      border-radius: 50%;
+      background: #080747;
+      cursor: pointer;
+    }
+
+    &::-moz-range-progress {
+      background: #080747;
+      height: 6px;
+      border-radius: 10px;
+    }
   }
   
   .time {

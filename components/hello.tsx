@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import Greets from './greets';
+import SplitText from './SplitText';
 import styles from '@/styles/hello.module.scss';
 import { Dela_Gothic_One } from 'next/font/google';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
 type Props = {
     greets: string[];
@@ -21,35 +23,12 @@ const delaGothicOne = Dela_Gothic_One({
 });
 
 export default function Hello({ greets, msg1, msg2, title }: Props) {
-    const titleRef = useRef<HTMLHeadingElement>(null);
     const phrasesRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (!titleRef.current || !phrasesRef.current) return;
-        const text = titleRef.current.textContent || '';
-        titleRef.current.textContent = '';
+    useGSAP(() => {
+        if (!phrasesRef.current) return;
 
-        // 一文字ごとにspanタグで囲む
-        text.split('').forEach(char => {
-            const span = document.createElement('span');
-            span.textContent = char;
-            titleRef.current?.appendChild(span);
-        });
-
-        // titleのアニメーション
-        gsap.fromTo(Array.from(titleRef.current.children),
-
-            { y: '100%' },  // 初期位置を指定
-            { 
-                y: '0%',  // 最終位置を指定
-                duration: 1,
-                stagger: 0.1,
-                delay: 1,
-                ease: 'Power4.easeInOut',
-            }
-        );
-
-        // pharesesのアニメーション
+        // フレーズのスケールアニメーション
         gsap.fromTo(phrasesRef.current.children,
             { scale: 0 },
             {
@@ -57,9 +36,9 @@ export default function Hello({ greets, msg1, msg2, title }: Props) {
                 duration: 1,
                 stagger: 0.2,
                 ease: 'back.out(1.7)',
-            }    
+            }
         );
-    }, [title]);
+    }, { scope: phrasesRef });
 
     return (
         <section className={styles.hello}>
@@ -68,12 +47,20 @@ export default function Hello({ greets, msg1, msg2, title }: Props) {
                 <Greets greets={msg1} />
                 <Greets greets={msg2} />
             </div>
-            <h1 
-                ref={titleRef}
+            <SplitText
+                text={title}
+                tag="h1"
                 className={`${styles.title} ${delaGothicOne.className}`}
-            >
-                {title}
-            </h1>
+                splitType="chars"
+                from={{ y: '100%' }}
+                to={{ y: '0%' }}
+                duration={1}
+                delay={100}
+                ease="power4.inOut"
+                initialDelay={1}
+                useScrollTrigger={false}
+                textAlign="left"
+            />
             <span className={styles.desu}>&nbsp;ですっ！</span>
         </section>
     );
