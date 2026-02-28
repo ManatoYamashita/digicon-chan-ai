@@ -1,7 +1,7 @@
 "use client";
 
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styles from '@/styles/chat.module.scss';
 
 type Message = {
@@ -12,14 +12,25 @@ type EmotionProps = {
   setEmotion: (value: string) => void;
 }
 
+const DEBOUNCE_MS = 2000;
+
 function Chat({ setEmotion }: EmotionProps) {
   const [prompt, setPrompt] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [displayedAnswer, setDisplayedAnswer] = useState('');
+  const lastSubmitTime = useRef<number>(0);
 
   const generateAnswer = async () => {
+    // 二重送信防止 (isLoading ガード)
+    if (isLoading) return;
+
+    // デバウンス: 前回送信から2秒未満なら無視
+    const now = Date.now();
+    if (now - lastSubmitTime.current < DEBOUNCE_MS) return;
+    lastSubmitTime.current = now;
+
     setIsLoading(true);
     setError('');
 
@@ -40,7 +51,7 @@ function Chat({ setEmotion }: EmotionProps) {
     try {
       const res = await axios.post('/api/gemini', { messages: newMessages }, { timeout: 15000 });
       console.log('Geminiからのresponse: ', res.data);
-    
+
       // レスポンスを行ごとに分割し、空行を削除
       const responseText = res.data.content || '';
       const responseLines = responseText.split('\n').filter((line: string) => line.trim() !== '');
@@ -74,7 +85,7 @@ function Chat({ setEmotion }: EmotionProps) {
 
       console.log('最終的なでじこんちゃんの感情(パース済): 『', emotion, '』');
       console.log('最終的なでじこんちゃんの回答: 『', content, '』');
-    
+
       setEmotion(emotion);
       setDisplayedAnswer(content);
 
@@ -92,6 +103,9 @@ function Chat({ setEmotion }: EmotionProps) {
     catch (e: any) {
       if (e.code === 'ECONNABORTED') {
         setError('タイムアウト: 15秒以内に回答が返ってきませんでした。');
+      } else if (e.response?.status === 429) {
+        const retryAfter = e.response?.data?.retryAfter || 30;
+        setError(`たくさんの人が話しかけてるみたい！${retryAfter}秒くらい待ってからまた話しかけてね！`);
       } else {
         setError('エラーが発生しました。');
       }
@@ -123,9 +137,9 @@ function Chat({ setEmotion }: EmotionProps) {
     <div className={isTabVisible ? styles.tabVisible : styles.tabHidden}>
       <div className={styles.chat}>
         <button type="button" className={styles.toggleBtn} onClick={toggleTabVisibility}>
-          {isTabVisible ? 
+          {isTabVisible ?
             <span className={styles.toVisible}></span>
-           : 
+           :
             <span className={styles.toHidden}></span>
            }
         </button>
