@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-import Menu from "@/components/menu";
 import { ProfilePage, WithContext } from 'schema-dts';
 import { Metadata } from "next";
 import Link from "next/link";
@@ -7,6 +6,7 @@ import Script from "next/script";
 import { Suspense } from 'react';
 
 import Analytics from './analytics';
+import Menu from '@/components/menu';
 
 export const metadata: Metadata = {
   title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -218,11 +218,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Analytics />
           </Suspense>
           {children}
-          <nav className='nav'>
-            <Menu />
-          </nav>
           <footer>© 2024 でじこんちゃん.net / Designed/Dev by <Link href="https://manapuraza.com">ヤマシタマナト(TCU-DC)</Link></footer>
         </main>
+        <Menu />
       </body>
     </html>
   );
