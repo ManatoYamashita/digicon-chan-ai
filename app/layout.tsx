@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import { Nunito } from "next/font/google";
 import { ProfilePage, WithContext } from 'schema-dts';
 import { Metadata } from "next";
 import Link from "next/link";
@@ -7,6 +8,13 @@ import { Suspense } from 'react';
 
 import Analytics from './analytics';
 import Menu from '@/components/menu';
+
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-nunito",
+});
 
 export const metadata: Metadata = {
   title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -155,22 +163,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // PageMapの内容
-  const pageMapContent = `
-  <PageMap>
-    <DataObject type="thumbnail">
-      <Attribute name="src" value="https://でじこんちゃん.net/images/dcchan-studentcard.webp"/>
-      <Attribute name="width" value="1200"/>
-      <Attribute name="height" value="630"/>
-    </DataObject>
-    <DataObject type="metatags">
-      <Attribute name="og:image" value="https://でじこんちゃん.net/ogp.jpg"/>
-      <Attribute name="og:type" value="website"/>
-      <Attribute name="og:title" value="でじこんちゃん - 東京都市大学デジタルコンテンツ研究会"/>
-    </DataObject>
-  </PageMap>
-  `;
-
   return (
     <html lang="ja">
       <head>
@@ -181,13 +173,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           key="json-ld"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-
-        {/* PageMapの追加 */}
-        <Script
-          id="page-map"
-          key="page-map"
-          dangerouslySetInnerHTML={{ __html: pageMapContent }}
         />
 
         {GA_MEASUREMENT_ID && (
@@ -212,7 +197,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
       </head>
       
-      <body>
+      <body className={nunito.variable}>
         <main>
           <Suspense fallback={<div>Loading...</div>}>
             <Analytics />
