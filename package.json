@@ -7,7 +7,7 @@
     "vercel-build": "sh ./vercel-build.sh",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint app/ components/"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -26,8 +26,8 @@
     "@types/node": "^25.3.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.28",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "16.1.6",
     "typescript": "^5"
   },
   "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017",

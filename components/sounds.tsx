@@ -1,7 +1,7 @@
 import Image from "next/image";
-import styles from"@/styles/sounds.module.scss";
+import styles from "@/styles/sounds.module.scss";
 import ImgSrc from "@/public/images/dcchan-icon.webp";
-import { useState } from "react";
+import { useRef, useCallback } from "react";
 
 type Props = {
     title: string,
@@ -10,17 +10,17 @@ type Props = {
 
 function Sounds({title, description}: Props) {
 
-    const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+    const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
-    const playSound = (soundFile: string) => {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
+    const playSound = useCallback((soundFile: string) => {
+      if (currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
       }
       const newAudio = new Audio(soundFile);
-      setCurrentAudio(newAudio);
+      currentAudioRef.current = newAudio;
       newAudio.play().catch(error => console.error("Failed to play sound:", error));
-    };
+    }, []);
 
     return (
         <div className={styles.sounds}>
