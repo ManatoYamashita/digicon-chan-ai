@@ -31,22 +31,6 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    href: "/chat",
-    label: "Chat",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
-    ),
-  },
-  {
     href: "/about",
     label: "About",
     icon: (
@@ -61,6 +45,22 @@ const navItems: NavItem[] = [
         <circle cx="12" cy="12" r="10" />
         <line x1="12" y1="16" x2="12" y2="12" />
         <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+    ),
+  },
+  {
+    href: "/chat",
+    label: "Chat",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
     ),
   },
@@ -88,7 +88,7 @@ export default function Menu() {
         )}
       </AnimatePresence>
 
-      <div className={styles.fab}>
+      <div className={styles.fab} style={{ viewTransitionName: "menu-fab" }}>
         <AnimatePresence>
           {isOpen && (
             <motion.nav
@@ -105,6 +105,13 @@ export default function Menu() {
                   className={`${styles.link} ${pathname === href ? styles.active : ""}`}
                   onClick={close}
                 >
+                  {pathname === href ? (
+                    <motion.span
+                      className={styles.activeIndicator}
+                      layoutId="desktop-nav-indicator"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  ) : null}
                   {icon}
                   {label}
                 </Link>
@@ -125,13 +132,20 @@ export default function Menu() {
       </div>
 
       {/* Mobile pill bar */}
-      <nav className={styles.pillBar}>
+      <nav className={styles.pillBar} style={{ viewTransitionName: "menu-pill" }}>
         {navItems.map(({ href, label, icon }) => (
           <Link
             key={href}
             href={href}
             className={`${styles.pillItem} ${pathname === href ? styles.pillActive : ""}`}
           >
+            {pathname === href ? (
+              <motion.span
+                className={styles.pillActiveIndicator}
+                layoutId="mobile-nav-indicator"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            ) : null}
             {icon}
             {label}
           </Link>
