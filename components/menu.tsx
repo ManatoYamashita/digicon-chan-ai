@@ -31,8 +31,8 @@ const navItems: NavItem[] = [
     ),
   },
   {
-    href: "/talk",
-    label: "Talk",
+    href: "/about",
+    label: "About",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -42,7 +42,25 @@ const navItems: NavItem[] = [
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+    ),
+  },
+  {
+    href: "/chat",
+    label: "Chat",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
     ),
   },
@@ -70,7 +88,7 @@ export default function Menu() {
         )}
       </AnimatePresence>
 
-      <div className={styles.fab}>
+      <div className={styles.fab} style={{ viewTransitionName: "menu-fab" }}>
         <AnimatePresence>
           {isOpen && (
             <motion.nav
@@ -87,6 +105,13 @@ export default function Menu() {
                   className={`${styles.link} ${pathname === href ? styles.active : ""}`}
                   onClick={close}
                 >
+                  {pathname === href ? (
+                    <motion.span
+                      className={styles.activeIndicator}
+                      layoutId="desktop-nav-indicator"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  ) : null}
                   {icon}
                   {label}
                 </Link>
@@ -105,6 +130,27 @@ export default function Menu() {
           <span className={styles.hamburger} data-open={isOpen} />
         </motion.button>
       </div>
+
+      {/* Mobile pill bar */}
+      <nav className={styles.pillBar} style={{ viewTransitionName: "menu-pill" }}>
+        {navItems.map(({ href, label, icon }) => (
+          <Link
+            key={href}
+            href={href}
+            className={`${styles.pillItem} ${pathname === href ? styles.pillActive : ""}`}
+          >
+            {pathname === href ? (
+              <motion.span
+                className={styles.pillActiveIndicator}
+                layoutId="mobile-nav-indicator"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            ) : null}
+            {icon}
+            {label}
+          </Link>
+        ))}
+      </nav>
     </>
   );
 }

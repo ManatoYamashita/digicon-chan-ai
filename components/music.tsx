@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import styles from "@/styles/music.module.scss";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 
-import jacketImg from "@/public/images/jacket.webp";
+import jacketImg from "@/public/images/gallery/cover.webp";
 
 type Props = {
     title: string;
@@ -20,52 +20,65 @@ function formatTime(seconds: number): string {
 function Music({ title, description }: Props) {
 
     const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const durationRef = useRef(0);
+    const seekbarRef = useRef<HTMLInputElement>(null);
+    const currentTimeRef = useRef<HTMLDivElement>(null);
+    const durationTimeRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.play().catch(error => console.error("Failed to play sound:", error));
-            } else {
-                audioRef.current.pause();
+    const handleCheckboxChange = useCallback(() => {
+        setIsPlaying(prev => {
+            const next = !prev;
+            if (audioRef.current) {
+                if (next) {
+                    audioRef.current.play().catch(error => console.error("Failed to play sound:", error));
+                } else {
+                    audioRef.current.pause();
+                }
             }
+            return next;
+        });
+    }, []);
+
+    const handleTimeUpdate = useCallback(() => {
+        if (!audioRef.current) return;
+        const ct = audioRef.current.currentTime;
+        const d = durationRef.current;
+        const percent = d > 0 ? (ct / d) * 100 : 0;
+
+        if (seekbarRef.current) {
+            seekbarRef.current.value = String(ct);
+            seekbarRef.current.style.setProperty('--progress', `${percent}%`);
         }
-    }, [isPlaying]);
-
-    const handleCheckboxChange = () => {
-        setIsPlaying(!isPlaying);
-    };
-
-    const handleTimeUpdate = () => {
-        if (audioRef.current) {
-            setCurrentTime(audioRef.current.currentTime);
+        if (currentTimeRef.current) {
+            currentTimeRef.current.textContent = formatTime(ct);
         }
-    };
+    }, []);
 
-    const handleLoadedMetadata = () => {
-        if (audioRef.current) {
-            setDuration(audioRef.current.duration);
+    const handleLoadedMetadata = useCallback(() => {
+        if (!audioRef.current) return;
+        durationRef.current = audioRef.current.duration;
+        if (seekbarRef.current) {
+            seekbarRef.current.max = String(audioRef.current.duration);
         }
-    };
+        if (durationTimeRef.current) {
+            durationTimeRef.current.textContent = formatTime(audioRef.current.duration);
+        }
+    }, []);
 
-    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number(e.target.value);
-        setCurrentTime(value);
         if (audioRef.current) {
             audioRef.current.currentTime = value;
         }
-    };
-
-    const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+    }, []);
 
     return (
         <section className={styles.music}>
             <div className={`${styles.player} ${styles.horizontal}`}>
                 <div className={styles.wrapper}>
                     <div className={styles.infoWrapper}>
-                        <Image className={styles.img} src={jacketImg} alt="dtm" width={75} height={75} priority />
+                        <Image className={styles.img} src={jacketImg} alt="DeskTop Musics ジャケット" width={75} height={75} priority />
                         <div className={styles.info}>
                             <h1 className={styles.h1}>{title}</h1>
                             <p className={styles.p}>{description}</p>
@@ -109,17 +122,17 @@ function Music({ title, description }: Props) {
                                 type="range"
                                 className={styles.seekbar}
                                 min={0}
-                                max={duration || 0}
+                                max={0}
                                 step={0.1}
-                                value={currentTime}
+                                defaultValue={0}
+                                ref={seekbarRef}
                                 onChange={handleSeek}
-                                style={{ '--progress': `${progressPercent}%` } as React.CSSProperties}
                                 aria-label="シーク"
                             />
                         </div>
                         <div className={styles.time}>
-                            <div className={styles.totalTime}>{formatTime(currentTime)}</div>
-                            <div className={styles.lastTime}>{formatTime(duration)}</div>
+                            <div className={styles.totalTime} ref={currentTimeRef}>0:00</div>
+                            <div className={styles.lastTime} ref={durationTimeRef}>0:00</div>
                         </div>
                     </div>
                 </div>

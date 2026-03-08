@@ -7,4 +7,4 @@ git lfs install
 git lfs pull
 
 # Run the Next.js build
-npm run build
+pnpm build

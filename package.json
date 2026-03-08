@@ -7,32 +7,35 @@
     "vercel-build": "sh ./vercel-build.sh",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint app/ components/"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
-    "axios": "^1.6.9",
-    "feather-icons": "^4.29.2",
-    "framer-motion": "^12.6.5",
+    "@svgr/webpack": "^8.1.0",
+    "framer-motion": "^12.35.0",
     "gsap": "^3.14.2",
-    "next": "14.2.35",
-    "next-plugin-svgr": "^1.1.10",
-    "openai": "^4.47.1",
-    "react": "^18",
-    "react-dom": "^18",
-    "sass": "^1.77.2",
-    "schema-dts": "^1.1.2",
-    "sharp": "^0.33.4",
-    "split-type": "^0.3.4"
+    "next": "16.1.6",
+    "openai": "^6.27.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "sass": "^1.97.3",
+    "schema-dts": "^1.1.5",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "@types/feather-icons": "^4.29.4",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.28",
-    "file-loader": "^6.2.0",
-    "typescript": "^5"
+    "@types/node": "^25.3.5",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "16.1.6",
+    "typescript": "^5.9.3"
+  },
+  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "@parcel/watcher",
+      "unrs-resolver"
+    ]
   }
 }

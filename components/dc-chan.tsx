@@ -1,70 +1,50 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import styles from "@/styles/dc-chan.module.scss";
-// import dcchan_default from "@/public/images/dcchan.webp";
 import dcchan from "@/public/images/dcchan.webp";
-// import dcchanMov from "@/public/images/v.mov";
-// import dcchanWebm from "@/public/images/v.webm";
 
-// const dcchanMovURL = `/images/v.mov`;
-// const dcchanWebmURL = `/images/v.webm`;
+const ZOOM_LEVEL = 2;
+const ZOOM_WINDOW_SIZE = 200;
 
 function DCchan() {
-    const zoomLevel = 2;
-    const zoomWindowSize = 200;
-
     const [isHovered, setIsHovered] = useState(false);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const imageSizeRef = useRef({ width: 0, height: 0 });
     const imageRef = useRef<HTMLImageElement>(null);
-    const [isMounted, setIsMounted] = useState(false);
+    const zoomRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        setIsMounted(true);
+    const handleMouseEnter = useCallback(() => {
+        if (imageRef.current) {
+            imageSizeRef.current = {
+                width: imageRef.current.width,
+                height: imageRef.current.height,
+            };
+        }
+        setIsHovered(true);
     }, []);
 
-    const handleMouseEnter = () => {
-        setIsHovered(true);
-    };
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
+        if (!imageRef.current || !zoomRef.current) return;
+        const rect = imageRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const { width, height } = imageSizeRef.current;
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLImageElement>) => {
-        if (imageRef.current) {
-          const rect = imageRef.current.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          setPosition({ x, y });
-        }
-    };
+        const zoom = zoomRef.current.style;
+        zoom.backgroundSize = `${width * ZOOM_LEVEL}px ${height * ZOOM_LEVEL}px`;
+        zoom.backgroundPosition = `-${x * ZOOM_LEVEL - ZOOM_WINDOW_SIZE / 2}px -${y * ZOOM_LEVEL - ZOOM_WINDOW_SIZE / 2}px`;
+    }, []);
 
-    const handleMouseLeave = () => {
+    const handleMouseLeave = useCallback(() => {
         setIsHovered(false);
-    };
-
-    if (!isMounted) {
-        return null;
-    }
+    }, []);
 
     return(
         <section className={styles.dcchan}>
-            {/* <video 
-                playsInline 
-                autoPlay 
-                muted 
-                ref={imageRef} 
-                className={styles.image} 
-                onMouseEnter={handleMouseEnter} 
-                onMouseMove={handleMouseMove} 
-                onMouseLeave={handleMouseLeave}
-            >
-                <source src={dcchanMov} type='video/mov' />
-                <source src={dcchanWebm} type='video/webm' />
-                <source src={dcchanMovURL} type='video/mov' />
-                <source src={dcchanWebmURL} type='video/webm' />
-            </video> */}
             <Image
                 src={dcchan}
-                alt="dcchan"
+                alt="でじこんちゃん - 東京都市大学デジタルコンテンツ研究会公式キャラクター"
                 priority
                 loading='eager'
                 width={700}
@@ -76,17 +56,12 @@ function DCchan() {
                 onMouseEnter={handleMouseEnter}
             />
 
-            {isHovered && imageRef.current && (
+            {isHovered && (
                 <div
+                ref={zoomRef}
                 className={styles.zoomWindow}
                 style={{
                     backgroundImage: `url(${dcchan.src})`,
-                    backgroundSize: `${imageRef.current.width * zoomLevel}px ${
-                    imageRef.current.height * zoomLevel
-                    }px`,
-                    backgroundPosition: `-${position.x * zoomLevel - zoomWindowSize / 2}px -${
-                    position.y * zoomLevel - zoomWindowSize / 2
-                    }px`,
                 }}
                 />
             )}

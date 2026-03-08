@@ -2,8 +2,8 @@ import Image from "next/image";
 import styles from "@/styles/card.module.scss";
 import Link from "next/link";
 
-import headImg from "@/public/images/yc.webp";
-import iconImg from "@/public/images/dcchan-with-friends.webp";
+import headImg from "@/public/images/gallery/yc.webp";
+import iconImg from "@/public/images/gallery/friends.webp";
 
 type Props = {
     title: string

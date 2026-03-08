@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
-});
+function getOpenAIClient() {
+    return new OpenAI({
+        apiKey: process.env.GEMINI_API_KEY,
+        baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
+    });
+}
 
 const setting = `
     # 命令文
@@ -41,7 +43,7 @@ type Message = {
 };
 
 // --- インメモリレート制限 (スライディングウィンドウ) ---
-const RATE_LIMIT_RPM = 12; // Gemini Free Tier 15RPM に対して余裕枠
+const RATE_LIMIT_RPM = 8; // Gemini 2.5 Flash Free Tier 10RPM に対して余裕枠
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const requestTimestamps: number[] = [];
 
@@ -68,8 +70,8 @@ async function callGeminiWithRetry(apiMessages: Message[]) {
 
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
-            const completion = await openai.chat.completions.create({
-                model: "gemini-2.0-flash",
+            const completion = await getOpenAIClient().chat.completions.create({
+                model: "gemini-2.5-flash",
                 messages: apiMessages,
                 temperature: 0.7,
             });
@@ -103,7 +105,7 @@ export async function POST(request: Request) {
         if (isRateLimited()) {
             const retryAfter = 30;
             return NextResponse.json(
-                { error: 'ただいま混み合っています。しばらく待ってから再度お試しください。', retryAfter },
+                { error: 'わわっ、今たくさんの人が話しかけてくれてるみたい！ちょっとだけ待っててね～！', retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -120,7 +122,7 @@ export async function POST(request: Request) {
         } catch (e) {
             console.error('Request body parsing error:', e);
             return NextResponse.json(
-                { error: 'リクエストの解析に失敗しました。' },
+                { error: 'あれれ？メッセージがうまく届かなかったみたい...もう一回送ってくれる？' },
                 { status: 400 }
             );
         }
@@ -129,7 +131,7 @@ export async function POST(request: Request) {
 
         if (!messages || !Array.isArray(messages)) {
             return NextResponse.json(
-                { error: 'メッセージの形式が不正です。' },
+                { error: 'ん？なんだか変なメッセージが来ちゃった！もう一回ちゃんと送ってほしいな～！' },
                 { status: 400 }
             );
         }
@@ -154,7 +156,7 @@ export async function POST(request: Request) {
         if (!process.env.GEMINI_API_KEY) {
             console.error('Gemini API key is not set');
             return NextResponse.json(
-                { error: 'APIキーが設定されていません。' },
+                { error: 'えっと...でじこんちゃんの準備がまだできてないみたい。管理者さんに聞いてみてね！' },
                 { status: 500 }
             );
         }
@@ -170,17 +172,18 @@ export async function POST(request: Request) {
         if (!completion.choices[0]?.message) {
             console.error('Invalid completion response:', completion);
             return NextResponse.json(
-                { error: 'APIからの応答が不正です。' },
+                { error: 'あわわ、でじこんちゃんの頭がこんがらがっちゃった...もう一回話しかけてくれる？' },
                 { status: 500 }
             );
         }
 
         const response = completion.choices[0].message;
+        const usage = completion.usage ?? null;
         if (isDev) {
             console.log('クライアントに返すレスポンス:', JSON.stringify(response, null, 2));
         }
 
-        return NextResponse.json(response);
+        return NextResponse.json({ ...response, usage });
     } catch (error: any) {
         console.error('Gemini API Error:', {
             message: error.message,
@@ -191,7 +194,7 @@ export async function POST(request: Request) {
         if (error.status === 429) {
             const retryAfter = 30;
             return NextResponse.json(
-                { error: 'APIの使用制限に達しました。しばらく待ってから再度お試しください。', retryAfter },
+                { error: 'うぅ、今日はたくさんおしゃべりしすぎちゃったみたい...ちょっと休憩してからまた来てね！', retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -201,14 +204,14 @@ export async function POST(request: Request) {
 
         if (error.status === 401) {
             return NextResponse.json(
-                { error: 'APIキーが無効です。設定を確認してください。' },
+                { error: 'あれ？でじこんちゃんのカギが合わないみたい...管理者さんに確認してもらってね！' },
                 { status: 401 }
             );
         }
 
         return NextResponse.json(
             {
-                error: 'サーバーエラーが発生しました。',
+                error: 'ごめんね、なんかうまくいかなかった...もうちょっとしたらまた話しかけてみて！',
                 details: isDev ? error.message : undefined
             },
             { status: 500 }
