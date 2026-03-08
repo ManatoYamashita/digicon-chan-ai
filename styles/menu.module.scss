@@ -182,9 +182,31 @@ $line-gap:     5px;
   }
 }
 
-// ── Pill bar (mobile nav) ──
+// ── Pill bar (all screens) ──
 .pillBar {
-  display: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 50vw;
+  z-index: 99;
+  padding: 4px 6px;
+  border-radius: 24px;
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border: 1px solid $glass-border;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.6);
+}
+
+// ── FAB hidden (pill replaces it) ──
+.fab,
+.overlay {
+  display: none !important;
 }
 
 .pillItem {
@@ -227,28 +249,11 @@ $line-gap:     5px;
 
 // ── Mobile ──
 @media screen and (max-width: 768px) {
-  .fab,
-  .overlay {
-    display: none !important;
-  }
-
   .pillBar {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    position: fixed;
-    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: auto;
     left: 12px;
     right: 12px;
-    z-index: 99;
-    padding: 4px 6px;
-    border-radius: 24px;
-    background: $glass-bg;
-    backdrop-filter: blur($glass-blur);
-    -webkit-backdrop-filter: blur($glass-blur);
-    border: 1px solid $glass-border;
-    box-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.1),
-      inset 0 0 0 0.5px rgba(255, 255, 255, 0.6);
+    transform: none;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   }
 }

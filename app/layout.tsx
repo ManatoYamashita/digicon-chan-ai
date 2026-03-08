@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import { Nunito } from "next/font/google";
+import { Nunito, Dela_Gothic_One } from "next/font/google";
 import { ProfilePage, WebSite, WithContext } from 'schema-dts';
 import { Metadata } from "next";
 import Link from "next/link";
@@ -14,6 +14,13 @@ const nunito = Nunito({
   weight: ["400", "700"],
   display: "swap",
   variable: "--font-nunito",
+});
+
+const delaGothicOne = Dela_Gothic_One({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-dela-gothic",
 });
 
 export const metadata: Metadata = {
@@ -168,7 +175,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <head>
-        <meta name="thumbnail" content="https://でじこんちゃん.net/images/dcchan-studentcard.webp" />
+        <meta name="thumbnail" content="https://でじこんちゃん.net/images/gallery/dcchan-selfie.webp" />
         
         <Script
           id="json-ld-profile"
@@ -203,7 +210,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
       </head>
       
-      <body className={nunito.variable}>
+      <body className={`${nunito.variable} ${delaGothicOne.variable}`}>
         <main>
           <Suspense fallback={<div>Loading...</div>}>
             <Analytics />

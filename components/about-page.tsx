@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ComponentType } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import SplitText from "@/components/SplitText";
 import TiltedCard from "@/components/tilted-card";
+import Folder from "@/components/folder";
 import styles from "@/styles/about-page.module.scss";
 
 import {
@@ -52,7 +53,26 @@ const sectionTitles = ["Profile", "History", "Gallery", "Links"] as const;
 export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbsRef = useRef<HTMLDivElement>(null);
+  const heroCardRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  const { folderItems, folderSrcs } = useMemo(() => {
+    const picked = [galleryImages[4], galleryImages[6], galleryImages[9]];
+    return {
+      folderItems: picked.map((img) => (
+        <Image
+          key={img.src}
+          src={img.src}
+          alt={img.alt}
+          fill
+          sizes="80px"
+          style={{ objectFit: "cover", borderRadius: "8px" }}
+        />
+      )),
+      folderSrcs: new Set(picked.map((img) => img.src)),
+    };
+  }, []);
 
   // body class
   useEffect(() => {
@@ -78,6 +98,32 @@ export default function AboutPage() {
           repeat: -1,
         });
       });
+
+      // ── Hero initial load ──
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      tl.fromTo(orbsRef.current, { opacity: 0 }, { opacity: 1, duration: 1 }, 0);
+
+      tl.fromTo(
+        heroCardRef.current,
+        { opacity: 0, y: 40, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8 },
+        0.1
+      );
+
+      tl.fromTo(
+        containerRef.current!.querySelector(`.${styles.heroSubtitle}`),
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6 },
+        0.8
+      );
+
+      tl.fromTo(
+        scrollIndicatorRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5 },
+        1.2
+      );
 
       // ── Profile items stagger ──
       const profileItems = containerRef.current.querySelectorAll(
@@ -208,7 +254,7 @@ export default function AboutPage() {
       <div ref={containerRef} className={styles.container}>
         {/* ── Hero ── */}
         <section className={styles.hero}>
-          <div className={styles.heroCardWrapper}>
+          <div ref={heroCardRef} className={styles.heroCardWrapper}>
             <TiltedCard
               imageSrc="/images/student-card.webp"
               altText="でじこんちゃん 学生証 東京都市大学 デジタルコンテンツ研究会"
@@ -219,6 +265,7 @@ export default function AboutPage() {
             />
           </div>
           <div className={styles.heroTextBlock}>
+            <DcIcon className={styles.heroIcon} />
             <SplitText
               text="でじこんちゃん"
               tag="h1"
@@ -235,20 +282,19 @@ export default function AboutPage() {
               公式キャラクター
             </p>
           </div>
-          <div className={styles.scrollIndicator}>
+          <div ref={scrollIndicatorRef} className={styles.scrollIndicator}>
             <div className={styles.scrollLine} />
           </div>
         </section>
 
-        {/* ── Divider ── */}
-        <div className={styles.sectionDivider} />
-
         {/* ── Profile ── */}
         <section className={styles.profile}>
           <SectionTitle text={sectionTitles[0]} />
-          <div className={styles.profileNotice}>
-            &#x26A0; &quot;デジコンちゃん&quot;じゃなくて、&quot;でじこんちゃん&quot;だよ！！
-          </div>
+          <p className={styles.profileNotice}>
+          東京都市大学デジタルコンテンツ研究会の公式キャラクターです！<strong>『デジコンちゃん』</strong>じゃなくて、<strong className={styles.profileNoticeStrong}>『でじこんちゃん』</strong>だよ！！<br />
+          2014年にデザインされ、無名のキャラとしてキャラクタ原案が公開。DTM班のCDのパッケージに飾られた。<br />
+          現在もLINEスタンプや、会員の作品の中に登場するなど、デジコンの象徴として活躍しており、会員から愛されている。
+          </p>
           <dl className={styles.profileGrid}>
             {profileData.map((item) => (
               <div key={item.label} className={styles.profileItem}>
@@ -259,8 +305,10 @@ export default function AboutPage() {
           </dl>
         </section>
 
-        {/* ── Divider ── */}
-        <div className={styles.sectionDivider} />
+        {/* ── Folder ── */}
+        <section className={styles.folderSection}>
+          <Folder size={3} color="#06C0FF" items={folderItems} />
+        </section>
 
         {/* ── Timeline ── */}
         <section className={styles.timeline}>
@@ -276,14 +324,11 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* ── Divider ── */}
-        <div className={styles.sectionDivider} />
-
         {/* ── Gallery ── */}
         <section className={styles.gallery}>
           <SectionTitle text={sectionTitles[2]} />
           <div className={styles.galleryGrid}>
-            {galleryImages.map((img) => (
+            {galleryImages.filter((img) => !folderSrcs.has(img.src)).map((img) => (
               <div
                 key={img.src}
                 className={styles.galleryItem}
@@ -341,9 +386,6 @@ export default function AboutPage() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* ── Divider ── */}
-        <div className={styles.sectionDivider} />
 
         {/* ── Links ── */}
         <section className={styles.links}>

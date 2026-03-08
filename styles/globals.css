@@ -42,6 +42,9 @@ a {
 main {
     height: 100dvh;
 }
+h1 {
+    font-family: var(--font-dela-gothic), sans-serif;
+}
 img {
     pointer-events: none;
 }

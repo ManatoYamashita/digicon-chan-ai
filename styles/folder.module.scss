@@ -1,0 +1,137 @@
+.folder {
+  transition: all 0.2s ease-in;
+  cursor: pointer;
+
+  &:not(.open):hover {
+    transform: translateY(-8px);
+  }
+
+  &:not(.open):hover .paper {
+    transform: translate(-50%, 0%);
+  }
+
+  &:not(.open):hover .folderFront {
+    transform: skew(15deg) scaleY(0.6);
+  }
+
+  &:not(.open):hover .right {
+    transform: skew(-15deg) scaleY(0.6);
+  }
+}
+
+.open {
+  transform: translateY(-8px);
+
+  .paper:nth-child(1) {
+    transform: translate(
+      calc(-120% + var(--magnet-x, 0px)),
+      calc(-70% + var(--magnet-y, 0px))
+    ) rotateZ(-15deg);
+
+    &:hover {
+      transform: translate(
+        calc(-120% + var(--magnet-x, 0px)),
+        calc(-70% + var(--magnet-y, 0px))
+      ) rotateZ(-15deg) scale(1.1);
+    }
+  }
+
+  .paper:nth-child(2) {
+    transform: translate(
+      calc(10% + var(--magnet-x, 0px)),
+      calc(-70% + var(--magnet-y, 0px))
+    ) rotateZ(15deg);
+    height: 80%;
+
+    &:hover {
+      transform: translate(
+        calc(10% + var(--magnet-x, 0px)),
+        calc(-70% + var(--magnet-y, 0px))
+      ) rotateZ(15deg) scale(1.1);
+    }
+  }
+
+  .paper:nth-child(3) {
+    transform: translate(
+      calc(-50% + var(--magnet-x, 0px)),
+      calc(-100% + var(--magnet-y, 0px))
+    ) rotateZ(5deg);
+    height: 80%;
+
+    &:hover {
+      transform: translate(
+        calc(-50% + var(--magnet-x, 0px)),
+        calc(-100% + var(--magnet-y, 0px))
+      ) rotateZ(5deg) scale(1.1);
+    }
+  }
+
+  .folderFront {
+    transform: skew(15deg) scaleY(0.6);
+  }
+
+  .right {
+    transform: skew(-15deg) scaleY(0.6);
+  }
+}
+
+.folderBack {
+  position: relative;
+  width: 100px;
+  height: 80px;
+  background: var(--folder-back-color);
+  border-radius: 0 10px 10px 10px;
+
+  &::after {
+    position: absolute;
+    z-index: 0;
+    bottom: 98%;
+    left: 0;
+    content: "";
+    width: 30px;
+    height: 10px;
+    background: var(--folder-back-color);
+    border-radius: 5px 5px 0 0;
+  }
+}
+
+.paper {
+  position: absolute;
+  z-index: 2;
+  bottom: 10%;
+  left: 50%;
+  transform: translate(-50%, 10%);
+  width: 70%;
+  height: 80%;
+  background: var(--paper-1);
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+
+  &:nth-child(2) {
+    background: var(--paper-2);
+    width: 80%;
+    height: 70%;
+  }
+
+  &:nth-child(3) {
+    background: var(--paper-3);
+    width: 90%;
+    height: 60%;
+  }
+}
+
+.folderFront {
+  position: absolute;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  background: var(--folder-color);
+  border-radius: 5px 10px 10px 10px;
+  transform-origin: bottom;
+  transition: all 0.3s ease-in-out;
+}
+
+.right {
+  border-radius: 10px 5px 10px 10px;
+}

@@ -4,7 +4,7 @@ import Image from "next/image";
 import styles from "@/styles/music.module.scss";
 import { useState, useRef, useCallback } from "react";
 
-import jacketImg from "@/public/images/jacket.webp";
+import jacketImg from "@/public/images/gallery/cover.webp";
 
 type Props = {
     title: string;
