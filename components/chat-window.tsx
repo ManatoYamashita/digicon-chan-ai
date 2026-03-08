@@ -10,9 +10,13 @@ type Props = {
   isLoading: boolean;
   onInputChange: (value: string) => void;
   onSend: () => void;
+  isSessionExhausted: boolean;
+  onReset: () => void;
+  remainingCount: number;
+  maxPrompts: number;
 };
 
-export default function ChatWindow({ messages, input, isLoading, onInputChange, onSend }: Props) {
+export default function ChatWindow({ messages, input, isLoading, onInputChange, onSend, isSessionExhausted, onReset, remainingCount, maxPrompts }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,7 +24,7 @@ export default function ChatWindow({ messages, input, isLoading, onInputChange, 
   }, [messages, isLoading]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       onSend();
     }
@@ -36,6 +40,10 @@ export default function ChatWindow({ messages, input, isLoading, onInputChange, 
           <span className={styles.dotGreen} />
         </div>
         <span className={styles.title}>でじこんちゃん Chat</span>
+        <div
+          className={styles.progressBar}
+          style={{ "--progress": `${Math.max(remainingCount, 0) / maxPrompts * 100}%` } as React.CSSProperties}
+        />
       </div>
 
       {/* Messages */}
@@ -71,26 +79,34 @@ export default function ChatWindow({ messages, input, isLoading, onInputChange, 
 
       {/* Input */}
       <div className={styles.inputArea}>
-        <textarea
-          className={styles.input}
-          value={input}
-          onChange={(e) => onInputChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="メッセージを入力..."
-          rows={1}
-          disabled={isLoading}
-        />
-        <button
-          className={styles.sendBtn}
-          onClick={onSend}
-          disabled={!input.trim() || isLoading}
-          aria-label="送信"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
-        </button>
+        {isSessionExhausted ? (
+          <button className={styles.resetBtn} onClick={onReset}>
+            セッション履歴をリセット
+          </button>
+        ) : (
+          <>
+            <textarea
+              className={styles.input}
+              value={input}
+              onChange={(e) => onInputChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="メッセージを入力..."
+              rows={1}
+              disabled={isLoading}
+            />
+            <button
+              className={styles.sendBtn}
+              onClick={onSend}
+              disabled={!input.trim() || isLoading}
+              aria-label="送信"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -50,6 +50,16 @@
   pointer-events: none;
 }
 
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: var(--progress, 100%);
+  background: linear-gradient(90deg, #06c0ff 0%, #0070d9 100%);
+  transition: width 0.4s ease;
+}
+
 /* Message List */
 .messageList {
   flex: 1;
@@ -233,6 +243,27 @@
   &:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+  }
+}
+
+.resetBtn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #06c0ff 0%, #0070d9 100%);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+  &:active {
+    transform: scale(0.98);
   }
 }
 

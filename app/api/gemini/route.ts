@@ -105,7 +105,7 @@ export async function POST(request: Request) {
         if (isRateLimited()) {
             const retryAfter = 30;
             return NextResponse.json(
-                { error: 'ただいま混み合っています。しばらく待ってから再度お試しください。', retryAfter },
+                { error: 'わわっ、今たくさんの人が話しかけてくれてるみたい！ちょっとだけ待っててね～！', retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
         } catch (e) {
             console.error('Request body parsing error:', e);
             return NextResponse.json(
-                { error: 'リクエストの解析に失敗しました。' },
+                { error: 'あれれ？メッセージがうまく届かなかったみたい...もう一回送ってくれる？' },
                 { status: 400 }
             );
         }
@@ -131,7 +131,7 @@ export async function POST(request: Request) {
 
         if (!messages || !Array.isArray(messages)) {
             return NextResponse.json(
-                { error: 'メッセージの形式が不正です。' },
+                { error: 'ん？なんだか変なメッセージが来ちゃった！もう一回ちゃんと送ってほしいな～！' },
                 { status: 400 }
             );
         }
@@ -156,7 +156,7 @@ export async function POST(request: Request) {
         if (!process.env.GEMINI_API_KEY) {
             console.error('Gemini API key is not set');
             return NextResponse.json(
-                { error: 'APIキーが設定されていません。' },
+                { error: 'えっと...でじこんちゃんの準備がまだできてないみたい。管理者さんに聞いてみてね！' },
                 { status: 500 }
             );
         }
@@ -172,7 +172,7 @@ export async function POST(request: Request) {
         if (!completion.choices[0]?.message) {
             console.error('Invalid completion response:', completion);
             return NextResponse.json(
-                { error: 'APIからの応答が不正です。' },
+                { error: 'あわわ、でじこんちゃんの頭がこんがらがっちゃった...もう一回話しかけてくれる？' },
                 { status: 500 }
             );
         }
@@ -194,7 +194,7 @@ export async function POST(request: Request) {
         if (error.status === 429) {
             const retryAfter = 30;
             return NextResponse.json(
-                { error: 'APIの使用制限に達しました。しばらく待ってから再度お試しください。', retryAfter },
+                { error: 'うぅ、今日はたくさんおしゃべりしすぎちゃったみたい...ちょっと休憩してからまた来てね！', retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -204,14 +204,14 @@ export async function POST(request: Request) {
 
         if (error.status === 401) {
             return NextResponse.json(
-                { error: 'APIキーが無効です。設定を確認してください。' },
+                { error: 'あれ？でじこんちゃんのカギが合わないみたい...管理者さんに確認してもらってね！' },
                 { status: 401 }
             );
         }
 
         return NextResponse.json(
             {
-                error: 'サーバーエラーが発生しました。',
+                error: 'ごめんね、なんかうまくいかなかった...もうちょっとしたらまた話しかけてみて！',
                 details: isDev ? error.message : undefined
             },
             { status: 500 }

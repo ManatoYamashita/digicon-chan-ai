@@ -3,7 +3,11 @@
 import { useState, useRef, useCallback, useEffect, ViewTransition } from "react";
 import ChatWindow from "@/components/chat-window";
 import ChatCharacter from "@/components/chat-character";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import styles from "@/styles/chat-page.module.scss";
+
+gsap.registerPlugin(useGSAP);
 
 export type Emotion = "楽" | "怒" | "哀" | "困" | "照" | "default";
 
@@ -44,6 +48,8 @@ function parseEmotionResponse(raw: string): { emotion: Emotion; text: string } {
   return { emotion: "default", text: trimmed };
 }
 
+const MAX_PROMPTS = 5;
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -53,6 +59,14 @@ export default function ChatPage() {
 
   const MAX_TOKENS = 1_048_576; // Gemini 2.5 Flash context window
   const [tokenUsage, setTokenUsage] = useState<number | null>(null);
+
+  const userMessageCount = messages.filter((m) => m.role === "user").length;
+  const isSessionExhausted = userMessageCount >= MAX_PROMPTS && !isLoading;
+
+  // Animation refs
+  const chatPageRef = useRef<HTMLDivElement>(null);
+  const characterWrapRef = useRef<HTMLDivElement>(null);
+  const infoBackdropRef = useRef<HTMLDivElement>(null);
 
   // Resize handle refs & state
   const windowWrapRef = useRef<HTMLDivElement>(null);
@@ -124,9 +138,65 @@ export default function ChatPage() {
     };
   }, []);
 
+  // 初期表示アニメーション
+  useGSAP(
+    () => {
+      if (!chatPageRef.current) return;
+
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      tl.fromTo(
+        windowWrapRef.current,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.7 },
+        0.1
+      );
+
+      tl.fromTo(
+        characterWrapRef.current,
+        { opacity: 0, ...(isMobile ? {} : { x: 40 }) },
+        { opacity: 1, x: 0, duration: 0.8 },
+        0.2
+      );
+
+      const infoTitle = infoBackdropRef.current?.querySelector(
+        `.${styles.infoTitle}`
+      );
+      if (infoTitle) {
+        tl.fromTo(
+          infoTitle,
+          { opacity: 0, scale: 0.9 },
+          { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.4)" },
+          0.5
+        );
+      }
+
+      const infoRest = infoBackdropRef.current?.querySelectorAll(
+        `.${styles.infoEmotion}, .${styles.infoTokens}, .${styles.infoDesc}, .${styles.infoHint}`
+      );
+      if (infoRest?.length) {
+        tl.fromTo(
+          infoRest,
+          { opacity: 0, y: 15 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.06 },
+          0.65
+        );
+      }
+    },
+    { scope: chatPageRef }
+  );
+
+  const handleReset = useCallback(() => {
+    setMessages([]);
+    setTokenUsage(null);
+    setInput("");
+    updateEmotion("default");
+  }, [updateEmotion]);
+
   const handleSend = useCallback(async () => {
     const trimmed = input.trim();
-    if (!trimmed || isLoading) return;
+    if (!trimmed || isLoading || userMessageCount >= MAX_PROMPTS) return;
 
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
@@ -154,9 +224,9 @@ export default function ChatPage() {
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
         if (res.status === 429) {
-          throw new Error(errorData?.error || "リクエストが多すぎます。少し待ってから再度お試しください。");
+          throw new Error(errorData?.error || "わわっ、今たくさんの人が話しかけてくれてるみたい！ちょっとだけ待っててね～！");
         }
-        throw new Error(errorData?.error || "エラーが発生しました。");
+        throw new Error(errorData?.error || "あわわ、なんかうまくいかなかった...もう一回試してみてね！");
       }
 
       const data = await res.json();
@@ -182,7 +252,7 @@ export default function ChatPage() {
       const errorMessage: ChatMessage = {
         id: crypto.randomUUID(),
         role: "bot",
-        content: err instanceof Error ? err.message : "通信エラーが発生しました。",
+        content: err instanceof Error ? err.message : "えーん、お話が途切れちゃった...もう一回話しかけてくれる？",
         emotion: "困",
         timestamp: Date.now(),
       };
@@ -191,12 +261,16 @@ export default function ChatPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [input, isLoading, messages, updateEmotion]);
+  }, [input, isLoading, messages, updateEmotion, userMessageCount]);
 
   const emotionImage = EMOTION_MAP[currentEmotion] || EMOTION_MAP.default;
 
   return (
-    <div className={styles.chatPage}>
+    <div ref={chatPageRef} className={styles.chatPage}>
+      <div className={styles.remainingBadge}>
+        <span className={styles.remainingNumber}>{Math.max(MAX_PROMPTS - userMessageCount, 0)}</span>
+        <span className={styles.remainingLabel}>/ {MAX_PROMPTS} 残り</span>
+      </div>
       <ViewTransition enter="vt-window-enter" default="none">
         <div className={styles.windowWrap} ref={windowWrapRef}>
           <ChatWindow
@@ -205,6 +279,10 @@ export default function ChatPage() {
             isLoading={isLoading}
             onInputChange={setInput}
             onSend={handleSend}
+            isSessionExhausted={isSessionExhausted}
+            onReset={handleReset}
+            remainingCount={MAX_PROMPTS - userMessageCount}
+            maxPrompts={MAX_PROMPTS}
           />
           <div
             className={`${styles.resizeHandle}${isResizing ? ` ${styles.resizing}` : ""}`}
@@ -216,8 +294,8 @@ export default function ChatPage() {
         </div>
       </ViewTransition>
       <ViewTransition enter="vt-char-enter" default="none">
-        <div className={styles.characterWrap}>
-          <div className={styles.infoBackdrop}>
+        <div ref={characterWrapRef} className={styles.characterWrap}>
+          <div ref={infoBackdropRef} className={styles.infoBackdrop}>
             <h2 className={styles.infoTitle}>Chat</h2>
             <p className={styles.infoEmotion}>
               {EMOTION_LABEL[currentEmotion]}
