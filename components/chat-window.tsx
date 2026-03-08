@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, type KeyboardEvent } from "react";
+import Image from "next/image";
 import type { ChatMessage } from "@/components/chat-page";
 import styles from "@/styles/chat-window.module.scss";
 
@@ -58,13 +59,13 @@ export default function ChatWindow({ messages, input, isLoading, onInputChange, 
             key={msg.id}
             className={`${styles.bubble} ${msg.role === "user" ? styles.user : styles.bot}`}
           >
-            {msg.role === "bot" && <span className={styles.avatar}>DC</span>}
+            {msg.role === "bot" && <span className={styles.avatar}><Image src="/images/gallery/dcchan-square.webp" alt="でじこんちゃん" width={28} height={28} /></span>}
             <div className={styles.text}>{msg.content}</div>
           </div>
         ))}
         {isLoading && (
           <div className={`${styles.bubble} ${styles.bot}`}>
-            <span className={styles.avatar}>DC</span>
+            <span className={styles.avatar}><Image src="/images/gallery/dcchan-square.webp" alt="でじこんちゃん" width={28} height={28} /></span>
             <div className={styles.text}>
               <span className={styles.typing}>
                 <span />
