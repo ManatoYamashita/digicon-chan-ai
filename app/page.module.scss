@@ -47,6 +47,13 @@
     }
 }
 
+@media screen and (max-width: 768px) {
+  .back {
+    box-sizing: border-box;
+    padding-bottom: 70px;
+  }
+}
+
 .front {
     position: fixed;
     top: 0;

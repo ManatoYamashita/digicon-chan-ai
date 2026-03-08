@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import styles from "@/styles/sounds.module.scss";
 import ImgSrc from "@/public/images/dcchan-icon.webp";

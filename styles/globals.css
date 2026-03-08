@@ -1,12 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
-
 :root {
     --dc-primary-sb: #06C0FF;
     --dc-primary-b: #0070D9;
 }
 body {
     position: relative;
-    font-family: 'Nunito', sans-serif;
+    font-family: var(--font-nunito), sans-serif;
     font-size: 1rem;
     line-height: 1;
     min-block-size: 100svb;
@@ -74,6 +72,87 @@ footer {
       transform: translateX(0);
     }
   }
+
+.body-default.no-intro {
+  animation: none;
+}
+
+/* ===== View Transitions: / → /chat ===== */
+
+/* Step 1: #home fadeout (0–300ms) */
+::view-transition-old(.vt-home-exit) {
+  animation: vt-fade-out 0.3s ease-out forwards;
+}
+
+/* Step 2: #dc-chan slide-out left (200–600ms) */
+::view-transition-old(.vt-dcchan-exit) {
+  animation: vt-slide-out-left 0.4s ease-in 0.2s both;
+}
+
+/* Step 3: Character slide-in right (400–900ms) */
+::view-transition-new(.vt-char-enter) {
+  animation: vt-slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+/* Step 4: Chat window fade-slide-in (500–1000ms) */
+::view-transition-new(.vt-window-enter) {
+  animation: vt-fade-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+@keyframes vt-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes vt-slide-out-left {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-30%); }
+}
+@keyframes vt-slide-in-right {
+  from { opacity: 0; transform: translateX(30%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes vt-fade-slide-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Chat page background */
+.body-chat {
+  --grid-color: rgba(0, 112, 217, 0.06);
+  --grid-size: 24px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--grid-color) 0px,
+      var(--grid-color) 1px,
+      transparent 1px,
+      transparent var(--grid-size)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      var(--grid-color) 0px,
+      var(--grid-color) 1px,
+      transparent 1px,
+      transparent var(--grid-size)
+    ),
+    linear-gradient(147deg, #e8f4f8 0%, #d1e8f0 74%);
+  transition: background 0.5s;
+}
+
+/* ===== About page ===== */
+.body-about {
+  background: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+  max-height: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.body-about main {
+  height: auto;
+  min-height: 100dvh;
+}
+.body-about footer {
+  position: relative;
+}
 
   /* スマートフォン対応 */
 

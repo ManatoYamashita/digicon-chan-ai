@@ -5,32 +5,35 @@ import Image from 'next/image';
 import styles from "@/styles/dc-chan.module.scss";
 import dcchan from "@/public/images/dcchan.webp";
 
-function DCchan() {
-    const zoomLevel = 2;
-    const zoomWindowSize = 200;
+const ZOOM_LEVEL = 2;
+const ZOOM_WINDOW_SIZE = 200;
 
+function DCchan() {
     const [isHovered, setIsHovered] = useState(false);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
-    const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+    const imageSizeRef = useRef({ width: 0, height: 0 });
     const imageRef = useRef<HTMLImageElement>(null);
+    const zoomRef = useRef<HTMLDivElement>(null);
 
     const handleMouseEnter = useCallback(() => {
         if (imageRef.current) {
-            setImageSize({
+            imageSizeRef.current = {
                 width: imageRef.current.width,
                 height: imageRef.current.height,
-            });
+            };
         }
         setIsHovered(true);
     }, []);
 
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
-        if (imageRef.current) {
-          const rect = imageRef.current.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          setPosition({ x, y });
-        }
+        if (!imageRef.current || !zoomRef.current) return;
+        const rect = imageRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const { width, height } = imageSizeRef.current;
+
+        const zoom = zoomRef.current.style;
+        zoom.backgroundSize = `${width * ZOOM_LEVEL}px ${height * ZOOM_LEVEL}px`;
+        zoom.backgroundPosition = `-${x * ZOOM_LEVEL - ZOOM_WINDOW_SIZE / 2}px -${y * ZOOM_LEVEL - ZOOM_WINDOW_SIZE / 2}px`;
     }, []);
 
     const handleMouseLeave = useCallback(() => {
@@ -53,17 +56,12 @@ function DCchan() {
                 onMouseEnter={handleMouseEnter}
             />
 
-            {isHovered && imageSize.width > 0 && (
+            {isHovered && (
                 <div
+                ref={zoomRef}
                 className={styles.zoomWindow}
                 style={{
                     backgroundImage: `url(${dcchan.src})`,
-                    backgroundSize: `${imageSize.width * zoomLevel}px ${
-                    imageSize.height * zoomLevel
-                    }px`,
-                    backgroundPosition: `-${position.x * zoomLevel - zoomWindowSize / 2}px -${
-                    position.y * zoomLevel - zoomWindowSize / 2
-                    }px`,
                 }}
                 />
             )}

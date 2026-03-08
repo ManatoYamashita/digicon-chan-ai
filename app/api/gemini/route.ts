@@ -176,11 +176,12 @@ export async function POST(request: Request) {
         }
 
         const response = completion.choices[0].message;
+        const usage = completion.usage ?? null;
         if (isDev) {
             console.log('クライアントに返すレスポンス:', JSON.stringify(response, null, 2));
         }
 
-        return NextResponse.json(response);
+        return NextResponse.json({ ...response, usage });
     } catch (error: any) {
         console.error('Gemini API Error:', {
             message: error.message,
