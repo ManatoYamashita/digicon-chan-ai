@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import { Nunito } from "next/font/google";
-import { ProfilePage, WithContext } from 'schema-dts';
+import { ProfilePage, WebSite, WithContext } from 'schema-dts';
 import { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
@@ -17,21 +17,25 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
-  description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！',
+  metadataBase: new URL('https://でじこんちゃん.net'),
+  title: {
+    default: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
+    template: '%s | でじこんちゃん.net',
+  },
+  description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ「でじこんちゃん」です。',
   keywords: ['でじこんちゃん', '東京都市大学', 'デジタルコンテンツ研究会', 'TCU', '山下マナト', 'デジコン', 'ginkiha', 'tcu-dc', 'デジコンちゃん', 'AI', 'でじこんちゃんAI'],
   authors: [{name: '山下マナト', url: 'https://manapuraza.com'}],
-  creator: '山下マナト', 
-  publisher: '山下マナト',
-  
+  creator: '山下マナト',
+  publisher: '東京都市大学デジタルコンテンツ研究会',
+
   openGraph: {
     title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
-    description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！！！',
+    description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ「でじこんちゃん」です。',
     url: 'https://でじこんちゃん.net',
-    siteName: 'でじこんちゃん',
+    siteName: 'でじこんちゃん.net',
     images: [
       {
-        url: 'https://でじこんちゃん.net/ogp.jpg',
+        url: '/ogp.jpg',
         width: 1200,
         height: 630,
         alt: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
@@ -40,24 +44,25 @@ export const metadata: Metadata = {
     locale: 'ja_JP',
     type: 'website',
   },
-  
+
   icons: {
     icon: [{ url: '/favicon.ico' }],
     shortcut: '/favicon.ico',
+    apple: [{ url: '/images/icons/dcchan-icon.webp' }],
   },
-  
+
   twitter: {
     card: 'summary_large_image',
     title: 'でじこんちゃん.net',
-    description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュの「でじこんちゃん」です！！！！',
+    description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ「でじこんちゃん」です。',
     creator: '@tcu_dc',
     site: '@tcu_dc',
     images: {
-      url: 'https://でじこんちゃん.net/ogp.jpg',
-      alt: 'dc-chan',
+      url: '/ogp.jpg',
+      alt: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会公式キャラクター',
     }
   },
-  
+
   robots: {
     index: true,
     follow: true,
@@ -73,11 +78,7 @@ export const metadata: Metadata = {
     canonical: 'https://でじこんちゃん.net',
     languages: {
       'ja': 'https://でじこんちゃん.net',
-      'en-US': 'https://でじこんちゃん.net/en'
     }
-  },
-  verification: {
-    google: 'googleサイト認証コードがあれば入力',
   },
 }
 
@@ -85,12 +86,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   
-  const jsonLd: WithContext<ProfilePage> = 
-  {
+  const jsonLdProfile: WithContext<ProfilePage> = {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
-    "dateCreated": "2024-07-10T20:30:00-05:00",
-    "dateModified": "2024-07-10T20:53:00-05:00",
+    "dateCreated": "2024-07-10T20:30:00+09:00",
+    "dateModified": "2026-03-08T00:00:00+09:00",
     "mainEntity": {
       "@type": "Person",
       "name": "でじこんちゃん",
@@ -138,17 +138,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         "https://x.com/tcu_dc_bot22"
       ]
     },
-    "about": {
-      "@type": "WebSite",
-      "name": "でじこんちゃん.net",
-      "url": "https://でじこんちゃん.net",
-      "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュサイト",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://でじこんちゃん.net/search?q={search_term_string}",
-        "query": "search_term_string"
-      }
-    },
     "publisher": {
       "@type": "Organization",
       "name": "東京都市大学デジタルコンテンツ研究会",
@@ -156,10 +145,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       "url": "https://tcu-dc.net",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://でじこんちゃん.net/icon.webp",
+        "url": "https://でじこんちゃん.net/images/icons/dcchan-icon.webp",
         "width": "192",
         "height": "192"
       }
+    }
+  };
+
+  const jsonLdWebSite: WithContext<WebSite> = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "でじこんちゃん.net",
+    "url": "https://でじこんちゃん.net",
+    "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュサイト",
+    "publisher": {
+      "@type": "Organization",
+      "name": "東京都市大学デジタルコンテンツ研究会",
+      "url": "https://tcu-dc.net"
     }
   };
 
@@ -169,10 +171,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="thumbnail" content="https://でじこんちゃん.net/images/dcchan-studentcard.webp" />
         
         <Script
-          id="json-ld"
-          key="json-ld"
+          id="json-ld-profile"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdProfile) }}
+        />
+        <Script
+          id="json-ld-website"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
         />
 
         {GA_MEASUREMENT_ID && (
@@ -203,7 +209,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Analytics />
           </Suspense>
           {children}
-          <footer>© 2024 でじこんちゃん.net / Designed/Dev by <Link href="https://manapuraza.com">ヤマシタマナト(TCU-DC)</Link></footer>
+          <footer>© {new Date().getFullYear()} でじこんちゃん.net / Designed/Dev by <Link href="https://manapuraza.com">ヤマシタマナト(TCU-DC)</Link></footer>
         </main>
         <Menu />
       </body>

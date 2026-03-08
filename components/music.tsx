@@ -78,7 +78,7 @@ function Music({ title, description }: Props) {
             <div className={`${styles.player} ${styles.horizontal}`}>
                 <div className={styles.wrapper}>
                     <div className={styles.infoWrapper}>
-                        <Image className={styles.img} src={jacketImg} alt="dtm" width={75} height={75} priority />
+                        <Image className={styles.img} src={jacketImg} alt="DeskTop Musics ジャケット" width={75} height={75} priority />
                         <div className={styles.info}>
                             <h1 className={styles.h1}>{title}</h1>
                             <p className={styles.p}>{description}</p>

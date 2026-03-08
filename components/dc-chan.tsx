@@ -44,7 +44,7 @@ function DCchan() {
         <section className={styles.dcchan}>
             <Image
                 src={dcchan}
-                alt="dcchan"
+                alt="でじこんちゃん - 東京都市大学デジタルコンテンツ研究会公式キャラクター"
                 priority
                 loading='eager'
                 width={700}

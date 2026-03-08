@@ -59,8 +59,10 @@ footer {
 .body-default {
   background-color: black;
   background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+  transition: background 0.5s;
+}
+.body-default > main {
   animation: In .3s ease-in-out forwards;
-  transition: all 0.5s;
 }
   
   /* アニメーションを設定 */
@@ -73,7 +75,13 @@ footer {
     }
   }
 
-.body-default.no-intro {
+.body-default.no-intro > main {
+  animation: none;
+}
+
+/* ===== Menu: View Transitions から除外 ===== */
+::view-transition-group(menu-fab),
+::view-transition-group(menu-pill) {
   animation: none;
 }
 
@@ -145,6 +153,18 @@ footer {
   max-height: none;
   overflow-y: auto;
   overflow-x: hidden;
+}
+.body-about::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
 .body-about main {
   height: auto;

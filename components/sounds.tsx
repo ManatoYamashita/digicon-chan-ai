@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import styles from "@/styles/sounds.module.scss";
-import ImgSrc from "@/public/images/dcchan-icon.webp";
+import ImgSrc from "@/public/images/icons/dcchan-icon.webp";
 import { useRef, useCallback } from "react";
 
 type Props = {

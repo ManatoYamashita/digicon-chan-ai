@@ -1,5 +1,0 @@
-User-agent: Googlebot
-Disallow: /api/
-User-agent: *
-Allow: /
-Sitemap: https://www.でじこんちゃん.net/sitemap.xml

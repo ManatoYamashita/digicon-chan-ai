@@ -14,9 +14,6 @@ export default function PageAnimations({ children }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    const isRevisit = sessionStorage.getItem("homeVisited") === "1";
-    if (isRevisit) return;
-
     const container = containerRef.current;
     if (!container) return;
 
@@ -81,15 +78,9 @@ export default function PageAnimations({ children }: Props) {
   }, { scope: containerRef });
 
   useEffect(() => {
-    const isRevisit = sessionStorage.getItem("homeVisited") === "1";
-    if (isRevisit) {
-      document.body.classList.add("body-default", "no-intro");
-    } else {
-      document.body.classList.add("body-default");
-      sessionStorage.setItem("homeVisited", "1");
-    }
+    document.body.classList.add("body-default");
     return () => {
-      document.body.classList.remove("body-default", "no-intro");
+      document.body.classList.remove("body-default");
     };
   }, []);
 

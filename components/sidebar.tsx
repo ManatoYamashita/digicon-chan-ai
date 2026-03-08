@@ -1,13 +1,13 @@
 import Link from "next/link";
 import styles from "@/styles/sidebar.module.scss";
 
-import TcuIcon from "@/public/images/tcu-icon.svg";
-import DcIcon from "@/public/images/dc-icon.svg";
-import XIcon from "@/public/images/x-icon.svg";
-import InstagramIcon from "@/public/images/instagram-icon.svg";
-import BskyIcon from "@/public/images/bsky-icon.svg";
-import DiscordIcon from "@/public/images/discord-icon.svg";
-import MailIcon from "@/public/images/mail-icon.svg";
+import TcuIcon from "@/public/images/icons/tcu-icon.svg";
+import DcIcon from "@/public/images/icons/dc-icon.svg";
+import XIcon from "@/public/images/icons/x-icon.svg";
+import InstagramIcon from "@/public/images/icons/instagram-icon.svg";
+import BskyIcon from "@/public/images/icons/bsky-icon.svg";
+import DiscordIcon from "@/public/images/icons/discord-icon.svg";
+import MailIcon from "@/public/images/icons/mail-icon.svg";
 
 function Sidebar() {
     return (

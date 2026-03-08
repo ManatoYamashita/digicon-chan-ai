@@ -4,9 +4,13 @@ $glass-border: rgba(255, 255, 255, 0.25);
 $glass-blur: 20px;
 $card-radius: 20px;
 $section-gap: 80px;
+$cyan: rgba(6, 192, 255, 0.8);
+$cyan-glow: rgba(6, 192, 255, 0.3);
 
 // ── Page container ──
 .container {
+  position: relative;
+  z-index: 1;
   max-width: 900px;
   margin: 0 auto;
   padding: 80px 24px 40px;
@@ -16,23 +20,102 @@ $section-gap: 80px;
   color: #fff;
 }
 
+// ── Background Orbs ──
+.bgOrbs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  will-change: transform;
+
+  &:nth-child(1) {
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.4);
+    top: 10%;
+    left: -10%;
+  }
+  &:nth-child(2) {
+    width: 350px;
+    height: 350px;
+    background: rgba(6, 192, 255, 0.5);
+    top: 40%;
+    right: -8%;
+  }
+  &:nth-child(3) {
+    width: 300px;
+    height: 300px;
+    background: rgba(160, 100, 255, 0.4);
+    bottom: 5%;
+    left: 20%;
+  }
+}
+
+// ── Section heading ──
+.sectionTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.sectionAccent {
+  display: inline-block;
+  width: 40px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+// ── Section Divider ──
+.sectionDivider {
+  width: 60px;
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+}
+
 // ── Hero Section ──
 .hero {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: 24px;
-  text-align: center;
+  gap: 40px;
+  text-align: left;
   padding-top: 40px;
 }
 
-.heroImage {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+.heroCardWrapper {
+  width: 100%;
+  max-width: 370px;
+  aspect-ratio: 740 / 464;
+}
+
+.heroTextBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .heroTitle {
@@ -40,6 +123,7 @@ $section-gap: 80px;
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: 0.02em;
+  text-shadow: 0 0 40px $cyan-glow;
 }
 
 .heroSubtitle {
@@ -47,6 +131,26 @@ $section-gap: 80px;
   opacity: 0.85;
   font-weight: 400;
   line-height: 1.6;
+}
+
+// Scroll indicator
+.scrollIndicator {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+}
+
+.scrollLine {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.5);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.2; transform: scaleY(0.6); }
+  50% { opacity: 0.8; transform: scaleY(1); }
 }
 
 // ── Glass card (shared) ──
@@ -57,26 +161,29 @@ $section-gap: 80px;
   border: 1px solid $glass-border;
   border-radius: $card-radius;
   padding: 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
 
-// ── Section heading ──
-.sectionTitle {
-  font-size: clamp(1.4rem, 4vw, 1.8rem);
-  font-weight: 700;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
+  // Top gradient shine
   &::before {
     content: "";
-    display: inline-block;
-    width: 4px;
-    height: 1em;
-    background: #fff;
-    border-radius: 2px;
-    flex-shrink: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 30%,
+      rgba(6, 192, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.4) 70%,
+      transparent 100%
+    );
+    border-radius: $card-radius $card-radius 0 0;
   }
 }
 
@@ -93,13 +200,15 @@ $section-gap: 80px;
   padding: 12px 16px;
   font-size: 0.9rem;
   line-height: 1.5;
-  border-left: 3px solid rgba(255, 255, 255, 0.5);
+  border-left: 3px solid rgba(255, 200, 0, 0.7);
 }
 
 .profileGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 16px 24px;
+  margin: 0;
+  padding: 0;
 }
 
 .profileItem {
@@ -118,21 +227,7 @@ $section-gap: 80px;
 .profileValue {
   font-size: 1rem;
   font-weight: 600;
-}
-
-.studentCard {
-  width: 100%;
-  max-width: 320px;
-  margin: 8px auto 0;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.studentCardImg {
-  width: 100%;
-  height: auto;
-  display: block;
+  margin: 0;
 }
 
 // ── Timeline Section ──
@@ -149,7 +244,7 @@ $section-gap: 80px;
   gap: 0;
   padding-left: 32px;
 
-  // Vertical line
+  // Vertical line — cyan gradient
   &::before {
     content: "";
     position: absolute;
@@ -159,10 +254,10 @@ $section-gap: 80px;
     width: 2px;
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.5) 20%,
-      rgba(255, 255, 255, 0.5) 80%,
-      rgba(255, 255, 255, 0.1) 100%
+      rgba(6, 192, 255, 0.1) 0%,
+      rgba(6, 192, 255, 0.5) 20%,
+      rgba(6, 192, 255, 0.5) 80%,
+      rgba(6, 192, 255, 0.1) 100%
     );
     border-radius: 1px;
   }
@@ -170,21 +265,36 @@ $section-gap: 80px;
 
 .timelineItem {
   position: relative;
-  padding: 20px 0;
+  padding: 20px 24px;
   opacity: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 12px;
+  margin-left: 4px;
+  transition: background 0.2s ease;
 
-  // Dot
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  // Glowing cyan dot
   &::before {
     content: "";
     position: absolute;
-    left: -28px;
+    left: -32px;
     top: 28px;
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #fff;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    background: rgba(6, 192, 255, 0.3);
+    border: 2px solid $cyan;
+    box-shadow: 0 0 8px $cyan-glow, 0 0 20px rgba(6, 192, 255, 0.15);
+    transition: box-shadow 0.3s ease;
+  }
+
+  &:hover::before {
+    box-shadow: 0 0 12px $cyan, 0 0 30px $cyan-glow;
   }
 }
 
@@ -218,7 +328,8 @@ $section-gap: 80px;
 
 .galleryGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 200px;
   gap: 12px;
 }
 
@@ -226,13 +337,29 @@ $section-gap: 80px;
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  aspect-ratio: 1;
   position: relative;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:nth-child(1) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  &:nth-child(5) {
+    grid-column: span 2;
+  }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  }
+
+  &:hover .galleryCaption {
+    opacity: 1;
+  }
+
+  &:hover .galleryCaptionText {
+    transform: translateY(0);
   }
 }
 
@@ -242,6 +369,31 @@ $section-gap: 80px;
   object-fit: cover;
   display: block;
   pointer-events: none;
+}
+
+// Hover overlay caption
+.galleryCaption {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.6) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.galleryCaptionText {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  transform: translateY(8px);
+  transition: transform 0.3s ease;
 }
 
 // ── Lightbox ──
@@ -311,6 +463,7 @@ $section-gap: 80px;
 }
 
 .linkCard {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -325,19 +478,47 @@ $section-gap: 80px;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 
   svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     fill: #fff;
     flex-shrink: 0;
+    transition: transform 0.3s ease;
+  }
+
+  // Shine effect
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      transparent 100%
+    );
+    transition: left 0.5s ease;
+    pointer-events: none;
   }
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px) scale(1.02);
     background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+
+    svg {
+      transform: scale(1.15);
+    }
+
+    &::after {
+      left: 100%;
+    }
   }
 }
 
@@ -349,12 +530,19 @@ $section-gap: 80px;
   }
 
   .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
     padding-top: 20px;
+    gap: 24px;
   }
 
-  .heroImage {
-    width: 140px;
-    height: 140px;
+  .heroCardWrapper {
+    max-width: min(340px, 85vw);
+    margin: 0 auto;
+  }
+
+  .heroTextBlock {
+    align-items: center;
   }
 
   .glassCard {
@@ -366,11 +554,26 @@ $section-gap: 80px;
   }
 
   .galleryGrid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 160px;
+
+    .galleryItem:nth-child(1) {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+    .galleryItem:nth-child(5) {
+      grid-column: span 1;
+    }
   }
 
   .linksGrid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .orb {
+    &:nth-child(1) { width: 250px; height: 250px; }
+    &:nth-child(2) { width: 200px; height: 200px; }
+    &:nth-child(3) { width: 180px; height: 180px; }
   }
 }
 
@@ -380,9 +583,8 @@ $section-gap: 80px;
     gap: 48px;
   }
 
-  .heroImage {
-    width: 120px;
-    height: 120px;
+  .heroCardWrapper {
+    max-width: min(320px, 90vw);
   }
 
   .glassCard {
@@ -392,6 +594,7 @@ $section-gap: 80px;
 
   .galleryGrid {
     grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 140px;
   }
 
   .linksGrid {
@@ -400,5 +603,14 @@ $section-gap: 80px;
 
   .timelineList {
     padding-left: 28px;
+  }
+
+  .timelineItem {
+    padding: 16px;
+    margin-left: 2px;
+
+    &::before {
+      left: -28px;
+    }
   }
 }

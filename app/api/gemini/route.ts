@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
-});
+function getOpenAIClient() {
+    return new OpenAI({
+        apiKey: process.env.GEMINI_API_KEY,
+        baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
+    });
+}
 
 const setting = `
     # 命令文
@@ -68,7 +70,7 @@ async function callGeminiWithRetry(apiMessages: Message[]) {
 
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
-            const completion = await openai.chat.completions.create({
+            const completion = await getOpenAIClient().chat.completions.create({
                 model: "gemini-2.5-flash",
                 messages: apiMessages,
                 temperature: 0.7,
