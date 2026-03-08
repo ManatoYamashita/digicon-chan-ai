@@ -41,7 +41,7 @@ type Message = {
 };
 
 // --- インメモリレート制限 (スライディングウィンドウ) ---
-const RATE_LIMIT_RPM = 12; // Gemini Free Tier 15RPM に対して余裕枠
+const RATE_LIMIT_RPM = 8; // Gemini 2.5 Flash Free Tier 10RPM に対して余裕枠
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const requestTimestamps: number[] = [];
 
@@ -69,7 +69,7 @@ async function callGeminiWithRetry(apiMessages: Message[]) {
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
             const completion = await openai.chat.completions.create({
-                model: "gemini-2.0-flash",
+                model: "gemini-2.5-flash",
                 messages: apiMessages,
                 temperature: 0.7,
             });
