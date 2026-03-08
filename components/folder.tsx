@@ -8,6 +8,7 @@ type FolderProps = {
   size?: number;
   items?: React.ReactNode[];
   className?: string;
+  href?: string;
 };
 
 function darkenColor(hex: string, percent: number): string {
@@ -38,6 +39,7 @@ export default function Folder({
   size = 1,
   items = [],
   className = "",
+  href,
 }: FolderProps) {
   const papers: (React.ReactNode | null)[] = items.slice(0, MAX_ITEMS);
   while (papers.length < MAX_ITEMS) {
@@ -55,6 +57,10 @@ export default function Folder({
   const paper3 = "#ffffff";
 
   const handleClick = () => {
+    if (href) {
+      window.open(href, "_blank", "noopener,noreferrer");
+      return;
+    }
     setOpen((prev) => !prev);
     if (open) {
       setPaperOffsets(

@@ -54,13 +54,18 @@ export const timelineData: TimelineItem[] = [
   {
     year: "2022",
     title: "副会長に任命",
-    text: "山下マナトが3人の会員を声優に起用し、書類上デジコンの副会長に任命することで、本格的にでじこんちゃんをキャラクタとして確立させ、外部でのプロモーションにも積極的に使用されるようになった。",
+    text: "3人の会員を声優に起用し、書類上デジコンの副会長に任命することで、本格的にでじこんちゃんをキャラクタとして確立させ、外部でのプロモーションにも積極的に使用されるようになった。",
   },
   {
     year: "2024年",
     title: "でじこんちゃん.net 開設",
     text: "Google Gemini APIを搭載したでじこんちゃん.netが開設",
   },
+  {
+    year: "2025年",
+    title: "デジミラ開催",
+    text: "でじこんちゃんの3Dモデルを使った音楽ライブを学園祭で開催",
+  }
 ];
 
 export const galleryImages: GalleryImage[] = [
@@ -95,5 +100,5 @@ export const externalLinksData: ExternalLink[] = [
     iconKey: "bsky",
   },
   { href: "https://tcu-dc.net/joinus", label: "Discord", iconKey: "discord" },
-  { href: "mailto:g2172117@tcu.ac.jp", label: "Mail", iconKey: "mail" },
+  { href: "mailto:mail@yamashitamana.to", label: "Mail", iconKey: "mail" },
 ];

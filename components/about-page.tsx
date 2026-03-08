@@ -307,7 +307,7 @@ export default function AboutPage() {
 
         {/* ── Folder ── */}
         <section className={styles.folderSection}>
-          <Folder size={3} color="#06C0FF" items={folderItems} />
+          <Folder size={3} color="#06C0FF" items={folderItems} href="https://youtu.be/jOkLO_n1SgY" />
         </section>
 
         {/* ── Timeline ── */}
