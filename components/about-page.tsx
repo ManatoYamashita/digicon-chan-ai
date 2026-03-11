@@ -50,6 +50,24 @@ const iconMap: Record<string, ComponentType> = {
 
 const sectionTitles = ["Profile", "History", "Gallery", "Links"] as const;
 
+function SectionTitle({ text }: { text: string }) {
+  return (
+    <div className={styles.sectionTitleWrapper}>
+      <SplitText
+        text={text}
+        tag="h2"
+        className={`${delaGothicOne.className} ${styles.sectionTitle}`}
+        useScrollTrigger={true}
+        duration={0.6}
+        splitType="chars"
+        delay={60}
+        textAlign="left"
+      />
+      <span className={styles.sectionAccent} />
+    </div>
+  );
+}
+
 export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbsRef = useRef<HTMLDivElement>(null);
@@ -223,23 +241,6 @@ export default function AboutPage() {
       }
     },
     { scope: containerRef }
-  );
-
-  // Helper: section title with SplitText + accent
-  const SectionTitle = ({ text }: { text: string }) => (
-    <div className={styles.sectionTitleWrapper}>
-      <SplitText
-        text={text}
-        tag="h2"
-        className={`${delaGothicOne.className} ${styles.sectionTitle}`}
-        useScrollTrigger={true}
-        duration={0.6}
-        splitType="chars"
-        delay={60}
-        textAlign="left"
-      />
-      <span className={styles.sectionAccent} />
-    </div>
   );
 
   return (
