@@ -1,8 +1,18 @@
 "use client";
 
 import { useRef, useEffect, type KeyboardEvent } from "react";
+import Image from "next/image";
 import type { ChatMessage } from "@/components/chat-page";
 import styles from "@/styles/chat-window.module.scss";
+
+const EMOTION_ICON_MAP: Record<string, string> = {
+  "楽": "/images/emotions/happy-icon.webp",
+  "怒": "/images/emotions/angry-icon.webp",
+  "哀": "/images/emotions/sad-icon.webp",
+  "困": "/images/emotions/confuse-icon.webp",
+  "照": "/images/emotions/surprise-icon.webp",
+  "default": "/images/emotions/default.webp",
+};
 
 type Props = {
   messages: ChatMessage[];
@@ -58,13 +68,31 @@ export default function ChatWindow({ messages, input, isLoading, onInputChange, 
             key={msg.id}
             className={`${styles.bubble} ${msg.role === "user" ? styles.user : styles.bot}`}
           >
-            {msg.role === "bot" && <span className={styles.avatar}>DC</span>}
+            {msg.role === "bot" && (
+              <span className={styles.avatar}>
+                <Image
+                  className={styles.avatarImg}
+                  src={EMOTION_ICON_MAP[msg.emotion ?? ""] ?? EMOTION_ICON_MAP.default}
+                  alt="でじこんちゃん"
+                  width={28}
+                  height={28}
+                />
+              </span>
+            )}
             <div className={styles.text}>{msg.content}</div>
           </div>
         ))}
         {isLoading && (
           <div className={`${styles.bubble} ${styles.bot}`}>
-            <span className={styles.avatar}>DC</span>
+            <span className={styles.avatar}>
+              <Image
+                className={styles.avatarImg}
+                src={EMOTION_ICON_MAP.default}
+                alt="でじこんちゃん"
+                width={28}
+                height={28}
+              />
+            </span>
             <div className={styles.text}>
               <span className={styles.typing}>
                 <span />
