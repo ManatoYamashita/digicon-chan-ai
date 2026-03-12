@@ -46,7 +46,7 @@ function DCchan() {
                 src={dcchan}
                 alt="でじこんちゃん - 東京都市大学デジタルコンテンツ研究会公式キャラクター"
                 priority
-                loading='eager'
+                sizes="100vw"
                 width={700}
                 height={393}
                 ref={imageRef}

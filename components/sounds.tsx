@@ -28,10 +28,10 @@ function Sounds({title, description}: Props) {
         <div className={styles.sounds}>
             <div className={styles.image_container}>
                 <Image
-                    src={ImgSrc} 
+                    src={ImgSrc}
                     className={styles.image}
                     alt="デジコン DTM班"
-                    unoptimized
+                    priority
                     fill
                     sizes="(max-width: 480px) 30vw, (max-width: 1000px) 10vw"
                 />

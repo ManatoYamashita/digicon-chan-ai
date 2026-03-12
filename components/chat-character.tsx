@@ -20,7 +20,6 @@ export default function ChatCharacter({ emotion, imageSrc }: Props) {
           sizes="(max-width: 768px) 100vw, 40vw"
           className={styles.img}
           priority
-          unoptimized
         />
       </div>
     </div>
