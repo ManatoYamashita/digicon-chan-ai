@@ -18,6 +18,7 @@ import {
   profileData,
   timelineData,
   galleryImages,
+  emotionIcons,
   externalLinksData,
 } from "@/data/about";
 
@@ -50,6 +51,11 @@ const iconMap: Record<string, ComponentType> = {
 
 const sectionTitles = ["Profile", "History", "Gallery", "Links"] as const;
 
+const pickedEmotionIcons = (() => {
+  const shuffled = [...emotionIcons].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 3);
+})();
+
 function SectionTitle({ text }: { text: string }) {
   return (
     <div className={styles.sectionTitleWrapper}>
@@ -75,10 +81,9 @@ export default function AboutPage() {
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
-  const { folderItems, folderSrcs } = useMemo(() => {
-    const picked = [galleryImages[4], galleryImages[6], galleryImages[9]];
-    return {
-      folderItems: picked.map((img) => (
+  const folderItems = useMemo(
+    () =>
+      pickedEmotionIcons.map((img) => (
         <Image
           key={img.src}
           src={img.src}
@@ -88,9 +93,8 @@ export default function AboutPage() {
           style={{ objectFit: "cover", borderRadius: "8px" }}
         />
       )),
-      folderSrcs: new Set(picked.map((img) => img.src)),
-    };
-  }, []);
+    []
+  );
 
   // body class
   useEffect(() => {
@@ -329,7 +333,7 @@ export default function AboutPage() {
         <section className={styles.gallery}>
           <SectionTitle text={sectionTitles[2]} />
           <div className={styles.galleryGrid}>
-            {galleryImages.filter((img) => !folderSrcs.has(img.src)).map((img) => (
+            {galleryImages.map((img) => (
               <div
                 key={img.src}
                 className={styles.galleryItem}

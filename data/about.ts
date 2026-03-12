@@ -80,6 +80,14 @@ export const galleryImages: GalleryImage[] = [
   { src: "/images/gallery/dcwithApp.webp", alt: "でじこんちゃん マッチングアプリプロフィール画像" },
 ];
 
+export const emotionIcons: GalleryImage[] = [
+  { src: "/images/emotions/angry-icon.webp", alt: "怒り" },
+  { src: "/images/emotions/confuse-icon.webp", alt: "困惑" },
+  { src: "/images/emotions/happy-icon.webp", alt: "幸福" },
+  { src: "/images/emotions/sad-icon.webp", alt: "悲しみ" },
+  { src: "/images/emotions/surprise-icon.webp", alt: "驚き" },
+];
+
 export const externalLinksData: ExternalLink[] = [
   { href: "https://www.tcu.ac.jp", label: "TCU", iconKey: "tcu" },
   { href: "https://tcu-dc.net", label: "TCU-DC", iconKey: "dc" },
