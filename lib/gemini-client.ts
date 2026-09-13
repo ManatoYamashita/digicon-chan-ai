@@ -9,11 +9,10 @@ export const MAX_RETRIES = 2;
 /**
  * 試行とバックオフを合わせた待ち時間の上限。
  * Vercel の関数上限 (10秒。Hobby で Fluid compute 無効) の1秒手前で打ち切り、JSON のエラーを返す。
- * 長めの応答は thinking 込みで 5〜8 秒かかるため、これ以上は削らない。
  */
 export const UPSTREAM_DEADLINE_MS = 9_000;
 /**
- * 残り時間がこれを下回るなら再試行しない。短い応答でも 3〜4 秒かかるため、
+ * 残り時間がこれを下回るなら再試行しない。thinking を切った応答は最大 3 秒ほどかかるため (#17)、
  * それより短い試行は応答を待ちきれず、クォータを浪費するだけになる。
  */
 export const MIN_ATTEMPT_MS = 4_000;
