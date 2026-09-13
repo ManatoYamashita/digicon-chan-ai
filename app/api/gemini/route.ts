@@ -129,6 +129,9 @@ export async function POST(request: Request) {
                         model: "gemini-2.5-flash",
                         messages: apiMessages,
                         temperature: 0.7,
+                        // thinking を切る。有効だと長めの応答が 11 秒を超え、関数上限 10 秒に収まらない (#17)。
+                        // 2.5 Pro と Gemini 3 系は thinking を切れないので、移行時は "minimal" で測り直すこと
+                        reasoning_effort: "none",
                     },
                     { timeout },
                 );
