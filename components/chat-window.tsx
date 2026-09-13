@@ -3,6 +3,7 @@
 import { useRef, useEffect, type KeyboardEvent } from "react";
 import Image from "next/image";
 import type { ChatMessage } from "@/components/chat-page";
+import { MAX_USER_CONTENT_LENGTH } from "@/lib/chat-request";
 import styles from "@/styles/chat-window.module.scss";
 
 const EMOTION_ICON_MAP: Record<string, string> = {
@@ -120,6 +121,7 @@ export default function ChatWindow({ messages, input, isLoading, onInputChange, 
               onKeyDown={handleKeyDown}
               placeholder="メッセージを入力..."
               rows={1}
+              maxLength={MAX_USER_CONTENT_LENGTH}
               disabled={isLoading}
             />
             <button
