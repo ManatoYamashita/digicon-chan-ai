@@ -8,11 +8,15 @@ const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai
 export const MAX_RETRIES = 2;
 /**
  * 試行とバックオフを合わせた待ち時間の上限。
- * Vercel の関数上限 (10秒。Hobby で Fluid compute 無効) より先に打ち切り、JSON のエラーを返す余裕を残す。
+ * Vercel の関数上限 (10秒。Hobby で Fluid compute 無効) の1秒手前で打ち切り、JSON のエラーを返す。
+ * 長めの応答は thinking 込みで 5〜7.5 秒かかるため、これ以上は削らない。
  */
-export const UPSTREAM_DEADLINE_MS = 8_000;
-/** 残り時間がこれを下回るなら再試行しない。応答を待ちきれない試行はクォータを浪費するだけになる */
-export const MIN_ATTEMPT_MS = 3_000;
+export const UPSTREAM_DEADLINE_MS = 9_000;
+/**
+ * 残り時間がこれを下回るなら再試行しない。短い応答でも 3〜4 秒かかるため、
+ * それより短い試行は応答を待ちきれず、クォータを浪費するだけになる。
+ */
+export const MIN_ATTEMPT_MS = 4_000;
 const BASE_DELAY_MS = 1000;
 const JITTER_MS = 500;
 
