@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
 import { parseChatRequest, type ChatRequestError } from '@/lib/chat-request';
-
-function getOpenAIClient() {
-    return new OpenAI({
-        apiKey: process.env.GEMINI_API_KEY,
-        baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
-    });
-}
+import { createGeminiClient, withRetry } from '@/lib/gemini-client';
 
 const setting = `
     # 命令文
@@ -68,43 +61,6 @@ function recordRequest(): void {
     requestTimestamps.push(Date.now());
 }
 
-// --- リトライ + エクスポネンシャルバックオフ ---
-const MAX_RETRIES = 2;
-const BASE_DELAY_MS = 1000;
-const JITTER_MS = 500;
-
-async function callGeminiWithRetry(apiMessages: Message[]) {
-    let lastError: any;
-
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-        try {
-            const completion = await getOpenAIClient().chat.completions.create({
-                model: "gemini-2.5-flash",
-                messages: apiMessages,
-                temperature: 0.7,
-            });
-            return completion;
-        } catch (error: any) {
-            lastError = error;
-            const status = error.status || error.statusCode;
-
-            // 429/503 のみリトライ対象
-            if ((status === 429 || status === 503) && attempt < MAX_RETRIES) {
-                const delay = BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * JITTER_MS;
-                if (process.env.NODE_ENV === 'development') {
-                    console.log(`Gemini API retry ${attempt + 1}/${MAX_RETRIES} after ${Math.round(delay)}ms (status: ${status})`);
-                }
-                await new Promise(resolve => setTimeout(resolve, delay));
-                continue;
-            }
-
-            throw error;
-        }
-    }
-
-    throw lastError;
-}
-
 const isDev = process.env.NODE_ENV === 'development';
 
 export async function POST(request: Request) {
@@ -153,7 +109,8 @@ export async function POST(request: Request) {
 
         const apiMessages: Message[] = [systemMessage, ...parsed.messages];
 
-        if (!process.env.GEMINI_API_KEY) {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
             console.error('Gemini API key is not set');
             return NextResponse.json(
                 { error: 'えっと...でじこんちゃんの準備がまだできてないみたい。管理者さんに聞いてみてね！' },
@@ -161,9 +118,24 @@ export async function POST(request: Request) {
             );
         }
 
-        // リクエスト記録 & リトライ付きAPI呼び出し
-        recordRequest();
-        const completion = await callGeminiWithRetry(apiMessages);
+        // キーが無いとコンストラクタが例外を投げるので、モジュールスコープではなくキーの確認後に作る
+        const client = createGeminiClient(apiKey);
+        const completion = await withRetry(
+            (timeout) => {
+                // 試行ごとに記録し、ローカルのレート制限を上流への実リクエスト数に合わせる
+                recordRequest();
+                return client.chat.completions.create(
+                    {
+                        model: "gemini-2.5-flash",
+                        messages: apiMessages,
+                        temperature: 0.7,
+                    },
+                    { timeout },
+                );
+            },
+            // 枠が尽きたら再試行せず、その時点のエラー (429 など) を返す
+            { canRetry: () => !isRateLimited() },
+        );
 
         if (isDev) {
             console.log('Gemini APIからのレスポンス:', JSON.stringify(completion, null, 2));
