@@ -61,7 +61,9 @@ APIレスポンスの1文字目で感情を判定（`components/chat-page.tsx`�
 
 ### APIルート (`app/api/gemini/route.ts`)
 
-- Gemini 2.5 Flash モデル使用
+- Gemini 2.5 Flash モデル使用。thinking は `reasoning_effort: "none"` で切ってある（#17）
+  - 有効だと長めの応答が 11 秒を超え、関数上限 10 秒に収まらない。切ると応答は 1〜3 秒で、感情の一文字やキャラクター設定の遵守は変わらない
+  - 2.5 Pro と Gemini 3 系は thinking を切れない。モデルを移行するときは `"minimal"` で応答時間とフォーマットを測り直す
 - インメモリレート制限（8 RPM、スライディングウィンドウ）。上流への試行ごとに記録し、枠が尽きたら再試行もしない
 - 上流の呼び出しは `lib/gemini-client.ts` に集約している（#13）
   - SDK の自動リトライは `maxRetries: 0` で止めてあり、再試行は `withRetry` だけが行う。SDK 側と二重にすると、1回の送信で上流を最大9回呼ぶ
@@ -101,7 +103,7 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID  # Google Analytics測定ID
 - `vercel.json` で `GIT_LFS_SKIP_SMUDGE=1` を設定（ビルド時にスクリプト側でLFSファイルを取得）
 - **Node.js 24.x**: `package.json` の `engines.node` で指定（Vercel のプロジェクト設定より優先される）。ローカルは `.nvmrc` に合わせて `nvm use`
 - `GEMINI_API_KEY` は Production / Development のみに設定されている。Preview では `/api/gemini` がキー未設定の 500 JSON を返すのが正常
-- **関数の実行時間上限は 10 秒**。Hobby プランで Fluid compute が無効なため（デプロイの `config.functionTimeout`）。超えると Vercel が HTML の 504 を返すので、`/api/gemini` はその手前の 9 秒で自前の JSON エラーを返す。gemini-2.5-flash の応答は thinking 込みで 3〜8 秒かかり、余裕は小さい
+- **関数の実行時間上限は 10 秒**。Hobby プランで Fluid compute が無効なため（デプロイの `config.functionTimeout`）。超えると Vercel が HTML の 504 を返すので、`/api/gemini` はその手前の 9 秒で自前の JSON エラーを返す。モデルや生成パラメータを変えたら、長めの応答（例:「おすすめのDTMソフト教えて」）で応答時間を測り、この枠に収まるか確かめる
 
 ### 障害調査
 
