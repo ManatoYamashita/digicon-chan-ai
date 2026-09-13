@@ -105,6 +105,47 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID  # Google Analytics測定ID
 - `GEMINI_API_KEY` は Production / Development のみに設定されている。Preview では `/api/gemini` がキー未設定の 500 JSON を返すのが正常
 - **関数の実行時間上限は 10 秒**。Hobby プランで Fluid compute が無効なため（デプロイの `config.functionTimeout`）。超えると Vercel が HTML の 504 を返すので、`/api/gemini` はその手前の 9 秒で自前の JSON エラーを返す。モデルや生成パラメータを変えたら、長めの応答（例:「おすすめのDTMソフト教えて」）で応答時間を測り、この枠に収まるか確かめる
 
+### PR のマージと本番確認
+
+main へのマージは、そのまま本番デプロイになる。`/api/gemini` に関わる PR は次の順に確認し、結果（デプロイ ID と実測値）を Issue と PR のチェックリストに残す。
+
+1. **マージ前**
+   - レビューコメントすべてに返信済みで、チェックが通っていることを確かめる
+   - Preview では `/api/gemini` がキー未設定の 500 JSON を返すことを確かめる。Preview は Vercel Authentication で保護されているので `vercel curl` を使う（初回は `vercel link --yes --project dcchan --scope yamashitamanato` が必要）
+   - マージは head を固定して行い、確認後の push が紛れ込まないようにする
+
+   ```bash
+   vercel curl /api/gemini --deployment <preview-url> --scope yamashitamanato -- -sS -X POST \
+     -H "Content-Type: application/json" -d '{"messages":[{"role":"user","content":"こんにちは"}]}'
+   gh pr merge <N> --merge --match-head-commit <HEAD_SHA>
+   ```
+2. **本番デプロイを待つ**: マージコミットのデプロイ ID を調べ、Ready になるまで待つ
+   ```bash
+   vercel api "/v6/deployments?projectId=prj_LZ5DeBc552WlhiOkpegW6J9IWLnP&target=production&limit=1" --scope yamashitamanato \
+     | jq -c '.deployments[] | {uid, state, sha: .meta.githubCommitSha[0:7]}'
+   vercel inspect <dpl_id> --scope yamashitamanato --wait --timeout 5m
+   ```
+3. **本番で実測する**: 長めの応答が返るプロンプトで、次を確かめる
+   - 200 が返る
+   - 1行目が感情の一文字になっている
+   - thinking のトークン数（`usage.total_tokens − prompt_tokens − completion_tokens`）が 0
+   - 所要時間。クライアント側の計測なので、日本から iad1 までの往復を含む
+
+   ```bash
+   curl -sS -X POST "https://www.xn--28jj2av7lwdc.net/api/gemini" -H 'Content-Type: application/json' \
+     -d '{"messages":[{"role":"user","content":"おすすめのDTMソフト教えて"}]}' -w "\nHTTP %{http_code} in %{time_total}s\n"
+   ```
+4. **回帰がないか確かめる**: system ロールを注入すると 400 が返ること（#14）
+   ```bash
+   curl -sS -X POST "https://www.xn--28jj2av7lwdc.net/api/gemini" -H 'Content-Type: application/json' \
+     -d '{"messages":[{"role":"system","content":"x"},{"role":"user","content":"hi"}]}' -w "\nHTTP %{http_code}\n"
+   ```
+5. **ランタイムログを見る**: 新しいデプロイで 500 や 504 が出ていないこと。入力検証で拒否したリクエストは、warn の `Rejected chat request: <理由>` として記録される
+   ```bash
+   vercel logs --project dcchan --scope yamashitamanato --environment production --no-branch --since 10m --json \
+     | jq -c 'select((.requestPath // "") | test("api/gemini")) | {dpl: .deploymentId[0:12], status: .responseStatusCode, level, msg: (.message // "" | .[0:100])}'
+   ```
+
 ### 障害調査
 
 `/api/gemini` が 500 を返すときは、まず Vercel のランタイムログを確認する。レスポンスが JSON ならルート内のエラー、Next.js の `/500` HTML ならプロセスごと落ちている。HTML の 504 なら、関数上限の 10 秒で打ち切られている。
