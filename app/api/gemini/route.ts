@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { parseChatRequest, type ChatRequestError } from '@/lib/chat-request';
 
 function getOpenAIClient() {
     return new OpenAI({
@@ -40,6 +41,13 @@ const setting = `
 type Message = {
     role: 'user' | 'assistant' | 'system';
     content: string;
+};
+
+const INVALID_REQUEST_MESSAGE = 'ん？なんだか変なメッセージが来ちゃった！もう一回ちゃんと送ってほしいな～！';
+
+const REQUEST_ERROR_MESSAGES: Partial<Record<ChatRequestError, string>> = {
+    content_too_long: 'メッセージが長すぎて読みきれないよ～！もうちょっと短くしてね！',
+    too_many_messages: 'いっぱいお話ししてくれてありがとう！セッションをリセットしてからまた話しかけてね！',
 };
 
 // --- インメモリレート制限 (スライディングウィンドウ) ---
@@ -127,31 +135,23 @@ export async function POST(request: Request) {
             );
         }
 
-        const { messages } = body;
-
-        if (!messages || !Array.isArray(messages)) {
+        // role のホワイトリスト検証。system メッセージはサーバーの setting だけに限る
+        const parsed = parseChatRequest(body);
+        if (!parsed.ok) {
+            // 利用者の入力内容はログに残さず、拒否理由だけを記録する
+            console.warn('Rejected chat request:', parsed.error);
             return NextResponse.json(
-                { error: 'ん？なんだか変なメッセージが来ちゃった！もう一回ちゃんと送ってほしいな～！' },
+                { error: REQUEST_ERROR_MESSAGES[parsed.error] ?? INVALID_REQUEST_MESSAGE },
                 { status: 400 }
             );
         }
-
-        const mappedMessages: Message[] = messages.map((msg: { role: string; content: string }) => {
-            if (!msg.role || !msg.content) {
-                throw new Error('メッセージの形式が不正です。roleとcontentが必要です。');
-            }
-            return {
-                role: msg.role === 'bot' ? 'assistant' : msg.role as 'user' | 'assistant' | 'system',
-                content: msg.content,
-            };
-        });
 
         const systemMessage: Message = {
             role: 'system',
             content: setting,
         };
 
-        const apiMessages = [systemMessage, ...mappedMessages];
+        const apiMessages: Message[] = [systemMessage, ...parsed.messages];
 
         if (!process.env.GEMINI_API_KEY) {
             console.error('Gemini API key is not set');
