@@ -87,6 +87,16 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID  # Google Analytics測定ID
 - **Git LFS** で `.mov` / `.webm` ファイルを管理
 - `vercel-build.sh` でビルド前に `git lfs pull` を実行
 - `vercel.json` で `GIT_LFS_SKIP_SMUDGE=1` を設定（ビルド時にスクリプト側でLFSファイルを取得）
+- **Node.js 24.x**: `package.json` の `engines.node` で指定（Vercel のプロジェクト設定より優先される）。ローカルは `.nvmrc` に合わせて `nvm use`
+- `GEMINI_API_KEY` は Production / Development のみに設定されている。Preview では `/api/gemini` がキー未設定の 500 JSON を返すのが正常
+
+### 障害調査
+
+`/api/gemini` が 500 を返すときは、まず Vercel のランタイムログを確認する。レスポンスが JSON ならルート内のエラー、Next.js の `/500` HTML ならプロセスごと落ちている。
+
+```bash
+vercel logs --project dcchan --scope yamashitamanato --environment production --no-branch --since 1h --status-code 500 --expand
+```
 
 ## コミットメッセージ規則
 
