@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect, ViewTransition } from "react";
 import ChatWindow from "@/components/chat-window";
 import ChatCharacter from "@/components/chat-character";
+import { MAX_PROMPTS } from "@/lib/chat-request";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import styles from "@/styles/chat-page.module.scss";
@@ -47,8 +48,6 @@ function parseEmotionResponse(raw: string): { emotion: Emotion; text: string } {
   }
   return { emotion: "default", text: trimmed };
 }
-
-const MAX_PROMPTS = 5;
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);

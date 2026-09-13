@@ -12,8 +12,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm dev          # 開発サーバー起動 (localhost:3000, Turbopack使用)
 pnpm build        # 本番ビルド
 pnpm start        # 本番サーバー起動
-pnpm lint         # ESLint実行 (app/ components/ 対象)
+pnpm lint         # ESLint実行 (app/ components/ lib/ 対象)
+pnpm test         # 単体テスト (node:test + 型ストリップ。Node 24 必須、依存追加なし)
 ```
+
+テストは `lib/**/*.test.ts` に置き、import は `./chat-request.ts` のように拡張子まで書く（`tsconfig.json` の `allowImportingTsExtensions` で許可済み）。Node はパスエイリアス `@/` を解決できないため、テスト対象のモジュールは `@/` を import しない。
 
 パッケージマネージャは **pnpm** を使用（`.npmrc` で `node-linker=hoisted` 設定済み）。
 
@@ -60,10 +63,14 @@ APIレスポンスの1文字目で感情を判定（`components/chat-page.tsx`�
 - インメモリレート制限（8 RPM、スライディングウィンドウ）
 - リトライ（429/503時、エクスポネンシャルバックオフ、最大2回）
 - システムプロンプトにキャラクター設定を埋め込み
+- 入力検証（`lib/chat-request.ts` の `parseChatRequest`）。不正なリクエストは Gemini を呼ぶ前に 400 で返すので、レート制限の枠を消費しない
+  - role は `user` / `bot` だけを受け付け、`bot` は `assistant` に正規化する。`system` などを通すとキャラクター設定を上書きされる（#14）
+  - `content` は空でない文字列のみ。user は 1000 字を超えたら 400、bot 履歴は 4000 字で切り詰める
+  - 件数は最大9件（user は5件まで）で、末尾は必ず user
 
 ### セッション制限
 
-チャットは最大5メッセージまで送信可能。その後リセットが必要。送信は Cmd+Enter (Mac) / Ctrl+Enter (Windows)。
+チャットは最大5メッセージまで送信可能。その後リセットが必要。送信は Cmd+Enter (Mac) / Ctrl+Enter (Windows)。上限値（`MAX_PROMPTS` など）は `lib/chat-request.ts` でクライアントとサーバーが共有し、サーバー側でも強制している。
 
 ## コンポーネント設計パターン
 
