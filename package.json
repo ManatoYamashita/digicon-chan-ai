@@ -7,7 +7,8 @@
     "vercel-build": "sh ./vercel-build.sh",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint app/ components/"
+    "lint": "eslint app/ components/ lib/",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"lib/**/*.test.ts\""
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
