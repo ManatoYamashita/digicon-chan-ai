@@ -7,8 +7,8 @@ $glass-blur:        20px;
 $menu-radius:       22px;
 $item-radius:       12px;
 
-// Active item
-$active-bg:         rgba(37, 99, 235, 0.85);
+// Active item (白い文字に対して 5.2:1。半透明だと背景に混ざって 4.1:1 まで落ちる)
+$active-bg:         rgb(37, 99, 235);
 $active-border:     rgba(255, 255, 255, 0.9);
 $active-shadow:     0 2px 8px rgba(0, 0, 0, 0.06);
 
@@ -245,6 +245,14 @@ $line-gap:     5px;
 .pillActive {
   color: #fff;
   font-weight: 700;
+}
+
+// ── /chat (desktop) ──
+// チャット欄 (最小 360px) の右側に収める。769〜809px の幅では 50vw のままだと送信ボタンに重なる
+@media screen and (min-width: 769px) {
+  :global(.body-chat) .pillBar {
+    width: min(50vw, calc(100vw - 360px - 5rem));
+  }
 }
 
 // ── Mobile ──

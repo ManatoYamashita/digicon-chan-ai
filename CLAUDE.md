@@ -46,7 +46,7 @@ Gemini の上流呼び出しは、本物の SDK クライアントの fetch だ�
 ### チャット機能のデータフロー
 
 ```
-ChatPage (状態管理: messages, emotion, tokenUsage)
+ChatPage (状態管理: messages, emotion, error)
   → ChatWindow (入力・メッセージ表示)
     → POST /api/gemini (messages配列を送信)
       → Gemini API (OpenAI互換エンドポイント)
@@ -69,7 +69,7 @@ APIレスポンスの1文字目で感情を判定（`components/chat-page.tsx`�
   - SDK の自動リトライは `maxRetries: 0` で止めてあり、再試行は `withRetry` だけが行う。SDK 側と二重にすると、1回の送信で上流を最大9回呼ぶ
   - 再試行するのは 429/503 だけで、エクスポネンシャルバックオフで最大2回
   - 試行とバックオフを合わせて 9 秒で打ち切る（`UPSTREAM_DEADLINE_MS`）。各試行には残り時間を SDK の `timeout` として渡し、残りが 4 秒を切ったら再試行しない
-- システムプロンプトにキャラクター設定を埋め込み
+- システムプロンプトにキャラクター設定を埋め込み。返答はプレーンテキストで表示するので、Markdown 記法を使わず、箇条書きは「・」で書くよう指示している（#20）
 - 入力検証（`lib/chat-request.ts` の `parseChatRequest`）。不正なリクエストは Gemini を呼ぶ前に 400 で返すので、レート制限の枠を消費しない
   - role は `user` / `bot` だけを受け付け、`bot` は `assistant` に正規化する。`system` などを通すとキャラクター設定を上書きされる（#14）
   - `content` は空でない文字列のみ。user は 1000 字を超えたら 400、bot 履歴は 4000 字で切り詰める
@@ -78,6 +78,16 @@ APIレスポンスの1文字目で感情を判定（`components/chat-page.tsx`�
 ### セッション制限
 
 チャットは最大5メッセージまで送信可能。その後リセットが必要。送信は Cmd+Enter (Mac) / Ctrl+Enter (Windows)。上限値（`MAX_PROMPTS` など）は `lib/chat-request.ts` でクライアントとサーバーが共有し、サーバー側でも強制している。
+
+送信に失敗したとき（429、通信エラー、504、本文が空の返答）は、発言を履歴から外して入力欄へ戻す。回数は減らず、エラー文言も Gemini へ送り返さない。エラーは履歴の外に `error` として持ち、「入力欄に戻したので、もう一度送って」という案内を添えて表示する。`route.ts` のエラー文言には何が起きたかだけを書く。
+
+### /chat の UI で守ること（#20）
+
+- **ページをスクロールさせない**: `body` は `overflow: hidden` なので、ページが一度スクロールすると利用者は戻せない。メッセージ一覧は `scrollIntoView` ではなく、一覧自身の `scrollTo` で送る。モバイルでは幅 820px の立ち絵を `.characterWrap` の `overflow: clip` で切る。はみ出したままだとレイアウトビューポートが広がり、固定表示のナビが画面外へ出る
+- **動きは `prefers-reduced-motion` で切り替える**: GSAP は `gsap.matchMedia()` を使い、`reduce` のときは opacity だけを変える。CSS のアニメーションと View Transition は `@media (prefers-reduced-motion: no-preference)` の中に書き、framer-motion は `MotionConfig reducedMotion="user"` で包む
+- **色は役割トークンを使う**: `globals.css` の `--color-text-*` と `--fill-accent-solid` を使う。値は描画された背景で 4.5:1 以上を実測して決めた。白い文字を `#06c0ff` 側のグラデーションに載せると 2.1:1 まで落ちる
+- **フォーカスを落とさない**: 送信中の入力欄は `disabled` ではなく `readOnly` にし、送信ボタンは `aria-disabled` にする。入力欄とリセットボタンが入れ替わるときは、新しく出た方へフォーカスを移す。メッセージ一覧は `role="log"` にして、返答と「入力中…」を読み上げさせる
+- **確認する画面サイズ**: 1280×800、390×844（Chrome のデバイスエミュレーション）、640×400（200% ズーム相当）、320×256。どれでもページ自体のスクロール量が 0 で、ヘッダー・バッジ・ナビ・入力欄が画面内にあること
 
 ## コンポーネント設計パターン
 
