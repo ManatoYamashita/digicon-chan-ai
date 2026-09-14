@@ -11,6 +11,7 @@ const setting = `
     * "東京都市大学デジタルコンテンツ研究会"と"デジコン"は同義で、"でじこんちゃん"は必ずひらがなで表記すること
     * 必ず回答の一行目には["楽", "怒", "哀", "困", "照"]のいずれかの感情を表す一文字を記述し、本文は2行目から記述してください。なお、感情の表記の前後に余計なスペースや句点、読点を含めないでください。
     * 感情の後には余計な句読点や空白を入れず、改行した後に本文は2行目から記述してください。
+    * 返答は画面にそのまま表示されるので、Markdown記法（**太字**、行頭の * や - による箇条書き、# の見出し）は使わず、プレーンテキストで書くこと。箇条書きにしたいときは行頭に「・」を使うこと
     * 山下マナトは聖乳くるみ(赤瀬みく)のファンで、でじこんちゃんに特別な感情を抱いていた。
 
     # キャラクター設定
@@ -36,11 +37,13 @@ type Message = {
     content: string;
 };
 
-const INVALID_REQUEST_MESSAGE = 'ん？なんだか変なメッセージが来ちゃった！もう一回ちゃんと送ってほしいな～！';
+// エラー文言は画面で「入力欄に戻したので、もう一度送って」という案内と並べて表示される (components/chat-page.tsx)。
+// ここでは何が起きたかだけを書き、利用者を責める言い方はしない
+const INVALID_REQUEST_MESSAGE = 'ごめんね、メッセージをうまく受け取れなかったみたい…。';
 
 const REQUEST_ERROR_MESSAGES: Partial<Record<ChatRequestError, string>> = {
     content_too_long: 'メッセージが長すぎて読みきれないよ～！もうちょっと短くしてね！',
-    too_many_messages: 'いっぱいお話ししてくれてありがとう！セッションをリセットしてからまた話しかけてね！',
+    too_many_messages: 'いっぱいお話ししてくれてありがとう！会話をリセットしてからまた話しかけてね！',
 };
 
 // --- インメモリレート制限 (スライディングウィンドウ) ---
@@ -69,7 +72,7 @@ export async function POST(request: Request) {
         if (isRateLimited()) {
             const retryAfter = 30;
             return NextResponse.json(
-                { error: 'わわっ、今たくさんの人が話しかけてくれてるみたい！ちょっとだけ待っててね～！', retryAfter },
+                { error: 'わわっ、今たくさんの人が話しかけてくれてるみたい！', retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -86,7 +89,7 @@ export async function POST(request: Request) {
         } catch (e) {
             console.error('Request body parsing error:', e);
             return NextResponse.json(
-                { error: 'あれれ？メッセージがうまく届かなかったみたい...もう一回送ってくれる？' },
+                { error: 'あれれ？メッセージがうまく届かなかったみたい…。' },
                 { status: 400 }
             );
         }
@@ -113,7 +116,7 @@ export async function POST(request: Request) {
         if (!apiKey) {
             console.error('Gemini API key is not set');
             return NextResponse.json(
-                { error: 'えっと...でじこんちゃんの準備がまだできてないみたい。管理者さんに聞いてみてね！' },
+                { error: 'えっと…でじこんちゃんの準備がまだできてないみたい。管理者さんに聞いてみてね！' },
                 { status: 500 }
             );
         }
@@ -147,7 +150,7 @@ export async function POST(request: Request) {
         if (!completion.choices[0]?.message) {
             console.error('Invalid completion response:', completion);
             return NextResponse.json(
-                { error: 'あわわ、でじこんちゃんの頭がこんがらがっちゃった...もう一回話しかけてくれる？' },
+                { error: 'あわわ、でじこんちゃんの頭がこんがらがっちゃった…。' },
                 { status: 500 }
             );
         }
@@ -169,7 +172,7 @@ export async function POST(request: Request) {
         if (error.status === 429) {
             const retryAfter = 30;
             return NextResponse.json(
-                { error: 'うぅ、今日はたくさんおしゃべりしすぎちゃったみたい...ちょっと休憩してからまた来てね！', retryAfter },
+                { error: 'うぅ、たくさんおしゃべりしすぎちゃったみたい…。', retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -179,14 +182,14 @@ export async function POST(request: Request) {
 
         if (error.status === 401) {
             return NextResponse.json(
-                { error: 'あれ？でじこんちゃんのカギが合わないみたい...管理者さんに確認してもらってね！' },
+                { error: 'あれ？でじこんちゃんのカギが合わないみたい…。管理者さんに確認してもらってね！' },
                 { status: 401 }
             );
         }
 
         return NextResponse.json(
             {
-                error: 'ごめんね、なんかうまくいかなかった...もうちょっとしたらまた話しかけてみて！',
+                error: 'ごめんね、なんかうまくいかなかった…。',
                 details: isDev ? error.message : undefined
             },
             { status: 500 }
