@@ -28,23 +28,25 @@
 .remainingNumber {
   font-size: 1.4rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #06c0ff 0%, #0070d9 100%);
+  background: var(--fill-accent-solid);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .remainingLabel {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(0, 112, 217, 0.5);
+  color: var(--color-text-accent);
 }
 
+// 最大幅は右下に固定したナビ (幅 50vw) の手前まで。広げすぎると送信ボタンがナビの下に潜る
 .windowWrap {
   position: relative;
-  flex: 0 0 clamp(360px, var(--window-width, 30%), 60vw);
-  width: clamp(360px, var(--window-width, 30%), 60vw);
+  flex: 0 0 clamp(360px, var(--window-width, 30%), calc(50vw - 4rem));
+  width: clamp(360px, var(--window-width, 30%), calc(50vw - 4rem));
   min-width: 360px;
   display: flex;
   z-index: 1;
@@ -73,7 +75,8 @@
     transition: background 0.2s, height 0.2s;
   }
 
-  &:hover::after {
+  &:hover::after,
+  &:focus-visible::after {
     background: rgba(0, 0, 0, 0.2);
   }
 
@@ -136,15 +139,6 @@
   opacity: 0;
 }
 
-.infoTokens {
-  font-size: clamp(0.7rem, 1.5vw, 1rem);
-  font-weight: 600;
-  color: rgba(0, 112, 217, 0.25);
-  font-variant-numeric: tabular-nums;
-  margin: 0;
-  opacity: 0;
-}
-
 .infoDesc {
   font-size: clamp(0.8rem, 1.5vw, 1.1rem);
   font-weight: 600;
@@ -171,6 +165,7 @@
     overflow: visible;
   }
 
+  // 幅 820px の立ち絵を画面の端で切る。はみ出したままだとレイアウトビューポートが広がり、固定表示のナビが画面外へ出る
   .characterWrap {
     position: absolute;
     inset: 0;
@@ -180,9 +175,11 @@
     order: 0;
     flex-shrink: 0;
     z-index: 1;
-    overflow: visible;
+    overflow: hidden;
+    overflow: clip;
   }
 
+  // 縦に狭い画面 (ズーム時など) では立ち絵よりチャット欄を優先し、バッジの下 (7rem) まで広げる
   .windowWrap {
     position: absolute;
     bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
@@ -192,8 +189,7 @@
     flex: 0 0 auto;
     width: auto;
     min-width: 0;
-    height: 45svh;
-    min-height: 45svh;
+    height: max(45svh, min(18rem, calc(100svh - 7rem - env(safe-area-inset-bottom, 0px))));
   }
 
   .resizeHandle {
@@ -224,6 +220,5 @@
   }
 
   .infoEmotion { font-size: 1rem; }
-  .infoTokens { font-size: 0.65rem; }
   .infoHint { display: none; }
 }

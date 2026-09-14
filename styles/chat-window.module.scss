@@ -39,14 +39,18 @@
 .dotYellow { background: #febc2e; }
 .dotGreen { background: #28c840; }
 
+// ページの見出し (h1)。globals.css の h1 の書体は引き継がない
 .title {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  margin: 0;
+  font-family: inherit;
   font-size: 0.8rem;
   font-weight: 700;
-  color: rgba(0, 0, 0, 0.5);
+  color: var(--color-text-secondary);
   letter-spacing: 0.02em;
+  white-space: nowrap;
   pointer-events: none;
 }
 
@@ -84,7 +88,7 @@
 
 .empty {
   margin: auto;
-  color: rgba(0, 0, 0, 0.35);
+  color: var(--color-text-secondary);
   font-size: 0.9rem;
   text-align: center;
   animation: fadeIn 0.6s ease;
@@ -95,13 +99,30 @@
   to { opacity: 1; }
 }
 
+// 画面には出さず、スクリーンリーダーにだけ読ませる
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Bubble */
 .bubble {
   display: flex;
   align-items: flex-end;
   gap: 8px;
   max-width: 80%;
-  animation: bubbleIn 0.25s ease-out;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: bubbleIn 0.25s ease-out;
+  }
 
   &.user {
     align-self: flex-end;
@@ -139,7 +160,7 @@
   white-space: pre-wrap;
 
   .user & {
-    background: linear-gradient(135deg, #06c0ff 0%, #0070d9 100%);
+    background: var(--fill-accent-solid);
     color: #fff;
     border-bottom-right-radius: 4px;
   }
@@ -187,36 +208,79 @@
 /* Input Area */
 .inputArea {
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   padding: 12px 16px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   background: rgba(245, 247, 250, 0.8);
 }
 
+.inputRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
 .input {
   flex: 1;
   resize: none;
+  // 対応ブラウザでは内容に合わせて伸ばす (5行まで)。非対応ブラウザは rows={2} の高さ
+  field-sizing: content;
+  max-block-size: 5lh;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 20px;
   padding: 10px 16px;
   font-size: 0.88rem;
   font-family: inherit;
   line-height: 1.4;
-  color: #1a202c;
+  color: var(--color-text-primary);
   background: rgba(255, 255, 255, 0.7);
-  outline: none;
   transition: border-color 0.2s;
 
   &::placeholder {
-    color: rgba(0, 0, 0, 0.35);
+    color: var(--color-text-secondary);
   }
   &:focus {
     border-color: rgba(6, 192, 255, 0.6);
   }
-  &:disabled {
+  // フォーカスリングはブラウザ既定のものを使い、枠線から少し離す
+  &:focus-visible {
+    outline-offset: 2px;
+  }
+  // 送信中。disabled ではなく readOnly なのでフォーカスは残る
+  &:read-only {
     opacity: 0.5;
   }
+}
+
+.hint {
+  margin: 0;
+  padding-inline: 16px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+// タッチ操作の端末ではキーボードショートカットの案内を出さない
+@media (hover: none) {
+  .shortcut {
+    display: none;
+  }
+}
+
+// 縦に極端に狭い画面 (400% ズームなど) では、案内より会話の表示を優先する
+@media (max-height: 20rem) {
+  .hint {
+    display: none;
+  }
+}
+
+.exhausted {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  text-align: center;
 }
 
 .sendBtn {
@@ -225,7 +289,7 @@
   height: 38px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #06c0ff 0%, #0070d9 100%);
+  background: var(--fill-accent-solid);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -238,13 +302,16 @@
     height: 18px;
   }
 
-  &:hover:not(:disabled) {
-    transform: scale(1.05);
+  @media (hover: hover) {
+    &:hover:not([aria-disabled="true"]) {
+      transform: scale(1.05);
+    }
   }
-  &:active:not(:disabled) {
-    transform: scale(0.95);
+  &:active:not([aria-disabled="true"]) {
+    transform: scale(0.96);
   }
-  &:disabled {
+  // aria-disabled はフォーカスを残すため。押しても onClick 側で何もしない
+  &[aria-disabled="true"] {
     opacity: 0.35;
     cursor: not-allowed;
   }
@@ -255,7 +322,7 @@
   padding: 12px;
   border: none;
   border-radius: 20px;
-  background: linear-gradient(135deg, #06c0ff 0%, #0070d9 100%);
+  background: var(--fill-accent-solid);
   color: #fff;
   font-size: 0.88rem;
   font-weight: 700;
@@ -263,11 +330,13 @@
   cursor: pointer;
   transition: opacity 0.2s, transform 0.15s;
 
-  &:hover {
-    transform: scale(1.02);
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(1.02);
+    }
   }
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.96);
   }
 }
 
@@ -277,5 +346,9 @@
   }
   .messageList {
     padding: 12px;
+  }
+  // iOS Safari は 16px 未満の入力欄にフォーカスするとページを拡大する
+  .input {
+    font-size: 1rem;
   }
 }
