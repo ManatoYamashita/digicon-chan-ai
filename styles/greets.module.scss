@@ -44,14 +44,17 @@
             flex-direction: column;
             list-style: none;
             padding: 0 .5rem 0 0;
-          
-            -webkit-animation-name: change;
-            -webkit-animation-duration: 10s;
-            -webkit-animation-iteration-count: infinite;
-            animation-name: change;
-            animation-duration: 10s;
-            animation-iteration-count: infinite;
-    
+
+            // 挨拶を縦に送り続けるループ。視差効果を減らす設定のときは止め、最初の挨拶だけを表示する
+            @media (prefers-reduced-motion: no-preference) {
+                -webkit-animation-name: change;
+                -webkit-animation-duration: 10s;
+                -webkit-animation-iteration-count: infinite;
+                animation-name: change;
+                animation-duration: 10s;
+                animation-iteration-count: infinite;
+            }
+
             .greet {
                 display: inline;
                 margin-bottom: 1rem;

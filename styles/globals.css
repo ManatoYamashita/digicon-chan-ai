@@ -72,10 +72,20 @@ footer {
   background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
   transition: background 0.5s;
 }
-.body-default > main {
-  animation: In .3s ease-in-out forwards;
+/* 画面全体を横から滑り込ませるので、視差効果を減らす設定のときは動かさない */
+@media (prefers-reduced-motion: no-preference) {
+  .body-default > main {
+    animation: In .3s ease-in-out forwards;
+  }
 }
-  
+/* 青いグラデーションや立ち絵の上に載るので、文字の後ろに暗い面を敷く。白い文字との対比を 6:1 以上に保つ */
+.body-default footer {
+  color: #fff;
+  background: rgba(0, 32, 72, 0.7);
+  padding: 1px 6px;
+  border-start-end-radius: 6px;
+}
+
   /* アニメーションを設定 */
   @keyframes In {
     0% {

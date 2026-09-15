@@ -9,9 +9,9 @@ import { Suspense } from 'react';
 import Analytics from './analytics';
 import Menu from '@/components/menu';
 
+// 可変フォントとして読み込む。weight を指定すると、同じファイルが 400 と 700 の2点に固定され、500/600/800/900 を指定しても近いウェイトで代用される
 const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["400", "700"],
   display: "swap",
   variable: "--font-nunito",
 });

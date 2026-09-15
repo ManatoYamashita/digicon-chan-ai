@@ -26,18 +26,24 @@ export default function Hello({ greets, msg1, msg2, title }: Props) {
     const phrasesRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        if (!phrasesRef.current) return;
+        const phrases = phrasesRef.current;
+        if (!phrases) return;
 
-        // フレーズのスケールアニメーション
-        gsap.fromTo(phrasesRef.current.children,
-            { scale: 0 },
-            {
-                scale: 1,
-                duration: 1,
-                stagger: 0.2,
-                ease: 'back.out(1.7)',
-            }
-        );
+        // フレーズのスケールアニメーション。視差効果を減らす設定のときは付けない
+        const mm = gsap.matchMedia();
+        mm.add("(prefers-reduced-motion: no-preference)", () => {
+            gsap.fromTo(phrases.children,
+                { scale: 0 },
+                {
+                    scale: 1,
+                    duration: 1,
+                    stagger: 0.2,
+                    ease: 'back.out(1.7)',
+                }
+            );
+        });
+
+        return () => mm.revert();
     }, { scope: phrasesRef });
 
     return (

@@ -3,7 +3,12 @@
     top: 0;
     left: 0;
     pointer-events: none;
-    animation: fadeIn 1s ease-in-out forwards;
+    // 視差効果を減らす設定のときは、下からせり上がる動きをやめてフェードだけにする
+    animation: fadeInOpacity 1s ease-in-out forwards;
+
+    @media (prefers-reduced-motion: no-preference) {
+        animation-name: fadeIn;
+    }
 
     .image {
         pointer-events: auto;
@@ -60,4 +65,9 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+@keyframes fadeInOpacity {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
