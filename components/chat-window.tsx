@@ -12,7 +12,8 @@ const EMOTION_ICON_MAP: Record<string, string> = {
   "哀": "/images/emotions/sad-icon.webp",
   "困": "/images/emotions/confuse-icon.webp",
   "照": "/images/emotions/surprise-icon.webp",
-  "default": "/images/emotions/default.webp",
+  // default.webp は全身のアニメーションなので、1フレーム目から顔を切り出したアイコンを使う
+  "default": "/images/emotions/default-icon.webp",
 };
 
 type Props = {
@@ -34,6 +35,7 @@ export default function ChatWindow({ messages, input, isLoading, error, onInputC
   const resetButtonRef = useRef<HTMLButtonElement>(null);
   const wasExhaustedRef = useRef(isSessionExhausted);
   const hintId = useId();
+  const exhaustedId = useId();
   const canSend = input.trim() !== "" && !isLoading;
 
   // 一覧だけをスクロールする。scrollIntoView はページごと動かし、overflow: hidden の body では戻せなくなる
@@ -147,10 +149,11 @@ export default function ChatWindow({ messages, input, isLoading, error, onInputC
       <div className={styles.inputArea}>
         {isSessionExhausted ? (
           <>
-            <p className={styles.exhausted}>
+            <p id={exhaustedId} className={styles.exhausted}>
               {maxPrompts}回お話ししたよ！続けるには会話をリセットしてね。これまでの会話は消えちゃうよ。
             </p>
-            <button ref={resetButtonRef} className={styles.resetBtn} onClick={onReset}>
+            {/* フォーカスが移ったときに、理由と会話が消えることも一緒に読み上げさせる */}
+            <button ref={resetButtonRef} className={styles.resetBtn} onClick={onReset} aria-describedby={exhaustedId}>
               会話をリセット
             </button>
           </>
