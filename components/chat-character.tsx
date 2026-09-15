@@ -23,13 +23,14 @@ export default function ChatCharacter({ emotion, imageSrc }: Props) {
   return (
     <div className={styles.character}>
       <div className={styles.imageWrap}>
+        {/* 立ち絵はアニメーション WebP。Next.js の画像最適化はどの幅でも元のファイルを返すだけなので、最適化を通さず静的ファイルとして配信する */}
         <Image
           src={imageSrc}
           fill
           alt={EMOTION_ALT[emotion]}
-          sizes="(max-width: 768px) 100vw, 40vw"
           className={styles.img}
           priority
+          unoptimized
         />
       </div>
     </div>
