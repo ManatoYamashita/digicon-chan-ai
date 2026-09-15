@@ -95,7 +95,11 @@ APIレスポンスの1文字目で感情を判定（`components/chat-page.tsx`�
 - **スタイル:** コンポーネントごとに `styles/*.module.scss` を使用
 - **クライアント/サーバー分離:** アニメーションやインタラクティブなコンポーネントは `"use client"` を明示
 - **アニメーション:** GSAP (ScrollTrigger, SplitText) はページレベル、framer-motion はUIコンポーネントレベルで使い分け
+  - 移動・拡大縮小・ループは `prefers-reduced-motion` に合わせる。GSAP は `gsap.matchMedia()` の `(prefers-reduced-motion: no-preference)` の中で付ける。CSS のアニメーションは `@media (prefers-reduced-motion: no-preference)` の中に書く。framer-motion は `MotionConfig reducedMotion="user"` で包む（#20、#22）
+  - 利用者の操作に対する短い反応（押したときの縮小、アイコンの切り替えなど）はそのままでよい
 - **ページ遷移:** View Transitions API で entry/exit アニメーションを定義（`styles/globals.css`）
+- **画像:** アニメーション WebP（`public/images/emotions/` の立ち絵）は `next/image` に `unoptimized` を付ける。画像最適化はどの幅でも元のファイルを返すだけで、幅ごとにキャッシュを作って無駄になる
+- **フォント:** Nunito は可変フォントとして読み込む（`weight` を指定しない）。指定すると 400 と 700 に固定され、他のウェイトは近いもので代用される
 
 ## 環境変数
 
