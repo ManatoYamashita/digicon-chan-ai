@@ -49,59 +49,70 @@ const SplitText: React.FC<SplitTextProps> = ({
     const el = containerRef.current;
     if (!el) return;
 
-    const split = new GSAPSplitText(el, {
-      type: splitType,
-      charsClass: 'split-char',
-      wordsClass: 'split-word',
-      linesClass: 'split-line',
+    const mm = gsap.matchMedia();
+
+    // 視差効果を減らす設定のときは文字を分割せず、そのまま表示する
+    mm.add('(prefers-reduced-motion: reduce)', () => {
+      if (onLetterAnimationComplete) onLetterAnimationComplete();
     });
 
-    // splitType に応じてアニメーション対象要素を選択
-    let targets: Element[];
-    if (splitType === 'chars') {
-      targets = split.chars;
-    } else if (splitType === 'words') {
-      targets = split.words;
-    } else if (splitType === 'lines') {
-      targets = split.lines;
-    } else {
-      targets = split.chars;
-    }
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const split = new GSAPSplitText(el, {
+        type: splitType,
+        charsClass: 'split-char',
+        wordsClass: 'split-word',
+        linesClass: 'split-line',
+      });
 
-    // overflow hidden を親に設定してクリッピング
-    gsap.set(el, { overflow: 'hidden' });
+      // splitType に応じてアニメーション対象要素を選択
+      let targets: Element[];
+      if (splitType === 'chars') {
+        targets = split.chars;
+      } else if (splitType === 'words') {
+        targets = split.words;
+      } else if (splitType === 'lines') {
+        targets = split.lines;
+      } else {
+        targets = split.chars;
+      }
 
-    const tweenVars: gsap.TweenVars = {
-      ...to,
-      duration,
-      stagger: delay / 1000,
-      ease,
-      onComplete: () => {
-        if (onLetterAnimationComplete) onLetterAnimationComplete();
-      },
-    };
+      // overflow hidden を親に設定してクリッピング
+      gsap.set(el, { overflow: 'hidden' });
 
-    if (useScrollTrigger) {
-      // ScrollTrigger でスクロール連動アニメーション
-      gsap.fromTo(targets, from, {
-        ...tweenVars,
-        scrollTrigger: {
-          trigger: el,
-          start: `top bottom${rootMargin}`,
-          toggleActions: 'play none none none',
+      const tweenVars: gsap.TweenVars = {
+        ...to,
+        duration,
+        stagger: delay / 1000,
+        ease,
+        onComplete: () => {
+          if (onLetterAnimationComplete) onLetterAnimationComplete();
         },
-      });
-    } else {
-      // スクロールトリガーなし（ページ上部の要素向け）
-      gsap.fromTo(targets, from, {
-        ...tweenVars,
-        delay: initialDelay,
-      });
-    }
+      };
 
-    return () => {
-      split.revert();
-    };
+      if (useScrollTrigger) {
+        // ScrollTrigger でスクロール連動アニメーション
+        gsap.fromTo(targets, from, {
+          ...tweenVars,
+          scrollTrigger: {
+            trigger: el,
+            start: `top bottom${rootMargin}`,
+            toggleActions: 'play none none none',
+          },
+        });
+      } else {
+        // スクロールトリガーなし（ページ上部の要素向け）
+        gsap.fromTo(targets, from, {
+          ...tweenVars,
+          delay: initialDelay,
+        });
+      }
+
+      return () => {
+        split.revert();
+      };
+    });
+
+    return () => mm.revert();
   }, { scope: containerRef, dependencies: [text] });
 
   return (
