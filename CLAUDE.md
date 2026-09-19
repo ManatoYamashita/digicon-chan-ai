@@ -50,14 +50,42 @@ ChatPage (状態管理: messages, emotion, error)
   → ChatWindow (入力・メッセージ表示)
     → POST /api/gemini (messages配列を送信)
       → Gemini API (OpenAI互換エンドポイント)
+      → describeEmotionHeader (遵守率の計測のみ。応答は変えない)
     → parseEmotionResponse (レスポンス1文字目から感情を抽出)
   → ChatCharacter (感情に応じた画像切り替え)
 ```
 
 ### 感情表現システム
 
-APIレスポンスの1文字目で感情を判定（`components/chat-page.tsx`）:
+APIレスポンスの1文字目で感情を判定する。判定は `lib/emotion.ts` の `parseEmotionResponse` 1か所だけで行い、サーバー（計測）とクライアント（立ち絵の切り替え）で共有する。別々に判定するとログの数字と画面の挙動がずれる（#26）。
+
 - `楽` `怒` `哀` `困` `照` → 対応する感情画像に切り替え（7秒後にdefaultへ戻る）
+- 1文字目がどれでもなければ `default`。「フォーマットが崩れた」場合と「感情が付かなかった」場合の両方を含み、区別はしない
+
+`/api/gemini` は返却の直前に、判定結果を `Emotion header: <感情>` として本番でも記録する（`lib/emotion.ts` の `describeEmotionHeader`）。利用者の入力も返答の本文も残さない。記録されるのは次の形だけ。
+
+| 記録 | 意味 | 画面 |
+|---|---|---|
+| `楽` | 整った返答 | 楽の立ち絵 |
+| `楽 (empty body)` | 感情はあるが本文が空 | **困の立ち絵**。`fail` がエラー表示に切り替える |
+| `default (no emotion char in line 1)` | 1行目に感情の一文字が無い | default の立ち絵 |
+| `default (emotion char at 2)` | 感情はあるが前に2文字付いている（例: `**楽`） | default の立ち絵 |
+
+**`default` の割合は「立ち絵が切り替わらなかった割合」と等しくない。** 本文が空の返答は、感情が取れていても画面では `困` になる（`components/chat-page.tsx` の `fail`）。立ち絵の実態を知るには `(empty body)` の付いた行を別に数える。
+
+`default (emotion char at N)` が多いなら、解析を緩めれば拾える崩れ方だと分かる。`no emotion char in line 1` が多いなら、モデルがそもそも感情を書いていない。再デプロイせずに切り分けられる。
+
+```bash
+# Hobby の本番ランタイムログは1時間しか残らない。--since はそれより長くしても意味が無い
+vercel logs --project dcchan --scope yamashitamanato --environment production --no-branch --since 1h --json \
+  | jq -r 'select((.message // "") | startswith("Emotion header: ")) | .message | sub("^Emotion header: "; "") | sub(" \\(.*\\)$"; "")' \
+  | sort | uniq -c | sort -rn
+```
+
+> **ログの保持期間に注意。** Vercel のランタイムログは Hobby で **1時間**（Pro 1日 / Enterprise 3日 / Observability Plus 30日）。
+> 数日ぶんを溜めて一度に集計することはできない。期間を伸ばすには Log Drain を入れるか、保持期間の内側で定期的に採取して自分で足し込む。
+
+感情判定の方式を変えるときは、まずこの数字を見る。崩れが観測されないなら、置き換えても勝ち目が無い（#26 に n=30 の実測がある）。
 
 ### APIルート (`app/api/gemini/route.ts`)
 

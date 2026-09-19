@@ -3,10 +3,11 @@
 import { useRef, useEffect, useId, type KeyboardEvent } from "react";
 import Image from "next/image";
 import type { ChatMessage } from "@/components/chat-page";
+import type { Emotion } from "@/lib/emotion";
 import { MAX_USER_CONTENT_LENGTH } from "@/lib/chat-request";
 import styles from "@/styles/chat-window.module.scss";
 
-const EMOTION_ICON_MAP: Record<string, string> = {
+const EMOTION_ICON_MAP: Record<Emotion, string> = {
   "楽": "/images/emotions/happy-icon.webp",
   "怒": "/images/emotions/angry-icon.webp",
   "哀": "/images/emotions/sad-icon.webp",
@@ -93,7 +94,7 @@ export default function ChatWindow({ messages, input, isLoading, error, onInputC
               <span className={styles.avatar}>
                 <Image
                   className={styles.avatarImg}
-                  src={EMOTION_ICON_MAP[msg.emotion ?? ""] ?? EMOTION_ICON_MAP.default}
+                  src={EMOTION_ICON_MAP[msg.emotion ?? "default"]}
                   alt="でじこんちゃん"
                   width={28}
                   height={28}

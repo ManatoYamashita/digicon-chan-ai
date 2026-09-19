@@ -4,13 +4,13 @@ import { useState, useRef, useCallback, useEffect, ViewTransition } from "react"
 import ChatWindow from "@/components/chat-window";
 import ChatCharacter from "@/components/chat-character";
 import { MAX_PROMPTS } from "@/lib/chat-request";
+import { parseEmotionResponse, type Emotion } from "@/lib/emotion";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import styles from "@/styles/chat-page.module.scss";
 
 gsap.registerPlugin(useGSAP);
 
-export type Emotion = "楽" | "怒" | "哀" | "困" | "照" | "default";
 
 export type ChatMessage = {
   id: string;
@@ -20,7 +20,7 @@ export type ChatMessage = {
   timestamp: number;
 };
 
-const EMOTION_MAP: Record<string, string> = {
+const EMOTION_MAP: Record<Emotion, string> = {
   "楽": "/images/emotions/happy.webp",
   "怒": "/images/emotions/angry.webp",
   "哀": "/images/emotions/confuse.webp",
@@ -29,7 +29,7 @@ const EMOTION_MAP: Record<string, string> = {
   default: "/images/emotions/default.webp",
 };
 
-const EMOTION_LABEL: Record<Emotion | "default", string> = {
+const EMOTION_LABEL: Record<Emotion, string> = {
   "楽": "(≧▽≦)",
   "怒": "(｀Д´)ﾉ",
   "哀": "(´；ω；`)",
@@ -55,17 +55,6 @@ const RESIZE_STEP = 16;
 function maxWindowWidth(): number {
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   return Math.max(MIN_WINDOW_WIDTH, Math.floor(window.innerWidth / 2 - 4 * rem));
-}
-
-function parseEmotionResponse(raw: string): { emotion: Emotion; text: string } {
-  const trimmed = raw.trim();
-  const firstChar = trimmed.charAt(0);
-  if (["楽", "怒", "哀", "困", "照"].includes(firstChar)) {
-    const newlineIndex = trimmed.indexOf("\n");
-    const text = newlineIndex !== -1 ? trimmed.slice(newlineIndex + 1).trim() : trimmed.slice(1).trim();
-    return { emotion: firstChar as Emotion, text };
-  }
-  return { emotion: "default", text: trimmed };
 }
 
 export default function ChatPage() {
@@ -335,7 +324,8 @@ export default function ChatPage() {
     }
   }, [input, isLoading, messages, updateEmotion, userMessageCount]);
 
-  const emotionImage = EMOTION_MAP[currentEmotion] || EMOTION_MAP.default;
+  // Record<Emotion, string> なので currentEmotion のどの値でも必ず引ける
+  const emotionImage = EMOTION_MAP[currentEmotion];
 
   return (
     <div ref={chatPageRef} className={styles.chatPage}>
