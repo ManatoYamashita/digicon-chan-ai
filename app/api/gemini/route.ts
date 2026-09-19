@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { parseChatRequest, type ChatRequestError } from '@/lib/chat-request';
 import { createGeminiClient, withRetry } from '@/lib/gemini-client';
-import { parseEmotionResponse } from '@/lib/emotion';
+import { EMOTIONS, describeEmotionHeader } from '@/lib/emotion';
 
 const setting = `
     # 命令文
@@ -10,7 +10,7 @@ const setting = `
     * キャラクターの特性を分析して対象の視点から回答すること
     * 対象の特性に基づいた情報や視点から回答すること
     * "東京都市大学デジタルコンテンツ研究会"と"デジコン"は同義で、"でじこんちゃん"は必ずひらがなで表記すること
-    * 必ず回答の一行目には["楽", "怒", "哀", "困", "照"]のいずれかの感情を表す一文字を記述し、本文は2行目から記述してください。なお、感情の表記の前後に余計なスペースや句点、読点を含めないでください。
+    * 必ず回答の一行目には["${EMOTIONS.join('", "')}"]のいずれかの感情を表す一文字を記述し、本文は2行目から記述してください。なお、感情の表記の前後に余計なスペースや句点、読点を含めないでください。
     * 感情の後には余計な句読点や空白を入れず、改行した後に本文は2行目から記述してください。
     * 返答は画面にそのまま表示されるので、Markdown記法（**太字**、行頭の * や - による箇条書き、# の見出し）は使わず、プレーンテキストで書くこと。箇条書きにしたいときは行頭に「・」を使うこと
     * 山下マナトは聖乳くるみ(赤瀬みく)のファンで、でじこんちゃんに特別な感情を抱いていた。
@@ -159,11 +159,18 @@ export async function POST(request: Request) {
         const response = completion.choices[0].message;
         const usage = completion.usage ?? null;
 
-        // 感情ヘッダーの遵守率を本番で測る (#26)。default の割合が、そのまま画面で立ち絵が
-        // 切り替わらなかった割合になる。判定はクライアントと同じ parseEmotionResponse を使う。
+        // 感情ヘッダーの遵守率を本番で測る (#26)。この console.info だけは isDev で囲まず、
+        // 本番でも出す。ほかの console.log はすべて開発時のみ。
         // 利用者の入力も返答の本文も残さず、判定の結果だけを記録する
-        const { emotion, text: replyBody } = parseEmotionResponse(response.content ?? '');
-        console.log(`Emotion header: ${emotion}${replyBody ? '' : ' (empty body)'}`);
+        try {
+            // content は型では string だが、上流の互換レイヤーが別の形を返す可能性がある。
+            // クライアントも同じ理由で typeof を見ている (components/chat-page.tsx)。
+            // 計測はあくまで診断なので、ここで throw して成功した返答を 500 に変えてはいけない
+            const content = typeof response.content === 'string' ? response.content : '';
+            console.info(`Emotion header: ${describeEmotionHeader(content)}`);
+        } catch (e) {
+            console.warn('Emotion header logging failed:', e);
+        }
 
         if (isDev) {
             console.log('クライアントに返すレスポンス:', JSON.stringify(response, null, 2));

@@ -16,19 +16,48 @@ function isEmotionChar(value: string): value is EmotionChar {
 }
 
 /**
- * 返答の1行目から感情の一文字を取り出し、本文と分ける。
+ * 返答の先頭から感情の一文字を取り出し、残りを本文として返す。
  *
  * 1文字目が5つのいずれでもなければ `default` を返す。これは「フォーマットが崩れた」場合と
  * 「そもそも感情が付かなかった」場合の両方を含み、区別はしない。画面ではどちらも
  * 既定の立ち絵になるため、扱いが同じで良い。
+ *
+ * 本文は1文字目を落とした残り全体で、改行の有無を問わない。「1行目は感情の一文字だけ」と
+ * 仮定して最初の改行までを捨てると、モデルが同じ行に本文を続けたとき (例: `楽やっほー！\n…`)
+ * その分が黙って消える。
  */
 export function parseEmotionResponse(raw: string): { emotion: Emotion; text: string } {
   const trimmed = raw.trim();
   const firstChar = trimmed.charAt(0);
   if (isEmotionChar(firstChar)) {
-    const newlineIndex = trimmed.indexOf("\n");
-    const text = newlineIndex !== -1 ? trimmed.slice(newlineIndex + 1).trim() : trimmed.slice(1).trim();
-    return { emotion: firstChar, text };
+    return { emotion: firstChar, text: trimmed.slice(1).trim() };
   }
   return { emotion: "default", text: trimmed };
+}
+
+/**
+ * 本番ログに残す1行を組み立てる (#26)。
+ *
+ * 返答の本文も利用者の入力も含めない。残すのは次の3つだけ。
+ * - 判定された感情、または `default`
+ * - 本文が空かどうか。空の場合、画面はこの感情ではなく `困` を出してエラー表示に切り替わる
+ *   （`components/chat-page.tsx` の `fail`）ので、ログと画面が一致しない行として区別する
+ * - `default` のとき、感情の一文字が1行目のどこかに現れるかと、その位置。
+ *   0 より大きければ「感情は書かれたが前に何かが付いている」（例: `「楽」`、`**楽`）と分かり、
+ *   解析を緩める余地があるのか、そもそも感情が無いのかを、再デプロイせずに切り分けられる
+ */
+export function describeEmotionHeader(raw: string): string {
+  const { emotion, text } = parseEmotionResponse(raw);
+  const notes: string[] = [];
+
+  if (emotion === "default") {
+    const firstLine = raw.trim().split("\n", 1)[0] ?? "";
+    const at = [...firstLine].findIndex((char) => isEmotionChar(char));
+    notes.push(at === -1 ? "no emotion char in line 1" : `emotion char at ${at}`);
+  }
+  if (!text) {
+    notes.push("empty body");
+  }
+
+  return notes.length > 0 ? `${emotion} (${notes.join(", ")})` : emotion;
 }

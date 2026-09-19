@@ -11,8 +11,6 @@ import styles from "@/styles/chat-page.module.scss";
 
 gsap.registerPlugin(useGSAP);
 
-// chat-character.tsx が "@/components/chat-page" から取っているので、ここから再輸出する
-export type { Emotion };
 
 export type ChatMessage = {
   id: string;
@@ -22,7 +20,7 @@ export type ChatMessage = {
   timestamp: number;
 };
 
-const EMOTION_MAP: Record<string, string> = {
+const EMOTION_MAP: Record<Emotion, string> = {
   "楽": "/images/emotions/happy.webp",
   "怒": "/images/emotions/angry.webp",
   "哀": "/images/emotions/confuse.webp",
@@ -31,7 +29,7 @@ const EMOTION_MAP: Record<string, string> = {
   default: "/images/emotions/default.webp",
 };
 
-const EMOTION_LABEL: Record<Emotion | "default", string> = {
+const EMOTION_LABEL: Record<Emotion, string> = {
   "楽": "(≧▽≦)",
   "怒": "(｀Д´)ﾉ",
   "哀": "(´；ω；`)",
@@ -326,7 +324,8 @@ export default function ChatPage() {
     }
   }, [input, isLoading, messages, updateEmotion, userMessageCount]);
 
-  const emotionImage = EMOTION_MAP[currentEmotion] || EMOTION_MAP.default;
+  // Record<Emotion, string> なので currentEmotion のどの値でも必ず引ける
+  const emotionImage = EMOTION_MAP[currentEmotion];
 
   return (
     <div ref={chatPageRef} className={styles.chatPage}>

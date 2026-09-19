@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { Emotion } from "@/components/chat-page";
+import type { Emotion } from "@/lib/emotion";
 import styles from "@/styles/chat-character.module.scss";
 
 // 画像が伝える表情を言葉にする。感情のキー (楽・default など) をそのまま読ませない
