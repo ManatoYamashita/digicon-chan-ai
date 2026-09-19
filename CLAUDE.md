@@ -56,8 +56,20 @@ ChatPage (状態管理: messages, emotion, error)
 
 ### 感情表現システム
 
-APIレスポンスの1文字目で感情を判定（`components/chat-page.tsx`）:
+APIレスポンスの1文字目で感情を判定する。判定は `lib/emotion.ts` の `parseEmotionResponse` 1か所だけで行い、サーバー（計測）とクライアント（立ち絵の切り替え）で共有する。別々に判定するとログの数字と画面の挙動がずれる（#26）。
+
 - `楽` `怒` `哀` `困` `照` → 対応する感情画像に切り替え（7秒後にdefaultへ戻る）
+- 1文字目がどれでもなければ `default`。「フォーマットが崩れた」場合と「感情が付かなかった」場合の両方を含み、区別はしない
+
+`/api/gemini` は返却の直前に判定結果を `Emotion header: <感情>` として本番でも記録する。利用者の入力も返答の本文も残さない。`default` の割合が、そのまま画面で立ち絵が切り替わらなかった割合になる。
+
+```bash
+vercel logs --project dcchan --scope yamashitamanato --environment production --no-branch --since 7d --json \
+  | jq -r 'select((.message // "") | startswith("Emotion header:")) | .message' \
+  | sort | uniq -c | sort -rn
+```
+
+感情判定の方式を変えるときは、まずこの数字を見る。崩れが観測されないなら、置き換えても勝ち目が無い（#26 に n=30 の実測がある）。
 
 ### APIルート (`app/api/gemini/route.ts`)
 

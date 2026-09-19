@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { parseChatRequest, type ChatRequestError } from '@/lib/chat-request';
 import { createGeminiClient, withRetry } from '@/lib/gemini-client';
+import { parseEmotionResponse } from '@/lib/emotion';
 
 const setting = `
     # 命令文
@@ -157,6 +158,13 @@ export async function POST(request: Request) {
 
         const response = completion.choices[0].message;
         const usage = completion.usage ?? null;
+
+        // 感情ヘッダーの遵守率を本番で測る (#26)。default の割合が、そのまま画面で立ち絵が
+        // 切り替わらなかった割合になる。判定はクライアントと同じ parseEmotionResponse を使う。
+        // 利用者の入力も返答の本文も残さず、判定の結果だけを記録する
+        const { emotion, text: replyBody } = parseEmotionResponse(response.content ?? '');
+        console.log(`Emotion header: ${emotion}${replyBody ? '' : ' (empty body)'}`);
+
         if (isDev) {
             console.log('クライアントに返すレスポンス:', JSON.stringify(response, null, 2));
         }

@@ -4,13 +4,15 @@ import { useState, useRef, useCallback, useEffect, ViewTransition } from "react"
 import ChatWindow from "@/components/chat-window";
 import ChatCharacter from "@/components/chat-character";
 import { MAX_PROMPTS } from "@/lib/chat-request";
+import { parseEmotionResponse, type Emotion } from "@/lib/emotion";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import styles from "@/styles/chat-page.module.scss";
 
 gsap.registerPlugin(useGSAP);
 
-export type Emotion = "楽" | "怒" | "哀" | "困" | "照" | "default";
+// chat-character.tsx が "@/components/chat-page" から取っているので、ここから再輸出する
+export type { Emotion };
 
 export type ChatMessage = {
   id: string;
@@ -55,17 +57,6 @@ const RESIZE_STEP = 16;
 function maxWindowWidth(): number {
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   return Math.max(MIN_WINDOW_WIDTH, Math.floor(window.innerWidth / 2 - 4 * rem));
-}
-
-function parseEmotionResponse(raw: string): { emotion: Emotion; text: string } {
-  const trimmed = raw.trim();
-  const firstChar = trimmed.charAt(0);
-  if (["楽", "怒", "哀", "困", "照"].includes(firstChar)) {
-    const newlineIndex = trimmed.indexOf("\n");
-    const text = newlineIndex !== -1 ? trimmed.slice(newlineIndex + 1).trim() : trimmed.slice(1).trim();
-    return { emotion: firstChar as Emotion, text };
-  }
-  return { emotion: "default", text: trimmed };
 }
 
 export default function ChatPage() {
