@@ -1,4 +1,5 @@
 import AboutPage from "@/components/about-page";
+import { SITE_URL } from '@/lib/site';
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'About | でじこんちゃん.net',
     description: 'でじこんちゃんのプロフィールと東京都市大学デジタルコンテンツ研究会の紹介ページです。',
-    url: 'https://でじこんちゃん.net/about',
+    url: `${SITE_URL}/about`,
     images: [
       {
         url: '/ogp.jpg',
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     description: 'でじこんちゃんのプロフィールと東京都市大学デジタルコンテンツ研究会の紹介。',
   },
   alternates: {
-    canonical: 'https://でじこんちゃん.net/about',
+    canonical: `${SITE_URL}/about`,
   },
 };
 

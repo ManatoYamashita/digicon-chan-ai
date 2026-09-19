@@ -8,8 +8,8 @@ import { Suspense } from 'react';
 
 import Analytics from './analytics';
 import Menu from '@/components/menu';
+import { SITE_URL } from '@/lib/site';
 
-const SITE_URL = 'https://でじこんちゃん.net';
 const SEARCH_THUMBNAIL_URL = `${SITE_URL}/images/gallery/dcchan-square.webp`;
 const SEARCH_THUMBNAIL: ImageObject = {
   "@type": "ImageObject",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ「でじこんちゃん」です。',
-    url: 'https://でじこんちゃん.net',
+    url: SITE_URL,
     siteName: 'でじこんちゃん.net',
     images: [
       {
@@ -96,9 +96,9 @@ export const metadata: Metadata = {
     }
   },
   alternates: {
-    canonical: 'https://でじこんちゃん.net',
+    canonical: SITE_URL,
     languages: {
-      'ja': 'https://でじこんちゃん.net',
+      'ja': SITE_URL,
     }
   },
 }
@@ -118,8 +118,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       "name": "でじこんちゃん",
       "alternateName": ["デジコンちゃん", "Digicon-chan", "DC-chan", "デジコン"],
       "additionalName": "でじこんちゃん",
-      "identifier": "https://でじこんちゃん.net",
-      "url": "https://でじこんちゃん.net",
+      "identifier": SITE_URL,
+      "url": SITE_URL,
       "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ / Tokyo City University Digital Content Study Society's official virtual concierge",
       "image": SEARCH_THUMBNAIL,
       "birthDate": "2014-06-04",
@@ -161,7 +161,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       "url": "https://tcu-dc.net",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://でじこんちゃん.net/images/icons/dcchan-icon.webp",
+        "url": `${SITE_URL}/images/icons/dcchan-icon.webp`,
         "width": "192",
         "height": "192"
       }
@@ -172,7 +172,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "でじこんちゃん.net",
-    "url": "https://でじこんちゃん.net",
+    "url": SITE_URL,
     "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュサイト",
     "publisher": {
       "@type": "Organization",

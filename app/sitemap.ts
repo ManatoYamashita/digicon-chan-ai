@@ -1,23 +1,22 @@
 import { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/site'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://でじこんちゃん.net'
-
   return [
     {
-      url: baseUrl,
+      url: SITE_URL,
       lastModified: new Date('2026-03-08'),
       changeFrequency: 'monthly',
       priority: 1,
     },
     {
-      url: `${baseUrl}/chat`,
+      url: `${SITE_URL}/chat`,
       lastModified: new Date('2026-03-08'),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/about`,
+      url: `${SITE_URL}/about`,
       lastModified: new Date('2026-03-08'),
       changeFrequency: 'monthly',
       priority: 0.8,
