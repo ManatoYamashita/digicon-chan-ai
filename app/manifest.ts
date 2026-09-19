@@ -11,9 +11,9 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#ff91a4',
     icons: [
       {
-        src: '/images/icons/dcchan-icon.webp',
-        sizes: '192x192',
-        type: 'image/webp',
+        src: '/favicon.png',
+        sizes: '500x500',
+        type: 'image/png',
       },
     ],
   }
