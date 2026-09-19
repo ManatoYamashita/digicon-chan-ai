@@ -1,4 +1,5 @@
 import ChatPage from "@/components/chat-page";
+import { SITE_URL } from '@/lib/site';
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Chat | でじこんちゃん.net',
     description: 'でじこんちゃんとAIチャットで会話しよう。東京都市大学デジタルコンテンツ研究会や大学生活について気軽に質問できます。',
-    url: 'https://でじこんちゃん.net/chat',
+    url: `${SITE_URL}/chat`,
     images: [
       {
         url: '/ogp.jpg',
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     description: 'でじこんちゃんとAIチャットで会話しよう。',
   },
   alternates: {
-    canonical: 'https://でじこんちゃん.net/chat',
+    canonical: `${SITE_URL}/chat`,
   },
 };
 
