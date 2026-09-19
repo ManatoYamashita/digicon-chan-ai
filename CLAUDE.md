@@ -117,6 +117,33 @@ BASE_URL                # サイトURL
 NEXT_PUBLIC_GA_MEASUREMENT_ID  # Google Analytics測定ID
 ```
 
+## リモート構成
+
+このリポジトリには push 先が2つある。混同すると、Issue や PR が誰にも見えない場所に出来上がる。
+
+| リモート | リポジトリ | 役割 |
+|---|---|---|
+| `origin` | `ManatoYamashita/digicon-chan-ai` | **開発の正**。Issue・PR・Vercel のデプロイはすべてこちら |
+| `org` | `TCU-DC/digicon-chan-ai` | **公開用のミラー**。CI もデプロイも無い（Actions・Pages・Webhook いずれも未設定） |
+
+`main` へマージしたら、ミラーにも追従させる。
+
+```bash
+# 左が 0 であることを必ず確認する。0 でなければ fast-forward にならない
+git fetch org && git rev-list --left-right --count org/main...origin/main
+git push org origin/main:main
+```
+
+左が 0 にならない場合は、ミラー側に直接コミットが入っている。上書きせず、何が入ったかを確かめてから決める。
+
+LFS を使っているので、ミラーへ push する前に転送対象に LFS ポインタが含まれないかも見る。含まれる場合、ミラー側の LFS ストレージへアップロードが走る。
+
+```bash
+git log --diff-filter=A --oneline org/main..origin/main -- '*.mov' '*.webm'
+```
+
+TCU-DC 側の Dependabot は、pnpm へ移行する前の `package-lock.json` を指したアラートを抱えている。マニフェスト自体が存在しないので実体は無い。push のたびに警告が出るが、対応不要。
+
 ## デプロイ
 
 - **Vercel** にデプロイ
