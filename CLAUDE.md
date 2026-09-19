@@ -101,6 +101,13 @@ APIレスポンスの1文字目で感情を判定（`components/chat-page.tsx`�
 - **画像:** アニメーション WebP（`public/images/emotions/` の立ち絵）は `next/image` に `unoptimized` を付ける。画像最適化はどの幅でも元のファイルを返すだけで、幅ごとにキャッシュを作って無駄になる
 - **フォント:** Nunito は可変フォントとして読み込む（`weight` を指定しない）。指定すると 400 と 700 に固定され、他のウェイトは近いもので代用される
 
+## SEO・検索結果メタデータ
+
+- JSON-LD は `next/script` ではなく、Server Component 内のネイティブな `<script type="application/ld+json">` で初期HTMLへ出力する。`JSON.stringify` の結果は `<` を `\u003c` に置換してから埋め込む
+- Google検索結果で優先したい画像は、構造化データの `primaryImageOfPage` とメインエンティティの `image` に同じ不透明画像を指定する。Google非対応の `meta name="thumbnail"` には依存しない
+- `icon`、`shortcut icon`、`apple-touch-icon`、Web App Manifest のアイコンは同じ図柄に統一する。Google検索用faviconは正方形かつ48px超の安定したURLを使う
+- 検索結果の画像とfaviconはGoogleによる自動選択であり、デプロイ直後には変わらない。デプロイ後にSearch ConsoleのURL検査からトップページの再インデックスを依頼し、数日から数週間後に確認する
+
 ## 環境変数
 
 ```
