@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import BodyClass from "@/components/body-class";
 import ChatWindow from "@/components/chat-window";
 import ChatCharacter from "@/components/chat-character";
 import { MAX_PROMPTS } from "@/lib/chat-request";
@@ -167,14 +168,6 @@ export default function ChatPage() {
     }
   }, []);
 
-  // body-chat クラス付与
-  useEffect(() => {
-    document.body.classList.add("body-chat");
-    return () => {
-      document.body.classList.remove("body-chat");
-    };
-  }, []);
-
   // タイマークリーンアップ
   useEffect(() => {
     return () => {
@@ -330,6 +323,7 @@ export default function ChatPage() {
 
   return (
     <div ref={chatPageRef} className={styles.chatPage}>
+      <BodyClass name="body-chat" />
       <div className={styles.remainingBadge}>
         <span className={styles.remainingLabel}>残り</span>
         <span className={styles.remainingNumber}>{Math.max(MAX_PROMPTS - userMessageCount, 0)}</span>

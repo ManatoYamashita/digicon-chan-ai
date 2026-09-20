@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { ComponentType } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import BodyClass from "@/components/body-class";
 import SplitText from "@/components/SplitText";
 import TiltedCard from "@/components/tilted-card";
 import Folder, { MAX_FOLDER_ITEMS } from "@/components/folder";
@@ -122,14 +123,6 @@ export default function AboutPage() {
       )),
     [pickedEmotionIcons]
   );
-
-  // body class
-  useEffect(() => {
-    document.body.classList.add("body-about");
-    return () => {
-      document.body.classList.remove("body-about");
-    };
-  }, []);
 
   useGSAP(
     () => {
@@ -276,6 +269,8 @@ export default function AboutPage() {
 
   return (
     <>
+      <BodyClass name="body-about" />
+
       {/* ── Background Orbs ── */}
       <div ref={orbsRef} className={styles.bgOrbs}>
         <div className={styles.orb} />

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import BodyClass from "@/components/body-class";
 
 gsap.registerPlugin(useGSAP);
 
@@ -83,12 +84,10 @@ export default function PageAnimations({ children }: Props) {
     return () => mm.revert();
   }, { scope: containerRef });
 
-  useEffect(() => {
-    document.body.classList.add("body-default");
-    return () => {
-      document.body.classList.remove("body-default");
-    };
-  }, []);
-
-  return <div ref={containerRef}>{children}</div>;
+  return (
+    <div ref={containerRef}>
+      <BodyClass name="body-default" />
+      {children}
+    </div>
+  );
 }

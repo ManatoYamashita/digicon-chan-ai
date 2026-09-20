@@ -67,10 +67,14 @@ footer {
     inset-block-start: auto;
 }
 
+/* ページ間の背景の切り替えは View Transition の root グループのクロスフェードに任せる。
+   body に transition: background を足してはいけない。::view-transition-new は live 表現
+   なので実 DOM の遷移がその上で別途走り、クロスフェードと二重掛けになる。さらに
+   linear-gradient と repeating-linear-gradient のスタックは補間できず 50% 地点で
+   離散的に切り替わるため、背景が二段階に変わって見える (#40) */
 .body-default {
   background-color: black;
   background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
-  transition: background 0.5s;
 }
 /* 青いグラデーションや立ち絵の上に載るので、文字の後ろに暗い面を敷く。白い文字との対比を 6:1 以上に保つ */
 .body-default footer {
@@ -157,7 +161,6 @@ footer {
       transparent var(--grid-size)
     ),
     linear-gradient(147deg, #e8f4f8 0%, #d1e8f0 74%);
-  transition: background 0.5s;
 }
 /* 既定のフッター色 (rgb(200, 200, 200)) は明るい背景だと 1.3:1 まで落ちる */
 .body-chat footer {
