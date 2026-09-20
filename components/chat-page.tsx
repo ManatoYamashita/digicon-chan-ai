@@ -5,6 +5,7 @@ import ChatWindow from "@/components/chat-window";
 import ChatCharacter from "@/components/chat-character";
 import { MAX_PROMPTS } from "@/lib/chat-request";
 import { parseEmotionResponse, type Emotion } from "@/lib/emotion";
+import { describeRetryAfter } from "@/lib/rate-limit";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import styles from "@/styles/chat-page.module.scss";
@@ -40,7 +41,7 @@ const EMOTION_LABEL: Record<Emotion, string> = {
 
 // 送信に失敗したときは発言を履歴から外して入力欄へ戻すので、回数は減らない。そのことと次の手を必ず添える
 function restoredNote(retryAfter: number | null): string {
-  const next = retryAfter ? `${retryAfter}秒くらい待ってから、もう一度送ってね！` : "もう一度送ってね！";
+  const next = retryAfter ? `${describeRetryAfter(retryAfter)}待ってから、もう一度送ってね！` : "もう一度送ってね！";
   return `送れなかったメッセージは入力欄に戻したよ。回数は減ってないから、${next}`;
 }
 const NETWORK_ERROR = "ごめんね、通信がうまくいかなかったみたい…。";

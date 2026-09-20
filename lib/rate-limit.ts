@@ -97,3 +97,16 @@ export function createRateLimiter({
     },
   };
 }
+
+/**
+ * Retry-After の秒数を、画面にそのまま出せる言い方に直す。
+ *
+ * 窓が分と1日の2つあるので、秒のまま表示すると1日の上限に当たったときに
+ * 「86340秒くらい待ってから」になる。そもそもこの数え方はインスタンスごとなので、
+ * 秒の精度に意味は無い。単位を丸めて読める形にする。
+ */
+export function describeRetryAfter(seconds: number): string {
+  if (seconds < 60) return `${seconds}秒くらい`;
+  if (seconds < 60 * 60) return `${Math.ceil(seconds / 60)}分くらい`;
+  return "しばらく";
+}

@@ -1,6 +1,6 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { createRateLimiter } from "./rate-limit.ts";
+import { createRateLimiter, describeRetryAfter } from "./rate-limit.ts";
 
 /** 時計を手で進められるレート制限を作る */
 function withClock(opts: { rpm?: number; rpd?: number } = {}) {
@@ -107,5 +107,32 @@ describe("createRateLimiter: 記録の扱い", () => {
     fill(1);
     // 古い10件は捨てられているので、1日の上限には 1 件しか効いていない
     assert.equal(limiter.check().limited, false);
+  });
+});
+
+describe("describeRetryAfter: 画面に出す待ち時間", () => {
+  test("1分未満は秒で言う", () => {
+    assert.equal(describeRetryAfter(1), "1秒くらい");
+    assert.equal(describeRetryAfter(54), "54秒くらい");
+    assert.equal(describeRetryAfter(59), "59秒くらい");
+  });
+
+  test("1分以上1時間未満は分で言う。端数は切り上げる", () => {
+    assert.equal(describeRetryAfter(60), "1分くらい");
+    assert.equal(describeRetryAfter(61), "2分くらい");
+    assert.equal(describeRetryAfter(3599), "60分くらい");
+  });
+
+  test("1時間以上は数えない。秒の精度に意味が無いため", () => {
+    assert.equal(describeRetryAfter(3600), "しばらく");
+    assert.equal(describeRetryAfter(86340), "しばらく");
+  });
+
+  test("1日の上限に当たっても「86340秒くらい待って」とは言わない", () => {
+    const { limiter, fill } = withClock({ rpm: 1000, rpd: 3 });
+    fill(3);
+    const r = limiter.check();
+    assert.equal(r.limited && r.scope, "day");
+    assert.equal(r.limited && describeRetryAfter(r.retryAfterSeconds), "しばらく");
   });
 });
