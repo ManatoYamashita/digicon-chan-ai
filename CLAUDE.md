@@ -43,6 +43,7 @@ Gemini の上流呼び出しは、本物の SDK クライアントの fetch だ�
 | `/` | ホームページ（リンク集、キャラクター表示） |
 | `/about` | でじこんちゃんプロフィール・タイムライン・ギャラリー |
 | `/chat` | AIチャットUI |
+| （404） | `app/not-found.tsx`。存在しないURLで出る |
 
 ### チャット機能のデータフロー
 
@@ -129,6 +130,27 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 - **フォーカスを落とさない**: 送信中の入力欄は `disabled` ではなく `readOnly` にし、送信ボタンは `aria-disabled` にする。入力欄とリセットボタンが入れ替わるときは、新しく出た方へフォーカスを移す。メッセージ一覧は `role="log"` にして、返答と「入力中…」を読み上げさせる
 - **確認する画面サイズ**: 1280×800、390×844（Chrome のデバイスエミュレーション）、640×400（200% ズーム相当）、320×256。どれでもページ自体のスクロール量が 0 で、ヘッダー・バッジ・ナビ・入力欄が画面内にあること
 
+### 404ページ（#43）
+
+`app/not-found.tsx`。ナビとフッターは `app/layout.tsx` が全ページに描くので、404 では書かない。
+
+- **`.page` は `position: fixed; inset: 0`。** 通常フローにすると、`<main>` の先頭に入る Analytics の Suspense fallback（`<div>Loading...</div>`）のぶん 100dvh の箱が押し下げられ、`body { overflow: hidden }` で下端が切れる。iOS でツールバーが伸縮するときの `dvh` の更新遅れも避けられる
+- **立ち絵の抽選はブラウザ側で行う。** 候補は `app/not-found.tsx` の `ARTS`。3枚すべてを HTML に出し、描画前に走るインラインスクリプトが `<html>` に `data-nf-art` を立て、CSS の属性セレクタが 1 枚だけ見せる。`/_not-found` は**静的プリレンダ**（ビルド出力の `○ /_not-found`、応答の `x-nextjs-prerender: 1`）なので、Server Component で `Math.random()` を呼ぶとビルド時に 1 回だけ評価され、そのデプロイの間ずっと同じ絵になる
+  - React が `<script>` をホイストするのは `src` が文字列でかつ `async` が真のときだけ。`dangerouslySetInnerHTML` のインラインスクリプトは書いた位置にそのまま出力され、パース時に同期実行される。`<img>` より前に置けば画像がレイアウトされる前に決まるので、差し替えのちらつきが出ない
+  - `<html>` の属性を触るだけなので React のツリー外。ハイドレーション不一致は起きない（`components/about-page.tsx` のモジュールスコープのシャッフルは SSR とクライアントで結果が食い違う。あれは真似しない）
+  - **候補を増減させたら `styles/not-found.module.scss` の `$art-count` も直す。** さらに reveal 側が `html[data-nf-art="N"] .art[data-nf-art="N"]`（詳細度 0,3,1）なので、`@media (max-height: 20rem)` で挿絵を落とす側を `.art` だけ（0,1,0）で書くと負けて消えなくなる。320×256 では CTA とピルナビの隙間が 5px しか無く、挿絵が復活すると確実に溢れる
+- **立ち絵はアルファ付きの WebP を置く。`mix-blend-mode` は使わない。** 3枚とも `ALPH` チャンクを持ち四隅が完全透明なので、背景を消す加工が要らない。**アルファ付きに `multiply` を当ててはいけない。** 透明部分には効かないが、キャラクター本体の不透明画素まで下地と乗算されて濁る（当初の歯車は白背景の不透明画像だったので `multiply` で溶かしていた。差し替えのときに外した）
+  - 差し替える画像のアルファは目で見ても分からない。`VP8X` のフラグバイト（先頭から 20 バイト目）の `0x10` が立っていればアルファあり
+
+    ```bash
+    python3 -c "d=open('f.webp','rb').read(); print('ALPHA', bool(d[20]&0x10)) if d[12:16]==b'VP8X' else print('simple webp')"
+    ```
+
+  - 背景は `.page` 自身が塗る。body のクラス（`.body-notfound`）は、404 のツリーの外に `position: fixed` で描かれる `footer` の色を直すためだけに使う
+- **寸法は `vh` と `vw` の小さい方で決める**（`clamp(a, min(Xvh, Yvw), b)`）。`vw` だけだと 640×400 で縦に溢れ、`vh` だけだと 390×844 で横にはみ出す。縦が足りないときは挿絵から落とし、CTA は必ず画面内に残す
+- **`export const metadata` は `not-found.tsx` でも効く。** Next.js が `errorConvention: 'not-found'` として読み、layout の既定を上書きする。ただし metadata は浅いマージなので、`robots` と `alternates` はキーごと再定義して打ち消す。書かないと root の `index: true` と `canonical: SITE_URL` が 404 に継承され、「404 がトップページである」と宣言することになる
+- 確認する画面サイズは /chat と同じ4つ。どれでもスクロール量が 0 で、CTA が画面内にあり下部のピルナビに隠れないこと
+
 ## コンポーネント設計パターン
 
 - **ファイル命名:** kebab-case (`chat-window.tsx`, `chat-page.tsx`)
@@ -161,6 +183,16 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
     ```js
     // フレーム・間隔・ループを保ったまま再圧縮する。quality 75 で元の画質を保てる
     await sharp(src, { animated: true }).webp({ quality: 75, effort: 6 }).toFile(dst);
+    ```
+
+  - **画像を差し替えたら `.next/cache/images` を消してから測る。** `next.config.ts` の `minimumCacheTTL` が30日なので、リビルドしても古い最適化結果がそのまま返る。差し替えたはずの画像を測って「3枚とも同じバイト数」になったら、まずこれを疑う
+
+    ```bash
+    rm -rf .next/cache/images
+    # Accept ヘッダを付けないと AVIF ではなく JPEG が返るので、実ブラウザ相当で測る
+    curl -sS -o /dev/null -H 'Accept: image/avif,image/webp,image/*' \
+      -w '%{http_code} %{size_download}B %{content_type}\n' \
+      'http://localhost:3000/_next/image?url=%2Fimages%2Ffoo.webp&w=256&q=75'
     ```
 
   - 再生されているかは、ブラウザで開いて**スクリーンショットを連写し、ハッシュが変わるか**で見る。`canvas.drawImage` でフレームを採る方法は、CDP 越しだとレンダリングが進まず、動いていても同じフレームを返すことがある
