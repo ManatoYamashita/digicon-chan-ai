@@ -10,6 +10,10 @@ type NavItem = {
   href: string;
   label: string;
   icon: React.ReactNode;
+  // 渡した文字列は React.addTransitionType 経由で
+  // document.startViewTransition({ types }) へ届き、styles/globals.css の
+  // :root:active-view-transition-type() で掴める。演出を出したい遷移にだけ付ける
+  transitionTypes?: string[];
 };
 
 const navItems: NavItem[] = [
@@ -51,6 +55,10 @@ const navItems: NavItem[] = [
   {
     href: "/chat",
     label: "Chat",
+    // / の立ち絵が左へ抜ける演出は、/chat へ向かうときだけ走らせる。
+    // vt-dcchan は / にしか無い名前なので、種別で絞らないと / から離れる
+    // どの遷移でも old だけのグループができて退出アニメが走る (#42)
+    transitionTypes: ["to-chat"],
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -99,12 +107,13 @@ export default function Menu() {
               exit={{ opacity: 0, scale: 0.95, y: 8 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             >
-              {navItems.map(({ href, label, icon }) => (
+              {navItems.map(({ href, label, icon, transitionTypes }) => (
                 <Link
                   key={href}
                   href={href}
                   className={`${styles.link} ${pathname === href ? styles.active : ""}`}
                   aria-current={pathname === href ? "page" : undefined}
+                  transitionTypes={transitionTypes}
                   onClick={close}
                 >
                   {pathname === href ? (
@@ -135,12 +144,13 @@ export default function Menu() {
 
       {/* Mobile pill bar */}
       <nav className={styles.pillBar} style={{ viewTransitionName: "menu-pill" }}>
-        {navItems.map(({ href, label, icon }) => (
+        {navItems.map(({ href, label, icon, transitionTypes }) => (
           <Link
             key={href}
             href={href}
             className={`${styles.pillItem} ${pathname === href ? styles.pillActive : ""}`}
             aria-current={pathname === href ? "page" : undefined}
+            transitionTypes={transitionTypes}
           >
             {pathname === href ? (
               <motion.span
