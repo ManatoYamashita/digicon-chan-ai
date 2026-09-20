@@ -12,9 +12,10 @@ import styles from './page.module.scss';
 export default function Home() {
   return (
     <PageAnimations>
-      {/* 遷移で退出するときの演出対象。名前の付与は styles/globals.css の
-          ::view-transition-old(vt-home) と対になっている */}
-      <section id="home" className={styles.back} style={{ viewTransitionName: "vt-home" }}>
+      {/* ここに view-transition-name を振ってはいけない。振ると、この節が stacking context に
+          なり、中の z-index（.sounds / .sidebar / .greets）が #dc-chan の立ち絵を越えられなくなる。
+          退出のフェードは styles/globals.css の ::view-transition-old(.vt-shell) が担当する。 */}
+      <section id="home" className={styles.back}>
 
         <div className={styles.row} data-animate="r1">
           <Music title="DeskTop Musics" description="Kunimaly feat:でじこんちゃん(ver0)" />
