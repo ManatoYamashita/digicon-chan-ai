@@ -172,6 +172,7 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
   - 切ってある理由: 配信物は 30 枚中 29 枚が WebP（残り 1 枚が JPEG）で既に圧縮済みなので、幅ごとに変換してもほとんど縮まらない。一方で Hobby プランの変換枠は消費され、尽きると `/_next/image` が `HTTP 402`（`x-vercel-error: OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED`）を返して画像が消える
   - **枠が尽きるとモバイル幅から先に壊れる。** キャッシュ済みの変換は 304 で配信され続け、新しいキャッシュキーだけが 402 になるため。#48 の時点で `/about` は 1280×800 では 18 枚中 2 枚、**390×844 では 18 枚中 15 枚**が空白だった。デスクトップだけ見ていると気付けない
   - 画像を足したら `pnpm images:resize` を通す。長辺 1600px に収め（ギャラリーのライトボックスが最大 90vw × 85vh）、WebP は quality 85 で再圧縮し、8KB 以上縮むものだけ差し替える
+  - **`<Image>` の `sizes` はいま効かない。残してあるのは意図。** 最適化を通さないとき `next/image` は `srcSet` も `sizes` も出力しない（`next/dist/shared/lib/get-img-props.js` の `generateImgAttrs` が `unoptimized` のとき両方 `undefined` を返す）。本番の HTML に `sizes` 属性は 1 つも無い。ただし**完全な無料ではない**。props は RSC ペイロードにそのまま直列化されるので、404 ページで実測 **+120 バイト**（26,000 → 25,880 バイト）だった。それでも JSX に値を残しているのは、設定を戻すときに各画像の表示幅を測り直さずに済ませるため（#50）。`next.config.ts` から `formats` と `minimumCacheTTL` を消したのとは扱いが違う。あちらは `unoptimized: true` のすぐ隣に並んで一目で矛盾するうえ、復帰は既定値を書き戻すだけで済む
   - **アニメーション WebP はスクリプトの対象外。** `public/images/emotions/` の立ち絵 6 本と `public/images/icons/dcchan-icon.webp`。触らないことでフレーム落ちの余地を構造的に消している。個別の `<Image>` にも `unoptimized` を残してある（`components/chat-character.tsx` と `components/sounds.tsx`）。設定を戻したときに真っ先に壊れるのがここだから
   - **再圧縮するときはフレームを落とさない。** 多くの画像ツールは既定で1フレーム目だけを読む。`sharp` なら入力にも出力にも効く `{ animated: true }` が要る。落としても画像は表示され続けるため、画面を見ただけでは気付けない（#30 で「照」の立ち絵が 38 フレームから 1 フレームに潰れたまま本番に出ていた）
 

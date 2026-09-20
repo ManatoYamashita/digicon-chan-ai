@@ -51,9 +51,9 @@ export default function NotFound() {
             alt=""
             width={720}
             height={720}
-            // 表示は最大 200px。付けると記述子が x から w に変わり、
-            // ブラウザが 256w/384w を選ぶ。無指定だと width の 1x/2x、
-            // つまり 750px と 1920px の2択になる
+            // 表示は最大 200px。ただし images.unoptimized で最適化を切っている
+            // あいだ、この指定は効かない (srcSet ごと出力されない)。
+            // 設定を戻すときに表示幅を測り直さずに済むよう、値だけ残してある
             sizes="200px"
           />
         ))}
