@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { ComponentType } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +11,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import SplitText from "@/components/SplitText";
 import TiltedCard from "@/components/tilted-card";
-import Folder from "@/components/folder";
+import Folder, { MAX_FOLDER_ITEMS } from "@/components/folder";
+import { pickRandom } from "@/lib/shuffle";
 import styles from "@/styles/about-page.module.scss";
 
 import {
@@ -51,10 +52,26 @@ const iconMap: Record<string, ComponentType> = {
 
 const sectionTitles = ["Profile", "History", "Gallery", "Links"] as const;
 
-const pickedEmotionIcons = (() => {
-  const shuffled = [...emotionIcons].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 3);
-})();
+// フォルダに入れる感情アイコンの抽選。
+//
+// モジュールスコープや描画中に Math.random() を呼ぶと、サーバーとクライアントで別々の3枚が
+// 選ばれてハイドレーション不一致になる (#37)。React はこれを "This won't be patched up." として
+// 直さないので、画面にはサーバーが選んだ3枚が残り、読み上げ名との対応もずれる。
+//
+// そこで useSyncExternalStore で「サーバー用の値」と「クライアント用の値」を分ける。
+// 抽選はクライアントで1回だけ走り、ハイドレーションが終わった後の再描画で差し替わる。
+// 閉じたフォルダでは紙が前板の裏に完全に隠れているので、差し替わっても画面には出ない。
+//
+// useEffect の中で setState する書き方は react-hooks/set-state-in-effect に当たるため採らない。
+const initialEmotionIcons = emotionIcons.slice(0, MAX_FOLDER_ITEMS);
+let clientEmotionIcons: typeof initialEmotionIcons | null = null;
+
+/** 抽選結果は変わらないので購読しない。解除する処理も無い */
+const subscribeNever = () => () => {};
+/** useSyncExternalStore は毎描画で呼ぶので、同じ配列を返し続けるようキャッシュする */
+const getClientEmotionIcons = () =>
+  (clientEmotionIcons ??= pickRandom(emotionIcons, MAX_FOLDER_ITEMS));
+const getServerEmotionIcons = () => initialEmotionIcons;
 
 function SectionTitle({ text }: { text: string }) {
   return (
@@ -81,6 +98,14 @@ export default function AboutPage() {
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
+  // サーバーと初回のクライアント描画では先頭3枚を返し、ハイドレーションが終わってから
+  // 抽選結果へ差し替わる。詳しくは getClientEmotionIcons のコメント (#37)
+  const pickedEmotionIcons = useSyncExternalStore(
+    subscribeNever,
+    getClientEmotionIcons,
+    getServerEmotionIcons
+  );
+
   const folderItems = useMemo(
     () =>
       pickedEmotionIcons.map((img) => (
@@ -93,7 +118,7 @@ export default function AboutPage() {
           style={{ objectFit: "cover", borderRadius: "8px" }}
         />
       )),
-    []
+    [pickedEmotionIcons]
   );
 
   // body class
