@@ -115,9 +115,16 @@ footer {
 }
 
 /* ===== View Transitions: 退出演出 ===== */
-/* Step 1 は旧ページ全体（境界のスナップショット）、Step 2 は立ち絵だけを動かす。
+/* Step 1 は旧ページ全体（境界のスナップショット）で、どのページからどこへ行くときも走る。
+   Step 2 は立ち絵だけを動かすもので、/ → /chat のときだけ走らせる。
    立ち絵の名前は components/dc-chan.tsx の .dcchan に直接振ってある。/ にしか
    存在しない名前なので、ブラウザは old だけのグループを作る＝退出アニメーションになる。
+   ただし名前があるだけだと / から離れるどの遷移でも走ってしまい、/ → /about でも
+   /chat 向けの演出が出る。そこで遷移の種別で絞る（#42）。
+   種別は components/menu.tsx の <Link transitionTypes={["to-chat"]}> が渡す。
+   Next.js が React.addTransitionType を呼び、React が
+   document.startViewTransition({ types }) へ載せるので、ここで掴める。
+   種別の付かない遷移（/ → /about、ブラウザの戻る・進む）では Step 1 だけになる。
    入場側（チャット窓と立ち絵）は components/chat-page.tsx の GSAP が担当する。
    視差効果を減らす設定のときはどちらも適用せず、ブラウザ既定のクロスフェードに任せる。 */
 @media (prefers-reduced-motion: no-preference) {
@@ -126,8 +133,8 @@ footer {
     animation: vt-fade-out 0.3s ease-out both;
   }
 
-  /* Step 2: でじこんちゃんの立ち絵が左へ抜ける (200–600ms) */
-  ::view-transition-old(vt-dcchan) {
+  /* Step 2: でじこんちゃんの立ち絵が左へ抜ける (200–600ms)。/chat へ向かうときだけ */
+  :root:active-view-transition-type(to-chat)::view-transition-old(vt-dcchan) {
     animation: vt-slide-out-left 0.4s ease-in 0.2s both;
   }
 
