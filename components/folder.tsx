@@ -32,7 +32,8 @@ function darkenColor(hex: string, percent: number): string {
   );
 }
 
-const MAX_ITEMS = 3;
+/** フォルダに入る紙の枚数。呼び出し側が渡す items もこの数に揃える */
+export const MAX_FOLDER_ITEMS = 3;
 
 export default function Folder({
   color = "#5227FF",
@@ -41,14 +42,14 @@ export default function Folder({
   className = "",
   href,
 }: FolderProps) {
-  const papers: (React.ReactNode | null)[] = items.slice(0, MAX_ITEMS);
-  while (papers.length < MAX_ITEMS) {
+  const papers: (React.ReactNode | null)[] = items.slice(0, MAX_FOLDER_ITEMS);
+  while (papers.length < MAX_FOLDER_ITEMS) {
     papers.push(null);
   }
 
   const [open, setOpen] = useState(false);
   const [paperOffsets, setPaperOffsets] = useState(
-    Array.from({ length: MAX_ITEMS }, () => ({ x: 0, y: 0 }))
+    Array.from({ length: MAX_FOLDER_ITEMS }, () => ({ x: 0, y: 0 }))
   );
 
   const folderBackColor = darkenColor(color, 0.08);
@@ -60,7 +61,7 @@ export default function Folder({
     setOpen((prev) => !prev);
     if (open) {
       setPaperOffsets(
-        Array.from({ length: MAX_ITEMS }, () => ({ x: 0, y: 0 }))
+        Array.from({ length: MAX_FOLDER_ITEMS }, () => ({ x: 0, y: 0 }))
       );
     }
   };
@@ -141,7 +142,7 @@ export default function Folder({
 
             // href があるときは中身をリンクにする。a 要素にすると、キーボード操作・
             // 新しいタブで開く・リンク先の確認がブラウザの機能でそのまま使える。
-            // 中身の無い紙 (MAX_ITEMS まで埋めた分) はリンクにしない
+            // 中身の無い紙 (MAX_FOLDER_ITEMS まで埋めた分) はリンクにしない
             if (href && item) {
               return (
                 <a
