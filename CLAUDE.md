@@ -31,7 +31,8 @@ Gemini の上流呼び出しは、本物の SDK クライアントの fetch だ�
 - **GSAP** + **framer-motion** - アニメーション
 - **Sass** (SCSS Modules) - スタイリング
 - **@svgr/webpack** - SVGをReactコンポーネントとしてインポート
-- **View Transitions API** (`next.config.ts` の `experimental.viewTransition: true`)
+- **View Transitions API** - ルートレイアウトの `<ViewTransition>` が遷移を起こし、演出対象には `view-transition-name` を振る（`styles/globals.css`）。`next.config.ts` の設定は不要（`experimental.viewTransition` は no-op なので #32 で削除した）
+  - `ViewTransition` は `react@19.2.4` 本体には無い。App Router が `react` を Next.js の同梱ビルド（`next/dist/compiled/react`）へ解決するので使えている。型は `next/dist/types.d.ts` の `/// <reference types="react/experimental" />` 経由で届く
 
 ## アーキテクチャ
 
@@ -136,7 +137,15 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 - **アニメーション:** GSAP (ScrollTrigger, SplitText) はページレベル、framer-motion はUIコンポーネントレベルで使い分け
   - 移動・拡大縮小・ループは `prefers-reduced-motion` に合わせる。GSAP は `gsap.matchMedia()` の `(prefers-reduced-motion: no-preference)` の中で付ける。CSS のアニメーションは `@media (prefers-reduced-motion: no-preference)` の中に書く。framer-motion は `MotionConfig reducedMotion="user"` で包む（#20、#22）
   - 利用者の操作に対する短い反応（押したときの縮小、アイコンの切り替えなど）はそのままでよい
-- **ページ遷移:** View Transitions API で entry/exit アニメーションを定義（`styles/globals.css`）
+- **ページ遷移:** `app/layout.tsx` の `<ViewTransition default="none" update="vt-shell">` が `document.startViewTransition` を起こす。ページ全体の退出フェードは `styles/globals.css` の `::view-transition-old(.vt-shell)` に書く。個別に動かしたい要素だけ `style={{ viewTransitionName: "..." }}` を振り、`::view-transition-old/new(名前)` を当てる
+  - **既存の要素に `view-transition-name` を後付けしない。** 付けた要素は stacking context になり、その中の `z-index` が外の兄弟に効かなくなる。`/` の `#home` に振ったとき、`.sounds`（`z-index: 2`）・`.sidebar`（2）・`.greets`（1）がまとめて `#dc-chan` の立ち絵の裏へ落ちた。390×844 で画素の 17%、1280×800 で 3.5% が変わり、音声の再生カードが不可視になる（#32）
+    - ページ全体を消す・出すだけなら要素に名前は要らない。`::view-transition-old(.vt-shell)` が境界のスナップショット＝旧ページ全体を掴んでいる。名前を振ってよいのは `components/dc-chan.tsx` の `.dcchan` のように、**他と違う動きをさせたい要素**だけ
+    - 名前を振ったら **base と head を両方ビルドして静止画の画素を比べる。** `document.getAnimations()` の一覧が想定どおりでも、重なり順の退行はそこには出ない。アニメーション WebP はキャプチャごとにフレームが変わるので、比較の前に `img` を隠すか、同一 URL を 2 回撮ってノイズ量を先に測る
+  - `::view-transition-old/new(.vt-shell)` の指定と、対応する `@keyframes` は**同じ `@media` の中に置く。** `@keyframes` だけが `(prefers-reduced-motion: no-preference)` の中にあると、`reduce` のときに `animation-name` が解決できず、旧ページが最後まで不透明のまま残って最後に消える
+  - **React の `<ViewTransition enter/exit>` は使わない。** 上に DOM ノードがあるサブツリーでは活性化せず、黙って何も起きない。React は「挿入・削除されるサブツリーの最初の境界」しか活性化しないので、階層の途中にある兄弟を別々に動かすこともできない（#32。4 箇所すべてがこれを踏んでいて、一度も発火していなかった）
+  - 退出は View Transition、入場は GSAP という分担。`/chat` の入場（`components/chat-page.tsx` の `useGSAP`）は URL 直打ちやリロードでも効くうえ、`useGSAP` は layout effect なので新スナップショット取得の直前に `opacity: 0` を書き込む。同じ要素を View Transition でも動かすと二重になって濁る
+  - `view-transition-name` は必ず TSX のインライン `style` か `styles/globals.css` に書く。`*.module.scss` に書くと Lightning CSS が値をハッシュ化して `::view-transition-*()` のセレクタと一致しなくなる
+  - 開発サーバーでは StrictMode の二重コミットでページ遷移以外にも遷移が走る。挙動の確認は `pnpm build && pnpm start` で行う（#32）
 - **画像:** アニメーション WebP（`public/images/emotions/` の立ち絵と `public/images/icons/dcchan-icon.webp`）は `next/image` に `unoptimized` を付ける。画像最適化はどの幅でも元のファイルを返すだけで、幅ごとにキャッシュを作って無駄になる
   - **再圧縮するときはフレームを落とさない。** 多くの画像ツールは既定で1フレーム目だけを読む。`sharp` なら入力にも出力にも効く `{ animated: true }` が要る。落としても画像は表示され続けるため、画面を見ただけでは気付けない（#30 で「照」の立ち絵が 38 フレームから 1 フレームに潰れたまま本番に出ていた）
 

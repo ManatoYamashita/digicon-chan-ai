@@ -4,7 +4,7 @@ import { ImageObject, ProfilePage, WebSite, WithContext } from 'schema-dts';
 import { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
-import { Suspense } from 'react';
+import { Suspense, ViewTransition } from 'react';
 
 import Analytics from './analytics';
 import Menu from '@/components/menu';
@@ -226,7 +226,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Suspense fallback={<div>Loading...</div>}>
             <Analytics />
           </Suspense>
-          {children}
+          {/* ページ遷移で document.startViewTransition を起こすための境界。
+              この境界自体は styles/globals.css で動きを止めてあり、演出は
+              view-transition-name を振った要素が担う。Analytics の Suspense と
+              footer は、遷移のたびに巻き込まれないよう境界の外に置く。 */}
+          <ViewTransition default="none" update="vt-shell">
+            {children}
+          </ViewTransition>
           <footer>© {new Date().getFullYear()} でじこんちゃん.net / Designed/Dev by <Link href="https://manapuraza.com">ヤマシタマナト(TCU-DC)</Link></footer>
         </main>
         <Menu />

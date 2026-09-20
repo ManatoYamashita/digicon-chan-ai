@@ -40,8 +40,11 @@ function DCchan() {
         setIsHovered(false);
     }, []);
 
+    // ページ遷移で退出するときの演出対象。親の #dc-chan は position: fixed で
+    // 寸法を持たず border box が 0×0 になるため、view-transition-name は実体のある
+    // この要素に振る（styles/globals.css の ::view-transition-old(vt-dcchan) と対）。
     return(
-        <section className={styles.dcchan}>
+        <section className={styles.dcchan} style={{ viewTransitionName: "vt-dcchan" }}>
             <Image
                 src={dcchan}
                 alt="でじこんちゃん - 東京都市大学デジタルコンテンツ研究会公式キャラクター"

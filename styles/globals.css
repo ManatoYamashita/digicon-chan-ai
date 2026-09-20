@@ -100,33 +100,43 @@ footer {
   animation: none;
 }
 
+/* ===== View Transitions: 遷移の起動役 ===== */
+/* app/layout.tsx の <ViewTransition update="vt-shell"> が document.startViewTransition を
+   呼ぶためだけの境界。React は update / enter / exit のクラスを要素の
+   view-transition-class として付けるので、ここではクラスセレクタで掴む。
+   境界そのものは動かさず、新ページは即座に出す。旧ページのフェードアウトは
+   この境界のスナップショットに掛ける（下の「退出演出」の Step 1）。
+   ページ内の要素に view-transition-name を振って担当させることはしない。
+   振るとその要素が stacking context になり、中の z-index が外の兄弟へ効かなくなる。 */
+::view-transition-group(.vt-shell) { animation: none; }
+::view-transition-new(.vt-shell) { animation: none; opacity: 1; }
+/* old のフェードは keyframes と同じ @media の中にある。視差効果を減らす設定のときは
+   ここを素通しして、ブラウザ既定のクロスフェードに任せる。 */
+
+/* 遷移中のオーバーレイがクリックを吸わないようにする */
+::view-transition { pointer-events: none; }
+
 /* ===== Menu: View Transitions から除外 ===== */
 ::view-transition-group(menu-fab),
 ::view-transition-group(menu-pill) {
   animation: none;
 }
 
-/* ===== View Transitions: / → /chat ===== */
-/* 視差効果を減らす設定のときは適用せず、ブラウザ既定のクロスフェードに任せる */
+/* ===== View Transitions: 退出演出 ===== */
+/* Step 1 は旧ページ全体（境界のスナップショット）、Step 2 は立ち絵だけを動かす。
+   立ち絵の名前は components/dc-chan.tsx の .dcchan に直接振ってある。/ にしか
+   存在しない名前なので、ブラウザは old だけのグループを作る＝退出アニメーションになる。
+   入場側（チャット窓と立ち絵）は components/chat-page.tsx の GSAP が担当する。
+   視差効果を減らす設定のときはどちらも適用せず、ブラウザ既定のクロスフェードに任せる。 */
 @media (prefers-reduced-motion: no-preference) {
-  /* Step 1: #home fadeout (0–300ms) */
-  ::view-transition-old(.vt-home-exit) {
-    animation: vt-fade-out 0.3s ease-out forwards;
+  /* Step 1: 旧ページがフェードアウト (0–300ms) */
+  ::view-transition-old(.vt-shell) {
+    animation: vt-fade-out 0.3s ease-out both;
   }
 
-  /* Step 2: #dc-chan slide-out left (200–600ms) */
-  ::view-transition-old(.vt-dcchan-exit) {
+  /* Step 2: でじこんちゃんの立ち絵が左へ抜ける (200–600ms) */
+  ::view-transition-old(vt-dcchan) {
     animation: vt-slide-out-left 0.4s ease-in 0.2s both;
-  }
-
-  /* Step 3: Character slide-in right (400–900ms) */
-  ::view-transition-new(.vt-char-enter) {
-    animation: vt-slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
-  }
-
-  /* Step 4: Chat window fade-slide-in (500–1000ms) */
-  ::view-transition-new(.vt-window-enter) {
-    animation: vt-fade-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
   }
 
   @keyframes vt-fade-out {
@@ -136,14 +146,6 @@ footer {
   @keyframes vt-slide-out-left {
     from { opacity: 1; transform: translateX(0); }
     to   { opacity: 0; transform: translateX(-30%); }
-  }
-  @keyframes vt-slide-in-right {
-    from { opacity: 0; transform: translateX(30%); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes vt-fade-slide-in {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 }
 

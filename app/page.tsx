@@ -1,4 +1,3 @@
-import { ViewTransition } from "react";
 import Image from "next/image";
 import Sidebar from "@/components/sidebar";
 import Card from "@/components/card";
@@ -13,47 +12,46 @@ import styles from './page.module.scss';
 export default function Home() {
   return (
     <PageAnimations>
-      <ViewTransition exit="vt-home-exit" default="none">
-        <section id="home" className={styles.back}>
+      {/* ここに view-transition-name を振ってはいけない。振ると、この節が stacking context に
+          なり、中の z-index（.sounds / .sidebar / .greets）が #dc-chan の立ち絵を越えられなくなる。
+          退出のフェードは styles/globals.css の ::view-transition-old(.vt-shell) が担当する。 */}
+      <section id="home" className={styles.back}>
 
-          <div className={styles.row} data-animate="r1">
-            <Music title="DeskTop Musics" description="Kunimaly feat:でじこんちゃん(ver0)" />
-            <Card title="Graphics" subtitle="Illu/Anime/Design: 山下マナト" description="WebDesignはこちらのtweetを元にしています。" />
-          </div>
+        <div className={styles.row} data-animate="r1">
+          <Music title="DeskTop Musics" description="Kunimaly feat:でじこんちゃん(ver0)" />
+          <Card title="Graphics" subtitle="Illu/Anime/Design: 山下マナト" description="WebDesignはこちらのtweetを元にしています。" />
+        </div>
 
-          <div className={styles.row2} data-animate="r2">
-            <div className={styles.r2_column}>
-              <Toggle />
-              <Image
-                src="/images/dc-logo.webp"
-                alt="都市大 デジコン"
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className={styles.logo}
-              />
-            </div>
-            <Sounds title="DC-chan" description="Press to listen to voices." />
-          </div>
-
-          <div className={styles.row3} data-animate="r3">
-            <Sidebar />
-            <Hello
-              greets={["Hello", "こんにちは", "안녕하세요", "你好"]}
-              msg1="東京都市大学 デジタルコンテンツ研究会"
-              msg2="公式ヴァーチャルコンシェルジュの..."
-              title="でじこんちゃん"
+        <div className={styles.row2} data-animate="r2">
+          <div className={styles.r2_column}>
+            <Toggle />
+            <Image
+              src="/images/dc-logo.webp"
+              alt="都市大 デジコン"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className={styles.logo}
             />
           </div>
-        </section>
-      </ViewTransition>
+          <Sounds title="DC-chan" description="Press to listen to voices." />
+        </div>
 
-      <ViewTransition exit="vt-dcchan-exit" default="none">
-        <section id="dc-chan" className={styles.front}>
-          <div data-animate="r4">
-            <DCchan />
-          </div>
-        </section>
-      </ViewTransition>
+        <div className={styles.row3} data-animate="r3">
+          <Sidebar />
+          <Hello
+            greets={["Hello", "こんにちは", "안녕하세요", "你好"]}
+            msg1="東京都市大学 デジタルコンテンツ研究会"
+            msg2="公式ヴァーチャルコンシェルジュの..."
+            title="でじこんちゃん"
+          />
+        </div>
+      </section>
+
+      <section id="dc-chan" className={styles.front}>
+        <div data-animate="r4">
+          <DCchan />
+        </div>
+      </section>
     </PageAnimations>
   );
 }

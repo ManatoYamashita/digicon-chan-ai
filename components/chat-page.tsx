@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, ViewTransition } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import ChatWindow from "@/components/chat-window";
 import ChatCharacter from "@/components/chat-character";
 import { MAX_PROMPTS } from "@/lib/chat-request";
@@ -335,57 +335,53 @@ export default function ChatPage() {
         <span className={styles.remainingNumber}>{Math.max(MAX_PROMPTS - userMessageCount, 0)}</span>
         <span className={styles.remainingLabel}>/ {MAX_PROMPTS}</span>
       </div>
-      <ViewTransition enter="vt-window-enter" default="none">
-        <div className={styles.windowWrap} ref={windowWrapRef}>
-          <ChatWindow
-            messages={messages}
-            input={input}
-            isLoading={isLoading}
-            error={error}
-            onInputChange={setInput}
-            onSend={handleSend}
-            isSessionExhausted={isSessionExhausted}
-            onReset={handleReset}
-            remainingCount={MAX_PROMPTS - userMessageCount}
-            maxPrompts={MAX_PROMPTS}
-          />
-          <div
-            className={`${styles.resizeHandle}${isResizing ? ` ${styles.resizing}` : ""}`}
-            role="separator"
-            aria-orientation="vertical"
-            aria-label="チャット欄の幅"
-            aria-valuemin={MIN_WINDOW_WIDTH}
-            aria-valuemax={windowSize.max}
-            aria-valuenow={windowSize.now}
-            aria-valuetext={`${windowSize.now}px`}
-            tabIndex={0}
-            onFocus={syncWindowSize}
-            onKeyDown={handleResizeKeyDown}
-            onPointerDown={handleResizeStart}
-            onPointerMove={handleResizeMove}
-            onPointerUp={handleResizeEnd}
-            onPointerCancel={handleResizeEnd}
-          />
+      <div className={styles.windowWrap} ref={windowWrapRef}>
+        <ChatWindow
+          messages={messages}
+          input={input}
+          isLoading={isLoading}
+          error={error}
+          onInputChange={setInput}
+          onSend={handleSend}
+          isSessionExhausted={isSessionExhausted}
+          onReset={handleReset}
+          remainingCount={MAX_PROMPTS - userMessageCount}
+          maxPrompts={MAX_PROMPTS}
+        />
+        <div
+          className={`${styles.resizeHandle}${isResizing ? ` ${styles.resizing}` : ""}`}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="チャット欄の幅"
+          aria-valuemin={MIN_WINDOW_WIDTH}
+          aria-valuemax={windowSize.max}
+          aria-valuenow={windowSize.now}
+          aria-valuetext={`${windowSize.now}px`}
+          tabIndex={0}
+          onFocus={syncWindowSize}
+          onKeyDown={handleResizeKeyDown}
+          onPointerDown={handleResizeStart}
+          onPointerMove={handleResizeMove}
+          onPointerUp={handleResizeEnd}
+          onPointerCancel={handleResizeEnd}
+        />
+      </div>
+      <div ref={characterWrapRef} className={styles.characterWrap}>
+        {/* 飾りの透かし。内容はチャット欄と重複するので支援技術からは隠す */}
+        <div ref={infoBackdropRef} className={styles.infoBackdrop} aria-hidden="true">
+          <p className={styles.infoTitle}>Chat</p>
+          <p className={styles.infoEmotion}>
+            {EMOTION_LABEL[currentEmotion]}
+          </p>
+          <p className={styles.infoDesc}>
+            でじこんちゃんAI Chat
+          </p>
+          <p className={styles.infoHint}>
+            話しかけてみよう！
+          </p>
         </div>
-      </ViewTransition>
-      <ViewTransition enter="vt-char-enter" default="none">
-        <div ref={characterWrapRef} className={styles.characterWrap}>
-          {/* 飾りの透かし。内容はチャット欄と重複するので支援技術からは隠す */}
-          <div ref={infoBackdropRef} className={styles.infoBackdrop} aria-hidden="true">
-            <p className={styles.infoTitle}>Chat</p>
-            <p className={styles.infoEmotion}>
-              {EMOTION_LABEL[currentEmotion]}
-            </p>
-            <p className={styles.infoDesc}>
-              でじこんちゃんAI Chat
-            </p>
-            <p className={styles.infoHint}>
-              話しかけてみよう！
-            </p>
-          </div>
-          <ChatCharacter emotion={currentEmotion} imageSrc={emotionImage} />
-        </div>
-      </ViewTransition>
+        <ChatCharacter emotion={currentEmotion} imageSrc={emotionImage} />
+      </div>
     </div>
   );
 }
