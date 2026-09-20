@@ -42,6 +42,7 @@ Gemini の上流呼び出しは、本物の SDK クライアントの fetch だ�
 | `/` | ホームページ（リンク集、キャラクター表示） |
 | `/about` | でじこんちゃんプロフィール・タイムライン・ギャラリー |
 | `/chat` | AIチャットUI |
+| （404） | `app/not-found.tsx`。存在しないURLで出る |
 
 ### チャット機能のデータフロー
 
@@ -124,6 +125,18 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 - **色は役割トークンを使う**: `globals.css` の `--color-text-*` と `--fill-accent-solid` を使う。値は描画された背景で 4.5:1 以上を実測して決めた。白い文字を `#06c0ff` 側のグラデーションに載せると 2.1:1 まで落ちる
 - **フォーカスを落とさない**: 送信中の入力欄は `disabled` ではなく `readOnly` にし、送信ボタンは `aria-disabled` にする。入力欄とリセットボタンが入れ替わるときは、新しく出た方へフォーカスを移す。メッセージ一覧は `role="log"` にして、返答と「入力中…」を読み上げさせる
 - **確認する画面サイズ**: 1280×800、390×844（Chrome のデバイスエミュレーション）、640×400（200% ズーム相当）、320×256。どれでもページ自体のスクロール量が 0 で、ヘッダー・バッジ・ナビ・入力欄が画面内にあること
+
+### 404ページ（#43）
+
+`app/not-found.tsx`。ナビとフッターは `app/layout.tsx` が全ページに描くので、404 では書かない。
+
+- **`.page` は `position: fixed; inset: 0`。** 通常フローにすると、`<main>` の先頭に入る Analytics の Suspense fallback（`<div>Loading...</div>`）のぶん 100dvh の箱が押し下げられ、`body { overflow: hidden }` で下端が切れる。iOS でツールバーが伸縮するときの `dvh` の更新遅れも避けられる
+- **画像の白背景は `mix-blend-mode: multiply` で消す。** 配布された画像はアルファを持たない不透明な WebP。白 × 背景 = 背景 になるので、画像を加工せずに下地へ溶ける。輪郭線は引かない（消したはずの矩形の境界が現れる）
+  - **`.page` と画像の間に `transform` / `filter` / `opacity < 1` / `isolation` / `backdrop-filter` / `will-change` / `contain: paint` を持つ要素を挟むと無言で壊れる。** `mix-blend-mode` は最も近い重ね合わせ文脈の内容と合成されるため。入場アニメーションを `.page` ではなく子要素だけに当てているのはそのため
+  - 背景は `.page` 自身が塗る。`position: fixed` はそれ自体が重ね合わせ文脈になるので、下敷きがこの背景であることが保証される。body のクラス（`.body-notfound`）は、404 のツリーの外に `position: fixed` で描かれる `footer` の色を直すためだけに使う
+- **寸法は `vh` と `vw` の小さい方で決める**（`clamp(a, min(Xvh, Yvw), b)`）。`vw` だけだと 640×400 で縦に溢れ、`vh` だけだと 390×844 で横にはみ出す。縦が足りないときは挿絵から落とし、CTA は必ず画面内に残す
+- **`export const metadata` は `not-found.tsx` でも効く。** Next.js が `errorConvention: 'not-found'` として読み、layout の既定を上書きする。ただし metadata は浅いマージなので、`robots` と `alternates` はキーごと再定義して打ち消す。書かないと root の `index: true` と `canonical: SITE_URL` が 404 に継承され、「404 がトップページである」と宣言することになる
+- 確認する画面サイズは /chat と同じ4つ。どれでもスクロール量が 0 で、CTA が画面内にあり下部のピルナビに隠れないこと
 
 ## コンポーネント設計パターン
 
