@@ -74,8 +74,9 @@ export default function Folder({
     }
   };
 
+  // 紙は href の有無で div にも a にもなるので、両方を受けられる HTMLElement で受ける
   const handlePaperMouseMove = (
-    e: React.MouseEvent<HTMLDivElement>,
+    e: React.MouseEvent<HTMLElement>,
     index: number
   ) => {
     if (!open) return;
