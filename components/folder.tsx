@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useRef, useState } from "react";
 import styles from "@/styles/folder.module.scss";
 
 type FolderProps = {
@@ -9,6 +9,10 @@ type FolderProps = {
   items?: React.ReactNode[];
   className?: string;
   href?: string;
+  /** 開閉ボタンのアクセシブル名。開閉の状態は aria-expanded が伝えるので、ここには含めない */
+  label?: string;
+  /** 紙のリンクのアクセシブル名。href を渡すときは一緒に渡す */
+  linkLabel?: string;
 };
 
 function darkenColor(hex: string, percent: number): string {
@@ -41,11 +45,19 @@ export default function Folder({
   items = [],
   className = "",
   href,
+  label = "フォルダ",
+  linkLabel,
 }: FolderProps) {
   const papers: (React.ReactNode | null)[] = items.slice(0, MAX_FOLDER_ITEMS);
+  // 紙は同じ z-index なので、DOM の後ろにあるものほど手前に来る。
+  // 中身のある紙のうち最後のものが最前面
+  const primaryIndex = papers.length - 1;
   while (papers.length < MAX_FOLDER_ITEMS) {
     papers.push(null);
   }
+
+  const papersId = useId();
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   const [open, setOpen] = useState(false);
   const [paperOffsets, setPaperOffsets] = useState(
@@ -63,19 +75,9 @@ export default function Folder({
       setPaperOffsets(
         Array.from({ length: MAX_FOLDER_ITEMS }, () => ({ x: 0, y: 0 }))
       );
-    }
-  };
-
-  // クリックでもキーボードでも開閉できるようにする。div のままだと Tab で到達できず、
-  // 中身のリンクにキーボードだけでは辿り着けない
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    // 中の紙 (a 要素) で押された Enter もここまで上がってくる。それを preventDefault すると、
-    // リンクの既定動作である click が生成されず、リンクが開かなくなる。
-    // フォルダ自身にフォーカスがあるときだけ開閉する
-    if (e.target !== e.currentTarget) return;
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggle();
+      // 閉じると紙は支援技術から隠れる。中にフォーカスが残らないようボタンへ戻す。
+      // Safari はボタンを押してもフォーカスを当てないので、明示的に呼ぶ
+      toggleRef.current?.focus();
     }
   };
 
@@ -118,14 +120,22 @@ export default function Folder({
       <div
         className={`${styles.folder} ${open ? styles.open : ""}`}
         style={folderStyle}
-        onClick={toggle}
-        onKeyDown={handleKeyDown}
-        role="button"
-        tabIndex={0}
-        aria-expanded={open}
-        aria-label={open ? "フォルダを閉じる" : "フォルダを開く"}
       >
-        <div className={styles.folderBack}>
+        {/*
+          開閉はこの透明なボタンが受ける。フォルダの絵に重ねてあるだけで、紙は中に入っていない。
+          role="button" の div で全体を包むと、中の a が button の子孫になり
+          (axe-core の nested-interactive)、Enter の扱いも自前で書く羽目になる (#38)
+        */}
+        <button
+          type="button"
+          ref={toggleRef}
+          className={styles.toggle}
+          onClick={toggle}
+          aria-expanded={open}
+          aria-controls={papersId}
+          aria-label={label}
+        />
+        <div className={styles.folderBack} id={papersId}>
           {papers.map((item, i) => {
             const paperProps = {
               className: styles.paper,
@@ -144,6 +154,10 @@ export default function Folder({
             // 新しいタブで開く・リンク先の確認がブラウザの機能でそのまま使える。
             // 中身の無い紙 (MAX_FOLDER_ITEMS まで埋めた分) はリンクにしない
             if (href && item) {
+              // 3枚とも同じ行き先なので、支援技術へ見せるのは最前面の1枚だけにする。
+              // 残り2枚は装飾として隠すが、href は持ったままなのでマウスでは今までどおり開ける。
+              // 閉じているあいだは紙が前板の裏に隠れるので、1枚目も隠す (aria-expanded と揃える)
+              const exposed = i === primaryIndex && open;
               return (
                 <a
                   key={i}
@@ -151,10 +165,9 @@ export default function Folder({
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  // 閉じているときは紙が隠れるので、Tab で止まらないようにする
-                  tabIndex={open ? 0 : -1}
-                  // 親のクリックまで伝わると、リンクを開くと同時にフォルダが閉じてしまう
-                  onClick={(e) => e.stopPropagation()}
+                  tabIndex={exposed ? 0 : -1}
+                  aria-hidden={exposed ? undefined : true}
+                  aria-label={exposed ? linkLabel : undefined}
                 >
                   {item}
                 </a>
