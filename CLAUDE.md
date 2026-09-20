@@ -169,6 +169,16 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
     await sharp(src, { animated: true }).webp({ quality: 75, effort: 6 }).toFile(dst);
     ```
 
+  - **画像を差し替えたら `.next/cache/images` を消してから測る。** `next.config.ts` の `minimumCacheTTL` が30日なので、リビルドしても古い最適化結果がそのまま返る。差し替えたはずの画像を測って「3枚とも同じバイト数」になったら、まずこれを疑う
+
+    ```bash
+    rm -rf .next/cache/images
+    # Accept ヘッダを付けないと AVIF ではなく JPEG が返るので、実ブラウザ相当で測る
+    curl -sS -o /dev/null -H 'Accept: image/avif,image/webp,image/*' \
+      -w '%{http_code} %{size_download}B %{content_type}\n' \
+      'http://localhost:3000/_next/image?url=%2Fimages%2Ffoo.webp&w=256&q=75'
+    ```
+
   - 再生されているかは、ブラウザで開いて**スクリーンショットを連写し、ハッシュが変わるか**で見る。`canvas.drawImage` でフレームを採る方法は、CDP 越しだとレンダリングが進まず、動いていても同じフレームを返すことがある
 - **フォント:** Nunito は可変フォントとして読み込む（`weight` を指定しない）。指定すると 400 と 700 に固定され、他のウェイトは近いもので代用される
 
