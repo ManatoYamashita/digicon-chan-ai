@@ -96,6 +96,10 @@
 }
 
 .paper {
+  // a 要素として描画されることがあるので、リンクの既定の見た目を打ち消す
+  display: block;
+  text-decoration: none;
+  color: inherit;
   position: absolute;
   z-index: 2;
   bottom: 10%;
