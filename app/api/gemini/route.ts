@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
-
-function getOpenAIClient() {
-    return new OpenAI({
-        apiKey: process.env.GEMINI_API_KEY,
-        baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
-    });
-}
+import { parseChatRequest, type ChatRequestError } from '@/lib/chat-request';
+import { createGeminiClient, withRetry } from '@/lib/gemini-client';
+import { EMOTIONS, describeEmotionHeader } from '@/lib/emotion';
 
 const setting = `
     # 命令文
@@ -15,8 +10,9 @@ const setting = `
     * キャラクターの特性を分析して対象の視点から回答すること
     * 対象の特性に基づいた情報や視点から回答すること
     * "東京都市大学デジタルコンテンツ研究会"と"デジコン"は同義で、"でじこんちゃん"は必ずひらがなで表記すること
-    * 必ず回答の一行目には["楽", "怒", "哀", "困", "照"]のいずれかの感情を表す一文字を記述し、本文は2行目から記述してください。なお、感情の表記の前後に余計なスペースや句点、読点を含めないでください。
+    * 必ず回答の一行目には["${EMOTIONS.join('", "')}"]のいずれかの感情を表す一文字を記述し、本文は2行目から記述してください。なお、感情の表記の前後に余計なスペースや句点、読点を含めないでください。
     * 感情の後には余計な句読点や空白を入れず、改行した後に本文は2行目から記述してください。
+    * 返答は画面にそのまま表示されるので、Markdown記法（**太字**、行頭の * や - による箇条書き、# の見出し）は使わず、プレーンテキストで書くこと。箇条書きにしたいときは行頭に「・」を使うこと
     * 山下マナトは聖乳くるみ(赤瀬みく)のファンで、でじこんちゃんに特別な感情を抱いていた。
 
     # キャラクター設定
@@ -42,6 +38,15 @@ type Message = {
     content: string;
 };
 
+// エラー文言は画面で「入力欄に戻したので、もう一度送って」という案内と並べて表示される (components/chat-page.tsx)。
+// ここでは何が起きたかだけを書き、利用者を責める言い方はしない
+const INVALID_REQUEST_MESSAGE = 'ごめんね、メッセージをうまく受け取れなかったみたい…。';
+
+const REQUEST_ERROR_MESSAGES: Partial<Record<ChatRequestError, string>> = {
+    content_too_long: 'メッセージが長すぎて読みきれないよ～！もうちょっと短くしてね！',
+    too_many_messages: 'いっぱいお話ししてくれてありがとう！会話をリセットしてからまた話しかけてね！',
+};
+
 // --- インメモリレート制限 (スライディングウィンドウ) ---
 const RATE_LIMIT_RPM = 8; // Gemini 2.5 Flash Free Tier 10RPM に対して余裕枠
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -60,43 +65,6 @@ function recordRequest(): void {
     requestTimestamps.push(Date.now());
 }
 
-// --- リトライ + エクスポネンシャルバックオフ ---
-const MAX_RETRIES = 2;
-const BASE_DELAY_MS = 1000;
-const JITTER_MS = 500;
-
-async function callGeminiWithRetry(apiMessages: Message[]) {
-    let lastError: any;
-
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-        try {
-            const completion = await getOpenAIClient().chat.completions.create({
-                model: "gemini-2.5-flash",
-                messages: apiMessages,
-                temperature: 0.7,
-            });
-            return completion;
-        } catch (error: any) {
-            lastError = error;
-            const status = error.status || error.statusCode;
-
-            // 429/503 のみリトライ対象
-            if ((status === 429 || status === 503) && attempt < MAX_RETRIES) {
-                const delay = BASE_DELAY_MS * Math.pow(2, attempt) + Math.random() * JITTER_MS;
-                if (process.env.NODE_ENV === 'development') {
-                    console.log(`Gemini API retry ${attempt + 1}/${MAX_RETRIES} after ${Math.round(delay)}ms (status: ${status})`);
-                }
-                await new Promise(resolve => setTimeout(resolve, delay));
-                continue;
-            }
-
-            throw error;
-        }
-    }
-
-    throw lastError;
-}
-
 const isDev = process.env.NODE_ENV === 'development';
 
 export async function POST(request: Request) {
@@ -105,7 +73,7 @@ export async function POST(request: Request) {
         if (isRateLimited()) {
             const retryAfter = 30;
             return NextResponse.json(
-                { error: 'わわっ、今たくさんの人が話しかけてくれてるみたい！ちょっとだけ待っててね～！', retryAfter },
+                { error: 'わわっ、今たくさんの人が話しかけてくれてるみたい！', retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -122,48 +90,59 @@ export async function POST(request: Request) {
         } catch (e) {
             console.error('Request body parsing error:', e);
             return NextResponse.json(
-                { error: 'あれれ？メッセージがうまく届かなかったみたい...もう一回送ってくれる？' },
+                { error: 'あれれ？メッセージがうまく届かなかったみたい…。' },
                 { status: 400 }
             );
         }
 
-        const { messages } = body;
-
-        if (!messages || !Array.isArray(messages)) {
+        // role のホワイトリスト検証。system メッセージはサーバーの setting だけに限る
+        const parsed = parseChatRequest(body);
+        if (!parsed.ok) {
+            // 利用者の入力内容はログに残さず、拒否理由だけを記録する
+            console.warn('Rejected chat request:', parsed.error);
             return NextResponse.json(
-                { error: 'ん？なんだか変なメッセージが来ちゃった！もう一回ちゃんと送ってほしいな～！' },
+                { error: REQUEST_ERROR_MESSAGES[parsed.error] ?? INVALID_REQUEST_MESSAGE },
                 { status: 400 }
             );
         }
-
-        const mappedMessages: Message[] = messages.map((msg: { role: string; content: string }) => {
-            if (!msg.role || !msg.content) {
-                throw new Error('メッセージの形式が不正です。roleとcontentが必要です。');
-            }
-            return {
-                role: msg.role === 'bot' ? 'assistant' : msg.role as 'user' | 'assistant' | 'system',
-                content: msg.content,
-            };
-        });
 
         const systemMessage: Message = {
             role: 'system',
             content: setting,
         };
 
-        const apiMessages = [systemMessage, ...mappedMessages];
+        const apiMessages: Message[] = [systemMessage, ...parsed.messages];
 
-        if (!process.env.GEMINI_API_KEY) {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
             console.error('Gemini API key is not set');
             return NextResponse.json(
-                { error: 'えっと...でじこんちゃんの準備がまだできてないみたい。管理者さんに聞いてみてね！' },
+                { error: 'えっと…でじこんちゃんの準備がまだできてないみたい。管理者さんに聞いてみてね！' },
                 { status: 500 }
             );
         }
 
-        // リクエスト記録 & リトライ付きAPI呼び出し
-        recordRequest();
-        const completion = await callGeminiWithRetry(apiMessages);
+        // キーが無いとコンストラクタが例外を投げるので、モジュールスコープではなくキーの確認後に作る
+        const client = createGeminiClient(apiKey);
+        const completion = await withRetry(
+            (timeout) => {
+                // 試行ごとに記録し、ローカルのレート制限を上流への実リクエスト数に合わせる
+                recordRequest();
+                return client.chat.completions.create(
+                    {
+                        model: "gemini-2.5-flash",
+                        messages: apiMessages,
+                        temperature: 0.7,
+                        // thinking を切る。有効だと長めの応答が 11 秒を超え、関数上限 10 秒に収まらない (#17)。
+                        // 2.5 Pro と Gemini 3 系は thinking を切れないので、移行時は "minimal" で測り直すこと
+                        reasoning_effort: "none",
+                    },
+                    { timeout },
+                );
+            },
+            // 枠が尽きたら再試行せず、その時点のエラー (429 など) を返す
+            { canRetry: () => !isRateLimited() },
+        );
 
         if (isDev) {
             console.log('Gemini APIからのレスポンス:', JSON.stringify(completion, null, 2));
@@ -172,13 +151,27 @@ export async function POST(request: Request) {
         if (!completion.choices[0]?.message) {
             console.error('Invalid completion response:', completion);
             return NextResponse.json(
-                { error: 'あわわ、でじこんちゃんの頭がこんがらがっちゃった...もう一回話しかけてくれる？' },
+                { error: 'あわわ、でじこんちゃんの頭がこんがらがっちゃった…。' },
                 { status: 500 }
             );
         }
 
         const response = completion.choices[0].message;
         const usage = completion.usage ?? null;
+
+        // 感情ヘッダーの遵守率を本番で測る (#26)。この console.info だけは isDev で囲まず、
+        // 本番でも出す。ほかの console.log はすべて開発時のみ。
+        // 利用者の入力も返答の本文も残さず、判定の結果だけを記録する
+        try {
+            // content は型では string だが、上流の互換レイヤーが別の形を返す可能性がある。
+            // クライアントも同じ理由で typeof を見ている (components/chat-page.tsx)。
+            // 計測はあくまで診断なので、ここで throw して成功した返答を 500 に変えてはいけない
+            const content = typeof response.content === 'string' ? response.content : '';
+            console.info(`Emotion header: ${describeEmotionHeader(content)}`);
+        } catch (e) {
+            console.warn('Emotion header logging failed:', e);
+        }
+
         if (isDev) {
             console.log('クライアントに返すレスポンス:', JSON.stringify(response, null, 2));
         }
@@ -194,7 +187,7 @@ export async function POST(request: Request) {
         if (error.status === 429) {
             const retryAfter = 30;
             return NextResponse.json(
-                { error: 'うぅ、今日はたくさんおしゃべりしすぎちゃったみたい...ちょっと休憩してからまた来てね！', retryAfter },
+                { error: 'うぅ、たくさんおしゃべりしすぎちゃったみたい…。', retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -204,14 +197,14 @@ export async function POST(request: Request) {
 
         if (error.status === 401) {
             return NextResponse.json(
-                { error: 'あれ？でじこんちゃんのカギが合わないみたい...管理者さんに確認してもらってね！' },
+                { error: 'あれ？でじこんちゃんのカギが合わないみたい…。管理者さんに確認してもらってね！' },
                 { status: 401 }
             );
         }
 
         return NextResponse.json(
             {
-                error: 'ごめんね、なんかうまくいかなかった...もうちょっとしたらまた話しかけてみて！',
+                error: 'ごめんね、なんかうまくいかなかった…。',
                 details: isDev ? error.message : undefined
             },
             { status: 500 }

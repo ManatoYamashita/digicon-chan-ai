@@ -3,7 +3,7 @@ import styles from "@/styles/card.module.scss";
 import Link from "next/link";
 
 import headImg from "@/public/images/gallery/yc.webp";
-import iconImg from "@/public/images/gallery/friends.webp";
+import iconImg from "@/public/images/gallery/friends-thumb.webp";
 
 type Props = {
     title: string
@@ -26,14 +26,12 @@ function Card({ title, subtitle, description }: Props) {
                 <div className={styles.card__overlay}>
                     <div className={styles.card__header}>
                         <svg className={styles.card__arc} xmlns="http://www.w3.org/2000/svg"><path /></svg>                     
-                        <Image 
+                        <Image
                             className={styles.card__thumb}
-                            src={iconImg} 
-                            alt="デジコンちゃん" 
-                            width={64} 
+                            src={iconImg}
+                            alt="デジコンちゃん"
+                            width={64}
                             height={64}
-                            sizes="(max-width: 480px) 100vw, (max-width: 1000px) 50vw"
-                            objectFit="cover"
                         />
                         <div className={styles.card__header_text}>
                             <h2 className={styles.card__title}>

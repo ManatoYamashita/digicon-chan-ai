@@ -3,13 +3,14 @@
 import { useState, useRef, useCallback, useEffect, ViewTransition } from "react";
 import ChatWindow from "@/components/chat-window";
 import ChatCharacter from "@/components/chat-character";
+import { MAX_PROMPTS } from "@/lib/chat-request";
+import { parseEmotionResponse, type Emotion } from "@/lib/emotion";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import styles from "@/styles/chat-page.module.scss";
 
 gsap.registerPlugin(useGSAP);
 
-export type Emotion = "楽" | "怒" | "哀" | "困" | "照" | "default";
 
 export type ChatMessage = {
   id: string;
@@ -19,7 +20,7 @@ export type ChatMessage = {
   timestamp: number;
 };
 
-const EMOTION_MAP: Record<string, string> = {
+const EMOTION_MAP: Record<Emotion, string> = {
   "楽": "/images/emotions/happy.webp",
   "怒": "/images/emotions/angry.webp",
   "哀": "/images/emotions/confuse.webp",
@@ -28,7 +29,7 @@ const EMOTION_MAP: Record<string, string> = {
   default: "/images/emotions/default.webp",
 };
 
-const EMOTION_LABEL: Record<Emotion | "default", string> = {
+const EMOTION_LABEL: Record<Emotion, string> = {
   "楽": "(≧▽≦)",
   "怒": "(｀Д´)ﾉ",
   "哀": "(´；ω；`)",
@@ -37,28 +38,32 @@ const EMOTION_LABEL: Record<Emotion | "default", string> = {
   default: "(・ω・)",
 };
 
-function parseEmotionResponse(raw: string): { emotion: Emotion; text: string } {
-  const trimmed = raw.trim();
-  const firstChar = trimmed.charAt(0);
-  if (["楽", "怒", "哀", "困", "照"].includes(firstChar)) {
-    const newlineIndex = trimmed.indexOf("\n");
-    const text = newlineIndex !== -1 ? trimmed.slice(newlineIndex + 1).trim() : trimmed.slice(1).trim();
-    return { emotion: firstChar as Emotion, text };
-  }
-  return { emotion: "default", text: trimmed };
+// 送信に失敗したときは発言を履歴から外して入力欄へ戻すので、回数は減らない。そのことと次の手を必ず添える
+function restoredNote(retryAfter: number | null): string {
+  const next = retryAfter ? `${retryAfter}秒くらい待ってから、もう一度送ってね！` : "もう一度送ってね！";
+  return `送れなかったメッセージは入力欄に戻したよ。回数は減ってないから、${next}`;
 }
+const NETWORK_ERROR = "ごめんね、通信がうまくいかなかったみたい…。";
+const UNKNOWN_ERROR = "ごめんね、なんかうまくいかなかった…。";
+const EMPTY_REPLY_ERROR = "あれれ、うまく言葉が出てこなかった…。";
 
-const MAX_PROMPTS = 5;
+// チャット欄の幅 (px)。CSS の clamp() と同じ範囲に収める
+const MIN_WINDOW_WIDTH = 360;
+const RESIZE_STEP = 16;
+
+/** 右下に固定したナビ (幅 50vw) と重ならない最大幅。CSS の calc(50vw - 4rem) と揃える */
+function maxWindowWidth(): number {
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  return Math.max(MIN_WINDOW_WIDTH, Math.floor(window.innerWidth / 2 - 4 * rem));
+}
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [currentEmotion, setCurrentEmotion] = useState<Emotion>("default");
   const emotionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const MAX_TOKENS = 1_048_576; // Gemini 2.5 Flash context window
-  const [tokenUsage, setTokenUsage] = useState<number | null>(null);
 
   const userMessageCount = messages.filter((m) => m.role === "user").length;
   const isSessionExhausted = userMessageCount >= MAX_PROMPTS && !isLoading;
@@ -74,6 +79,27 @@ export default function ChatPage() {
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
   const [isResizing, setIsResizing] = useState(false);
+  // aria-valuenow / aria-valuemax 用。実際の幅は --window-width で決まる
+  const [windowSize, setWindowSize] = useState({ now: MIN_WINDOW_WIDTH, max: MIN_WINDOW_WIDTH });
+
+  const syncWindowSize = useCallback(() => {
+    const wrap = windowWrapRef.current;
+    if (!wrap) return;
+    setWindowSize({ now: Math.round(wrap.getBoundingClientRect().width), max: maxWindowWidth() });
+  }, []);
+
+  const applyWindowWidth = useCallback((width: number) => {
+    const wrap = windowWrapRef.current;
+    if (!wrap) return;
+    const max = maxWindowWidth();
+    const next = Math.round(Math.min(Math.max(width, MIN_WINDOW_WIDTH), max));
+    wrap.style.setProperty("--window-width", `${next}px`);
+    setWindowSize({ now: next, max });
+  }, []);
+
+  useEffect(() => {
+    syncWindowSize();
+  }, [syncWindowSize]);
 
   const handleResizeStart = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -106,7 +132,24 @@ export default function ChatPage() {
     setIsResizing(false);
     document.body.style.userSelect = "";
     document.body.style.cursor = "";
-  }, []);
+    syncWindowSize();
+  }, [syncWindowSize]);
+
+  // キーボードでの幅変更 (ARIA APG の Window Splitter と同じキー)
+  const handleResizeKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    const wrap = windowWrapRef.current;
+    if (!wrap) return;
+    const current = wrap.getBoundingClientRect().width;
+    const step = e.shiftKey ? RESIZE_STEP * 4 : RESIZE_STEP;
+    let next: number | null = null;
+    if (e.key === "ArrowLeft") next = current - step;
+    else if (e.key === "ArrowRight") next = current + step;
+    else if (e.key === "Home") next = MIN_WINDOW_WIDTH;
+    else if (e.key === "End") next = maxWindowWidth();
+    if (next === null) return;
+    e.preventDefault();
+    applyWindowWidth(next);
+  }, [applyWindowWidth]);
 
   // 感情7秒タイマー
   const updateEmotion = useCallback((emotion: Emotion) => {
@@ -138,59 +181,72 @@ export default function ChatPage() {
     };
   }, []);
 
-  // 初期表示アニメーション
+  // 初期表示アニメーション。視差効果を減らす設定のときは移動と拡大縮小をやめ、フェードだけにする
   useGSAP(
     () => {
       if (!chatPageRef.current) return;
 
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const mm = gsap.matchMedia();
+      mm.add(
+        {
+          reduceMotion: "(prefers-reduced-motion: reduce)",
+          allowMotion: "(prefers-reduced-motion: no-preference)",
+        },
+        (context) => {
+          const reduceMotion = Boolean(context.conditions?.reduceMotion);
+          const isMobile = window.matchMedia("(max-width: 768px)").matches;
+          const motion = (vars: gsap.TweenVars): gsap.TweenVars => (reduceMotion ? {} : vars);
+          const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.fromTo(
-        windowWrapRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.7 },
-        0.1
+          tl.fromTo(
+            windowWrapRef.current,
+            { opacity: 0, ...motion({ y: 30 }) },
+            { opacity: 1, ...motion({ y: 0 }), duration: 0.7 },
+            0.1
+          );
+
+          tl.fromTo(
+            characterWrapRef.current,
+            { opacity: 0, ...motion(isMobile ? {} : { x: 40 }) },
+            { opacity: 1, ...motion({ x: 0 }), duration: 0.8 },
+            0.2
+          );
+
+          const infoTitle = infoBackdropRef.current?.querySelector(
+            `.${styles.infoTitle}`
+          );
+          if (infoTitle) {
+            tl.fromTo(
+              infoTitle,
+              { opacity: 0, ...motion({ scale: 0.9 }) },
+              { opacity: 1, ...motion({ scale: 1, ease: "back.out(1.4)" }), duration: 0.6 },
+              0.5
+            );
+          }
+
+          const infoRest = infoBackdropRef.current?.querySelectorAll(
+            `.${styles.infoEmotion}, .${styles.infoDesc}, .${styles.infoHint}`
+          );
+          if (infoRest?.length) {
+            tl.fromTo(
+              infoRest,
+              { opacity: 0, ...motion({ y: 15 }) },
+              { opacity: 1, ...motion({ y: 0 }), duration: 0.5, stagger: 0.06 },
+              0.65
+            );
+          }
+        }
       );
 
-      tl.fromTo(
-        characterWrapRef.current,
-        { opacity: 0, ...(isMobile ? {} : { x: 40 }) },
-        { opacity: 1, x: 0, duration: 0.8 },
-        0.2
-      );
-
-      const infoTitle = infoBackdropRef.current?.querySelector(
-        `.${styles.infoTitle}`
-      );
-      if (infoTitle) {
-        tl.fromTo(
-          infoTitle,
-          { opacity: 0, scale: 0.9 },
-          { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.4)" },
-          0.5
-        );
-      }
-
-      const infoRest = infoBackdropRef.current?.querySelectorAll(
-        `.${styles.infoEmotion}, .${styles.infoTokens}, .${styles.infoDesc}, .${styles.infoHint}`
-      );
-      if (infoRest?.length) {
-        tl.fromTo(
-          infoRest,
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.5, stagger: 0.06 },
-          0.65
-        );
-      }
+      return () => mm.revert();
     },
     { scope: chatPageRef }
   );
 
   const handleReset = useCallback(() => {
     setMessages([]);
-    setTokenUsage(null);
     setInput("");
+    setError(null);
     updateEmotion("default");
   }, [updateEmotion]);
 
@@ -207,7 +263,16 @@ export default function ChatPage() {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    setError(null);
     setIsLoading(true);
+
+    // 失敗した発言は履歴から外して入力欄へ戻す。回数を消費させず、エラー文言を Gemini へ送り返さないため
+    const fail = (reason: string, retryAfter: number | null = null) => {
+      setMessages((prev) => prev.filter((m) => m.id !== userMessage.id));
+      setInput(trimmed);
+      setError(`${reason}\n${restoredNote(retryAfter)}`);
+      updateEmotion("困");
+    };
 
     try {
       const apiMessages = [...messages, userMessage].map((msg) => ({
@@ -215,27 +280,31 @@ export default function ChatPage() {
         content: msg.content,
       }));
 
-      const res = await fetch("/api/gemini", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: apiMessages }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => null);
-        if (res.status === 429) {
-          throw new Error(errorData?.error || "わわっ、今たくさんの人が話しかけてくれてるみたい！ちょっとだけ待っててね～！");
-        }
-        throw new Error(errorData?.error || "あわわ、なんかうまくいかなかった...もう一回試してみてね！");
+      let res: Response;
+      try {
+        res = await fetch("/api/gemini", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: apiMessages }),
+        });
+      } catch {
+        fail(NETWORK_ERROR);
+        return;
       }
 
-      const data = await res.json();
-      const content = data.content || "";
-      const { emotion, text } = parseEmotionResponse(content);
+      // Vercel の 504 など、JSON 以外の応答もここで受け止める
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        const retryAfter = res.status === 429 && typeof data?.retryAfter === "number" ? data.retryAfter : null;
+        fail(typeof data?.error === "string" ? data.error : UNKNOWN_ERROR, retryAfter);
+        return;
+      }
 
-      // トークン使用量を更新
-      if (data.usage) {
-        setTokenUsage(data.usage.total_tokens);
+      const { emotion, text } = parseEmotionResponse(typeof data?.content === "string" ? data.content : "");
+      // 本文が空の返答を履歴に残すと、以降のリクエストがすべて入力検証で 400 になる
+      if (!text) {
+        fail(EMPTY_REPLY_ERROR);
+        return;
       }
 
       const botMessage: ChatMessage = {
@@ -248,28 +317,22 @@ export default function ChatPage() {
 
       setMessages((prev) => [...prev, botMessage]);
       updateEmotion(emotion);
-    } catch (err) {
-      const errorMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: "bot",
-        content: err instanceof Error ? err.message : "えーん、お話が途切れちゃった...もう一回話しかけてくれる？",
-        emotion: "困",
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-      updateEmotion("困");
+    } catch {
+      fail(UNKNOWN_ERROR);
     } finally {
       setIsLoading(false);
     }
   }, [input, isLoading, messages, updateEmotion, userMessageCount]);
 
-  const emotionImage = EMOTION_MAP[currentEmotion] || EMOTION_MAP.default;
+  // Record<Emotion, string> なので currentEmotion のどの値でも必ず引ける
+  const emotionImage = EMOTION_MAP[currentEmotion];
 
   return (
     <div ref={chatPageRef} className={styles.chatPage}>
       <div className={styles.remainingBadge}>
+        <span className={styles.remainingLabel}>残り</span>
         <span className={styles.remainingNumber}>{Math.max(MAX_PROMPTS - userMessageCount, 0)}</span>
-        <span className={styles.remainingLabel}>/ {MAX_PROMPTS} 残り</span>
+        <span className={styles.remainingLabel}>/ {MAX_PROMPTS}</span>
       </div>
       <ViewTransition enter="vt-window-enter" default="none">
         <div className={styles.windowWrap} ref={windowWrapRef}>
@@ -277,6 +340,7 @@ export default function ChatPage() {
             messages={messages}
             input={input}
             isLoading={isLoading}
+            error={error}
             onInputChange={setInput}
             onSend={handleSend}
             isSessionExhausted={isSessionExhausted}
@@ -286,6 +350,16 @@ export default function ChatPage() {
           />
           <div
             className={`${styles.resizeHandle}${isResizing ? ` ${styles.resizing}` : ""}`}
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="チャット欄の幅"
+            aria-valuemin={MIN_WINDOW_WIDTH}
+            aria-valuemax={windowSize.max}
+            aria-valuenow={windowSize.now}
+            aria-valuetext={`${windowSize.now}px`}
+            tabIndex={0}
+            onFocus={syncWindowSize}
+            onKeyDown={handleResizeKeyDown}
             onPointerDown={handleResizeStart}
             onPointerMove={handleResizeMove}
             onPointerUp={handleResizeEnd}
@@ -295,16 +369,12 @@ export default function ChatPage() {
       </ViewTransition>
       <ViewTransition enter="vt-char-enter" default="none">
         <div ref={characterWrapRef} className={styles.characterWrap}>
-          <div ref={infoBackdropRef} className={styles.infoBackdrop}>
-            <h2 className={styles.infoTitle}>Chat</h2>
+          {/* 飾りの透かし。内容はチャット欄と重複するので支援技術からは隠す */}
+          <div ref={infoBackdropRef} className={styles.infoBackdrop} aria-hidden="true">
+            <p className={styles.infoTitle}>Chat</p>
             <p className={styles.infoEmotion}>
               {EMOTION_LABEL[currentEmotion]}
             </p>
-            {tokenUsage !== null && (
-              <p className={styles.infoTokens}>
-                {((tokenUsage / MAX_TOKENS) * 100).toFixed(1)}% used
-              </p>
-            )}
             <p className={styles.infoDesc}>
               でじこんちゃんAI Chat
             </p>

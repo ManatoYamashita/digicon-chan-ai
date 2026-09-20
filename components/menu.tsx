@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import styles from "@/styles/menu.module.scss";
 
 type NavItem = {
@@ -74,7 +74,8 @@ export default function Menu() {
   const toggle = () => setIsOpen((prev) => !prev);
 
   return (
-    <>
+    // 視差効果を減らす設定のときは、インジケーターの移動や拡大縮小をやめる
+    <MotionConfig reducedMotion="user">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -103,6 +104,7 @@ export default function Menu() {
                   key={href}
                   href={href}
                   className={`${styles.link} ${pathname === href ? styles.active : ""}`}
+                  aria-current={pathname === href ? "page" : undefined}
                   onClick={close}
                 >
                   {pathname === href ? (
@@ -138,6 +140,7 @@ export default function Menu() {
             key={href}
             href={href}
             className={`${styles.pillItem} ${pathname === href ? styles.pillActive : ""}`}
+            aria-current={pathname === href ? "page" : undefined}
           >
             {pathname === href ? (
               <motion.span
@@ -151,6 +154,6 @@ export default function Menu() {
           </Link>
         ))}
       </nav>
-    </>
+    </MotionConfig>
   );
 }

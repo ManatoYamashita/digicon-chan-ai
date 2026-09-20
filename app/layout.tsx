@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import { Nunito, Dela_Gothic_One } from "next/font/google";
-import { ProfilePage, WebSite, WithContext } from 'schema-dts';
+import { ImageObject, ProfilePage, WebSite, WithContext } from 'schema-dts';
 import { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
@@ -8,10 +8,21 @@ import { Suspense } from 'react';
 
 import Analytics from './analytics';
 import Menu from '@/components/menu';
+import { SITE_URL } from '@/lib/site';
 
+const SEARCH_THUMBNAIL_URL = `${SITE_URL}/images/gallery/dcchan-square.webp`;
+const SEARCH_THUMBNAIL: ImageObject = {
+  "@type": "ImageObject",
+  "url": SEARCH_THUMBNAIL_URL,
+  "contentUrl": SEARCH_THUMBNAIL_URL,
+  "width": "1774",
+  "height": "1751",
+  "caption": "でじこんちゃん - 東京都市大学デジタルコンテンツ研究会の公式キャラクター",
+};
+
+// 可変フォントとして読み込む。weight を指定すると、同じファイルが 400 と 700 の2点に固定され、500/600/800/900 を指定しても近いウェイトで代用される
 const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["400", "700"],
   display: "swap",
   variable: "--font-nunito",
 });
@@ -24,7 +35,7 @@ const delaGothicOne = Dela_Gothic_One({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://でじこんちゃん.net'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
     template: '%s | でじこんちゃん.net',
@@ -38,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'でじこんちゃん - 東京都市大学デジタルコンテンツ研究会',
     description: '東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ「でじこんちゃん」です。',
-    url: 'https://でじこんちゃん.net',
+    url: SITE_URL,
     siteName: 'でじこんちゃん.net',
     images: [
       {
@@ -53,9 +64,12 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: [{ url: '/favicon.ico' }],
+    icon: [
+      { url: '/favicon.ico', sizes: '256x256', type: 'image/x-icon' },
+      { url: '/favicon.png', sizes: '500x500', type: 'image/png' },
+    ],
     shortcut: '/favicon.ico',
-    apple: [{ url: '/images/icons/dcchan-icon.webp' }],
+    apple: [{ url: '/favicon.png', sizes: '500x500', type: 'image/png' }],
   },
 
   twitter: {
@@ -82,9 +96,9 @@ export const metadata: Metadata = {
     }
   },
   alternates: {
-    canonical: 'https://でじこんちゃん.net',
+    canonical: SITE_URL,
     languages: {
-      'ja': 'https://でじこんちゃん.net',
+      'ja': SITE_URL,
     }
   },
 }
@@ -98,21 +112,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@type": "ProfilePage",
     "dateCreated": "2024-07-10T20:30:00+09:00",
     "dateModified": "2026-03-08T00:00:00+09:00",
+    "primaryImageOfPage": SEARCH_THUMBNAIL,
     "mainEntity": {
       "@type": "Person",
       "name": "でじこんちゃん",
       "alternateName": ["デジコンちゃん", "Digicon-chan", "DC-chan", "デジコン"],
       "additionalName": "でじこんちゃん",
-      "identifier": "https://でじこんちゃん.net",
-      "url": "https://でじこんちゃん.net",
+      "identifier": SITE_URL,
+      "url": SITE_URL,
       "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュ / Tokyo City University Digital Content Study Society's official virtual concierge",
-      "image": {
-        "@type": "ImageObject",
-        "url": "https://でじこんちゃん.net/ogp.jpg",
-        "width": "1200",
-        "height": "630",
-        "caption": "でじこんちゃん - 東京都市大学デジタルコンテンツ研究会の公式キャラクター"
-      },
+      "image": SEARCH_THUMBNAIL,
       "birthDate": "2014-06-04",
       "gender": "female",
       "knowsAbout": [
@@ -152,7 +161,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       "url": "https://tcu-dc.net",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://でじこんちゃん.net/images/icons/dcchan-icon.webp",
+        "url": `${SITE_URL}/images/icons/dcchan-icon.webp`,
         "width": "192",
         "height": "192"
       }
@@ -163,7 +172,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "でじこんちゃん.net",
-    "url": "https://でじこんちゃん.net",
+    "url": SITE_URL,
     "description": "東京都市大学デジタルコンテンツ研究会の公式ヴァーチャルコンシェルジュサイト",
     "publisher": {
       "@type": "Organization",
@@ -175,17 +184,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <head>
-        <meta name="thumbnail" content="https://でじこんちゃん.net/images/gallery/dcchan-selfie.webp" />
-        
-        <Script
+        <script
           id="json-ld-profile"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdProfile) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLdProfile).replace(/</g, '\\u003c'),
+          }}
         />
-        <Script
+        <script
           id="json-ld-website"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLdWebSite).replace(/</g, '\\u003c'),
+          }}
         />
 
         {GA_MEASUREMENT_ID && (

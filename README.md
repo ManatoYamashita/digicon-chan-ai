@@ -54,7 +54,7 @@ Gemini APIを使用してでじこんちゃんと会話が楽しめます！で�
 
 以下がマシンにインストールされていることを確認してください：
 
-- [Node.js](https://nodejs.org/) (v18以降)
+- [Node.js](https://nodejs.org/) (v24。`.nvmrc` があるので `nvm use` で切り替えられます)
 - [pnpm](https://pnpm.io/) (v9以降)
 
 ### インストール

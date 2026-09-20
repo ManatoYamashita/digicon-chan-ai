@@ -7,7 +7,8 @@
     "vercel-build": "sh ./vercel-build.sh",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint app/ components/"
+    "lint": "eslint app/ components/ lib/",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"lib/**/*.test.ts\""
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -29,6 +30,9 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "16.1.6",
     "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": "24.x"
   },
   "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017",
   "pnpm": {
