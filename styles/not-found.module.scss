@@ -14,18 +14,18 @@ $code-size:   clamp(2.5rem, min(13vh, 18vw), 7rem);
 $lead-size:   clamp(0.85rem, min(2.4vh, 4.5vw), 1.25rem);
 $desc-size:   clamp(0.7rem, min(2vh, 3.5vw), 1rem);
 
+// 立ち絵の候補枚数。app/not-found.tsx の ARTS と必ず揃える
+$art-count: 3;
+
 // ── Page ──
-// position: fixed にする理由は3つ。
+// position: fixed にする理由は2つ。
 //  1. layout の <main> には Analytics の Suspense fallback (<div>Loading...</div>) が
 //     先に入る。通常フローだと 100dvh の箱がそのぶん押し下げられ、
 //     body { overflow: hidden } で下端が切れる
 //  2. iOS でツールバーが伸縮するとき dvh の更新が一拍遅れ、下端に白が覗く
-//  3. fixed 自身が重ね合わせ文脈になる。背景をこの要素に塗ることで、
-//     下の .art の mix-blend-mode の下敷きが必ずこの背景になる
 //
-// この要素と .art の間に transform / filter / opacity < 1 / isolation /
-// backdrop-filter / will-change / contain: paint を持つ要素を挟むと multiply が壊れる。
-// 入場アニメーションを .page ではなく子要素だけに当てているのはそのため。
+// 入場アニメーションはこの要素ではなく子要素だけに当てる。画面いっぱいの背景ごと
+// 動かすと、下端に地の色が覗く 2 の問題がそのまま出る。
 .page {
   position: fixed;
   inset: 0;
@@ -42,12 +42,18 @@ $desc-size:   clamp(0.7rem, min(2vh, 3.5vw), 1rem);
   text-align: center;
 }
 
-// ── 歯車のイラスト ──
+// ── でじこんちゃんの立ち絵 ──
+// 候補は app/not-found.tsx の ARTS。3枚すべてが HTML に出ていて、
+// どれを見せるかは描画前に走るインラインスクリプトが <html> に立てる
+// data-nf-art で決まる。/_not-found は静的プリレンダなので、サーバー側で
+// 抽選するとビルド時に 1 回評価されて固定されてしまう。
 .art {
-  // 白背景のまま配布されている画像なので、乗算で下地に溶かす。
-  // 白 (255,255,255) × 背景 = 背景 となり、白い矩形が消える。
-  // 輪郭線は引かない。引くと消したはずの矩形の境界がそこに現れる。
-  mix-blend-mode: multiply;
+  display: none;
+  // 3枚とも本物のアルファを持つ (ALPH チャンクあり、四隅が完全透明) ので、
+  // 背景を消すための mix-blend-mode は要らない。アルファ付きに multiply を当てると
+  // キャラクター本体の不透明画素まで下地と乗算されて濁る。
+  // 輪郭線も引かない。絵の側が既に黒い線を持っている。
+  //
   // 縦横とも上限だけを与える。next/image が持つ width/height 属性の比率は
   // 保たれるので、縦横比の警告は出ない
   inline-size: auto;
@@ -57,6 +63,18 @@ $desc-size:   clamp(0.7rem, min(2vh, 3.5vw), 1rem);
   // 想定外の画面比でも、ページを溢れさせる前にここが縮む
   flex: 0 1 auto;
   min-block-size: 0;
+}
+
+// スクリプトが走らなかったとき (JS 無効など) は 1 枚目を出す。
+// 属性セレクタはクラス名と違ってハッシュ化されないので :global() は要らない
+html:not([data-nf-art]) .art[data-nf-art="0"] {
+  display: block;
+}
+
+@for $i from 0 to $art-count {
+  html[data-nf-art="#{$i}"] .art[data-nf-art="#{$i}"] {
+    display: block;
+  }
 }
 
 // ── 見出し ──
@@ -174,7 +192,10 @@ $desc-size:   clamp(0.7rem, min(2vh, 3.5vw), 1rem);
 // 端末のプリセットではなく、実際に入らなくなる高さで切る。
 // 挿絵より文言と導線を優先する (chat-window の .hint と同じ判断)
 @media (max-height: 20rem) {
-  .art {
+  // 上の reveal は html[data-nf-art=N] .art[data-nf-art=N] で (0,3,1)。
+  // .art だけだと (0,1,0) で負けて挿絵が消えない
+  .art,
+  html[data-nf-art] .art[data-nf-art] {
     display: none;
   }
   // 挿絵を落としてもなお窮屈なので、上と見出しの余白も削り、

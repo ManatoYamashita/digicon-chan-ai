@@ -131,9 +131,18 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 `app/not-found.tsx`。ナビとフッターは `app/layout.tsx` が全ページに描くので、404 では書かない。
 
 - **`.page` は `position: fixed; inset: 0`。** 通常フローにすると、`<main>` の先頭に入る Analytics の Suspense fallback（`<div>Loading...</div>`）のぶん 100dvh の箱が押し下げられ、`body { overflow: hidden }` で下端が切れる。iOS でツールバーが伸縮するときの `dvh` の更新遅れも避けられる
-- **画像の白背景は `mix-blend-mode: multiply` で消す。** 配布された画像はアルファを持たない不透明な WebP。白 × 背景 = 背景 になるので、画像を加工せずに下地へ溶ける。輪郭線は引かない（消したはずの矩形の境界が現れる）
-  - **`.page` と画像の間に `transform` / `filter` / `opacity < 1` / `isolation` / `backdrop-filter` / `will-change` / `contain: paint` を持つ要素を挟むと無言で壊れる。** `mix-blend-mode` は最も近い重ね合わせ文脈の内容と合成されるため。入場アニメーションを `.page` ではなく子要素だけに当てているのはそのため
-  - 背景は `.page` 自身が塗る。`position: fixed` はそれ自体が重ね合わせ文脈になるので、下敷きがこの背景であることが保証される。body のクラス（`.body-notfound`）は、404 のツリーの外に `position: fixed` で描かれる `footer` の色を直すためだけに使う
+- **立ち絵の抽選はブラウザ側で行う。** 候補は `app/not-found.tsx` の `ARTS`。3枚すべてを HTML に出し、描画前に走るインラインスクリプトが `<html>` に `data-nf-art` を立て、CSS の属性セレクタが 1 枚だけ見せる。`/_not-found` は**静的プリレンダ**（ビルド出力の `○ /_not-found`、応答の `x-nextjs-prerender: 1`）なので、Server Component で `Math.random()` を呼ぶとビルド時に 1 回だけ評価され、そのデプロイの間ずっと同じ絵になる
+  - React が `<script>` をホイストするのは `src` が文字列でかつ `async` が真のときだけ。`dangerouslySetInnerHTML` のインラインスクリプトは書いた位置にそのまま出力され、パース時に同期実行される。`<img>` より前に置けば画像がレイアウトされる前に決まるので、差し替えのちらつきが出ない
+  - `<html>` の属性を触るだけなので React のツリー外。ハイドレーション不一致は起きない（`components/about-page.tsx` のモジュールスコープのシャッフルは SSR とクライアントで結果が食い違う。あれは真似しない）
+  - **候補を増減させたら `styles/not-found.module.scss` の `$art-count` も直す。** さらに reveal 側が `html[data-nf-art="N"] .art[data-nf-art="N"]`（詳細度 0,3,1）なので、`@media (max-height: 20rem)` で挿絵を落とす側を `.art` だけ（0,1,0）で書くと負けて消えなくなる。320×256 では CTA とピルナビの隙間が 5px しか無く、挿絵が復活すると確実に溢れる
+- **立ち絵はアルファ付きの WebP を置く。`mix-blend-mode` は使わない。** 3枚とも `ALPH` チャンクを持ち四隅が完全透明なので、背景を消す加工が要らない。**アルファ付きに `multiply` を当ててはいけない。** 透明部分には効かないが、キャラクター本体の不透明画素まで下地と乗算されて濁る（当初の歯車は白背景の不透明画像だったので `multiply` で溶かしていた。差し替えのときに外した）
+  - 差し替える画像のアルファは目で見ても分からない。`VP8X` のフラグバイト（先頭から 20 バイト目）の `0x10` が立っていればアルファあり
+
+    ```bash
+    python3 -c "d=open('f.webp','rb').read(); print('ALPHA', bool(d[20]&0x10)) if d[12:16]==b'VP8X' else print('simple webp')"
+    ```
+
+  - 背景は `.page` 自身が塗る。body のクラス（`.body-notfound`）は、404 のツリーの外に `position: fixed` で描かれる `footer` の色を直すためだけに使う
 - **寸法は `vh` と `vw` の小さい方で決める**（`clamp(a, min(Xvh, Yvw), b)`）。`vw` だけだと 640×400 で縦に溢れ、`vh` だけだと 390×844 で横にはみ出す。縦が足りないときは挿絵から落とし、CTA は必ず画面内に残す
 - **`export const metadata` は `not-found.tsx` でも効く。** Next.js が `errorConvention: 'not-found'` として読み、layout の既定を上書きする。ただし metadata は浅いマージなので、`robots` と `alternates` はキーごと再定義して打ち消す。書かないと root の `index: true` と `canonical: SITE_URL` が 404 に継承され、「404 がトップページである」と宣言することになる
 - 確認する画面サイズは /chat と同じ4つ。どれでもスクロール量が 0 で、CTA が画面内にあり下部のピルナビに隠れないこと

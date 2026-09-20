@@ -210,8 +210,7 @@ footer {
   }
 
 /* ===== 404 ===== */
-/* 背景は styles/not-found.module.scss の .page が塗る。画像の mix-blend-mode の
-   下敷きを、その要素自身が作る重ね合わせ文脈の中に確実に置くため。
+/* 背景は styles/not-found.module.scss の .page が塗る。
    ここは footer だけを直す。footer は layout の <main> 内にあって 404 のツリーの
    外に position: fixed で描かれるので、body 側からしか色が届かない */
 /* 既定のフッター色 (rgb(200, 200, 200)) は明るい背景だと 1.3:1 まで落ちる */
