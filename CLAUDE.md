@@ -126,7 +126,20 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
   - 移動・拡大縮小・ループは `prefers-reduced-motion` に合わせる。GSAP は `gsap.matchMedia()` の `(prefers-reduced-motion: no-preference)` の中で付ける。CSS のアニメーションは `@media (prefers-reduced-motion: no-preference)` の中に書く。framer-motion は `MotionConfig reducedMotion="user"` で包む（#20、#22）
   - 利用者の操作に対する短い反応（押したときの縮小、アイコンの切り替えなど）はそのままでよい
 - **ページ遷移:** View Transitions API で entry/exit アニメーションを定義（`styles/globals.css`）
-- **画像:** アニメーション WebP（`public/images/emotions/` の立ち絵）は `next/image` に `unoptimized` を付ける。画像最適化はどの幅でも元のファイルを返すだけで、幅ごとにキャッシュを作って無駄になる
+- **画像:** アニメーション WebP（`public/images/emotions/` の立ち絵と `public/images/icons/dcchan-icon.webp`）は `next/image` に `unoptimized` を付ける。画像最適化はどの幅でも元のファイルを返すだけで、幅ごとにキャッシュを作って無駄になる
+  - **再圧縮するときはフレームを落とさない。** 多くの画像ツールは既定で1フレーム目だけを読む。`sharp` なら入力にも出力にも効く `{ animated: true }` が要る。落としても画像は表示され続けるため、画面を見ただけでは気付けない（#30 で「照」の立ち絵が 38 フレームから 1 フレームに潰れたまま本番に出ていた）
+
+    ```bash
+    # ANMF チャンクの数がフレーム数。0 なら静止画に潰れている
+    xxd -p <file>.webp | tr -d '\n' | grep -o 414e4d46 | wc -l
+    ```
+
+    ```js
+    // フレーム・間隔・ループを保ったまま再圧縮する。quality 75 で元の画質を保てる
+    await sharp(src, { animated: true }).webp({ quality: 75, effort: 6 }).toFile(dst);
+    ```
+
+  - 再生されているかは、ブラウザで開いて**スクリーンショットを連写し、ハッシュが変わるか**で見る。`canvas.drawImage` でフレームを採る方法は、CDP 越しだとレンダリングが進まず、動いていても同じフレームを返すことがある
 - **フォント:** Nunito は可変フォントとして読み込む（`weight` を指定しない）。指定すると 400 と 700 に固定され、他のウェイトは近いもので代用される
 
 ## SEO・検索結果メタデータ
