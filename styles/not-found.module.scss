@@ -1,0 +1,201 @@
+// ── Design tokens ──
+
+// 下部に固定されたピルナビ (styles/menu.module.scss の .pillBar) を避ける余白。
+// ピルの高さは border 1 + padding 4 + 項目 34 + padding 4 + border 1 = 44px
+$nav-clearance: 80px;                                          // bottom 24px + 44px + 余白 12px
+$nav-clearance-mobile: calc(68px + env(safe-area-inset-bottom, 0px)); // bottom 12px + 44px + 余白 12px
+
+// 縦にも横にも収める。vh と vw の小さい方で決めて clamp() で上下を止める。
+// vw だけだと 640x400 (200% ズーム) で溢れ、vh だけだと 390x844 で横にはみ出す
+$stack-gap:   clamp(0.4rem, min(2vh, 2vw), 1.25rem);
+$heading-gap: clamp(0.5rem, 1.6vh, 1.25rem);
+$image-size:  clamp(72px, min(28vh, 52vw), 200px);
+$code-size:   clamp(2.5rem, min(13vh, 18vw), 7rem);
+$lead-size:   clamp(0.85rem, min(2.4vh, 4.5vw), 1.25rem);
+$desc-size:   clamp(0.7rem, min(2vh, 3.5vw), 1rem);
+
+// ── Page ──
+// position: fixed にする理由は3つ。
+//  1. layout の <main> には Analytics の Suspense fallback (<div>Loading...</div>) が
+//     先に入る。通常フローだと 100dvh の箱がそのぶん押し下げられ、
+//     body { overflow: hidden } で下端が切れる
+//  2. iOS でツールバーが伸縮するとき dvh の更新が一拍遅れ、下端に白が覗く
+//  3. fixed 自身が重ね合わせ文脈になる。背景をこの要素に塗ることで、
+//     下の .art の mix-blend-mode の下敷きが必ずこの背景になる
+//
+// この要素と .art の間に transform / filter / opacity < 1 / isolation /
+// backdrop-filter / will-change / contain: paint を持つ要素を挟むと multiply が壊れる。
+// 入場アニメーションを .page ではなく子要素だけに当てているのはそのため。
+.page {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $stack-gap;
+  padding-block: 1.5rem $nav-clearance;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  background: linear-gradient(147deg, #e8f4f8 0%, #d1e8f0 74%);
+  text-align: center;
+}
+
+// ── 歯車のイラスト ──
+.art {
+  // 白背景のまま配布されている画像なので、乗算で下地に溶かす。
+  // 白 (255,255,255) × 背景 = 背景 となり、白い矩形が消える。
+  // 輪郭線は引かない。引くと消したはずの矩形の境界がそこに現れる。
+  mix-blend-mode: multiply;
+  // 縦横とも上限だけを与える。next/image が持つ width/height 属性の比率は
+  // 保たれるので、縦横比の警告は出ない
+  inline-size: auto;
+  block-size: auto;
+  max-inline-size: $image-size;
+  max-block-size: $image-size;
+  // 想定外の画面比でも、ページを溢れさせる前にここが縮む
+  flex: 0 1 auto;
+  min-block-size: 0;
+}
+
+// ── 見出し ──
+.heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $heading-gap;
+  margin: 0;
+}
+
+.code {
+  // globals.css の h1 が Dela Gothic One。数字はその書体をそのまま活かす
+  font-size: $code-size;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  // 単色で置く。グラデーションの切り抜きは強制カラーモードで文字が消える
+  color: var(--color-text-accent);
+}
+
+.lead {
+  // 親の h1 は Dela Gothic One (subsets: latin なので日本語は持たない)。
+  // inherit ではその h1 を継ぐだけなので、書体を明示して本文と同じ Nunito 系に戻す
+  // (chat-window の .title と同じ判断)
+  font-family: var(--font-nunito), sans-serif;
+  font-size: $lead-size;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-text-primary);
+}
+
+.detail {
+  margin: 0;
+  max-inline-size: min(34rem, 88vw);
+  font-size: $desc-size;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+// ── CTA ──
+// 塗り・白文字・hover の囲い方・押下の縮小は chat-window の .resetBtn に合わせる
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // 直前の説明文より広く空ける。一段離すことで「読むもの」と「押すもの」を分ける
+  margin-block-start: $stack-gap;
+  min-block-size: 44px;
+  padding-block: 12px;
+  padding-inline: 28px;   // ラベルの長さに応じて伸びる。固定幅は置かない
+  border-radius: 999px;
+  background: var(--fill-accent-solid);
+  color: #fff;            // globals.css の a { color: inherit } を上書きする
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  // 深さは影で出す。境界を描く必要は無いのでボーダーは使わない
+  box-shadow: 0 4px 12px rgba(0, 85, 170, 0.25);
+  transition-property: transform, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+
+  // 操作に対する短い反応なので prefers-reduced-motion の対象外 (CLAUDE.md)
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 18px rgba(0, 85, 170, 0.3);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-text-accent);
+    outline-offset: 3px;
+  }
+}
+
+// ── 入場 ──
+// 一度きりの入場なので keyframes を使い、意味のかたまりごとに少しずつ遅らせる。
+// 視差効果を減らす設定のときはこのブロックごと効かないので、要素は最初から
+// 定位置・不透明で出る (opacity: 0 もこの中にあるため、消えたままにはならない)。
+@media (prefers-reduced-motion: no-preference) {
+  .art,
+  .heading,
+  .detail,
+  .cta {
+    opacity: 0;
+    animation: nf-enter 400ms cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
+  .art { animation-delay: 0ms; }
+  .heading { animation-delay: 100ms; }
+  .detail { animation-delay: 160ms; }
+  .cta { animation-delay: 220ms; }
+
+  @keyframes nf-enter {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// ── 縦に極端に狭い画面 (320x256 など) ──
+// 端末のプリセットではなく、実際に入らなくなる高さで切る。
+// 挿絵より文言と導線を優先する (chat-window の .hint と同じ判断)
+@media (max-height: 20rem) {
+  .art {
+    display: none;
+  }
+  // 挿絵を落としてもなお窮屈なので、上と見出しの余白も削り、
+  // CTA とピルナビの隙間を稼ぐ
+  .page {
+    padding-block-start: 0.5rem;
+  }
+  .heading {
+    gap: 0.25rem;
+  }
+}
+
+// ── Mobile ──
+@media screen and (max-width: 768px) {
+  .page {
+    padding-block: 1rem $nav-clearance-mobile;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .detail {
+    max-inline-size: 100%;
+  }
+}
