@@ -8,6 +8,7 @@ type FolderProps = {
   size?: number;
   items?: React.ReactNode[];
   className?: string;
+  href?: string;
 };
 
 function darkenColor(hex: string, percent: number): string {
@@ -38,6 +39,7 @@ export default function Folder({
   size = 1,
   items = [],
   className = "",
+  href,
 }: FolderProps) {
   const papers: (React.ReactNode | null)[] = items.slice(0, MAX_ITEMS);
   while (papers.length < MAX_ITEMS) {
@@ -54,7 +56,7 @@ export default function Folder({
   const paper2 = darkenColor("#ffffff", 0.05);
   const paper3 = "#ffffff";
 
-  const handleClick = () => {
+  const toggle = () => {
     setOpen((prev) => !prev);
     if (open) {
       setPaperOffsets(
@@ -63,8 +65,22 @@ export default function Folder({
     }
   };
 
+  // クリックでもキーボードでも開閉できるようにする。div のままだと Tab で到達できず、
+  // 中身のリンクにキーボードだけでは辿り着けない
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // 中の紙 (a 要素) で押された Enter もここまで上がってくる。それを preventDefault すると、
+    // リンクの既定動作である click が生成されず、リンクが開かなくなる。
+    // フォルダ自身にフォーカスがあるときだけ開閉する
+    if (e.target !== e.currentTarget) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggle();
+    }
+  };
+
+  // 紙は href の有無で div にも a にもなるので、両方を受けられる HTMLElement で受ける
   const handlePaperMouseMove = (
-    e: React.MouseEvent<HTMLDivElement>,
+    e: React.MouseEvent<HTMLElement>,
     index: number
   ) => {
     if (!open) return;
@@ -101,27 +117,55 @@ export default function Folder({
       <div
         className={`${styles.folder} ${open ? styles.open : ""}`}
         style={folderStyle}
-        onClick={handleClick}
+        onClick={toggle}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        aria-label={open ? "フォルダを閉じる" : "フォルダを開く"}
       >
         <div className={styles.folderBack}>
-          {papers.map((item, i) => (
-            <div
-              key={i}
-              className={styles.paper}
-              onMouseMove={(e) => handlePaperMouseMove(e, i)}
-              onMouseLeave={() => handlePaperMouseLeave(i)}
-              style={
-                open
-                  ? ({
-                      "--magnet-x": `${paperOffsets[i]?.x || 0}px`,
-                      "--magnet-y": `${paperOffsets[i]?.y || 0}px`,
-                    } as React.CSSProperties)
-                  : {}
-              }
-            >
-              {item}
-            </div>
-          ))}
+          {papers.map((item, i) => {
+            const paperProps = {
+              className: styles.paper,
+              onMouseMove: (e: React.MouseEvent<HTMLElement>) =>
+                handlePaperMouseMove(e, i),
+              onMouseLeave: () => handlePaperMouseLeave(i),
+              style: open
+                ? ({
+                    "--magnet-x": `${paperOffsets[i]?.x || 0}px`,
+                    "--magnet-y": `${paperOffsets[i]?.y || 0}px`,
+                  } as React.CSSProperties)
+                : {},
+            };
+
+            // href があるときは中身をリンクにする。a 要素にすると、キーボード操作・
+            // 新しいタブで開く・リンク先の確認がブラウザの機能でそのまま使える。
+            // 中身の無い紙 (MAX_ITEMS まで埋めた分) はリンクにしない
+            if (href && item) {
+              return (
+                <a
+                  key={i}
+                  {...paperProps}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  // 閉じているときは紙が隠れるので、Tab で止まらないようにする
+                  tabIndex={open ? 0 : -1}
+                  // 親のクリックまで伝わると、リンクを開くと同時にフォルダが閉じてしまう
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {item}
+                </a>
+              );
+            }
+
+            return (
+              <div key={i} {...paperProps}>
+                {item}
+              </div>
+            );
+          })}
           <div className={styles.folderFront} />
           <div className={`${styles.folderFront} ${styles.right}`} />
         </div>

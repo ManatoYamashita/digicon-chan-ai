@@ -119,8 +119,8 @@ pnpm start
 
 問題や機能リクエストの提出は歓迎します。
 
-## 連絡先
+## 開発者
 
-山下マナト - g2172117[at]tcu.ac.jp
+山下マナト - [mail@yamashitamana.to](mailto:mail@yamashitamana.to)
 
 プロジェクトリンク: [https://github.com/ManatoYamashita/digicon-chan-ai](https://github.com/ManatoYamashita/digicon-chan-ai)
