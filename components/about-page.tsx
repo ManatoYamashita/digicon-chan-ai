@@ -111,8 +111,10 @@ export default function AboutPage() {
       pickedEmotionIcons.map((img) => (
         <Image
           key={img.src}
+          // 紙は3枚とも同じ動画へのリンクなので、感情アイコンは装飾として扱う。
+          // リンクの名前は Folder の linkLabel が持つ (#38)
+          alt=""
           src={img.src}
-          alt={img.alt}
           fill
           sizes="80px"
           style={{ objectFit: "cover", borderRadius: "8px" }}
@@ -337,7 +339,14 @@ export default function AboutPage() {
 
         {/* ── Folder ── */}
         <section className={styles.folderSection}>
-          <Folder size={3} color="#06C0FF" items={folderItems} href="https://youtu.be/jOkLO_n1SgY" />
+          <Folder
+            size={3}
+            color="#06C0FF"
+            items={folderItems}
+            href="https://youtu.be/jOkLO_n1SgY"
+            label="ボイスドラマのフォルダ"
+            linkLabel="デジコンのボイスドラマをYouTubeで見る（新しいタブで開く）"
+          />
         </section>
 
         {/* ── Timeline ── */}
