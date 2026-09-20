@@ -119,27 +119,21 @@ footer {
   animation: none;
 }
 
-/* ===== View Transitions: / → /chat ===== */
-/* 視差効果を減らす設定のときは適用せず、ブラウザ既定のクロスフェードに任せる */
+/* ===== View Transitions: / からの退出演出 ===== */
+/* 名前は app/page.tsx の #home と components/dc-chan.tsx の .dcchan に
+   view-transition-name で直接振ってある。/ にしか存在しない名前なので、
+   ブラウザは old だけのグループを作る＝退出アニメーションになる。
+   入場側（チャット窓と立ち絵）は components/chat-page.tsx の GSAP が担当する。
+   視差効果を減らす設定のときは適用せず、ブラウザ既定のクロスフェードに任せる。 */
 @media (prefers-reduced-motion: no-preference) {
   /* Step 1: #home fadeout (0–300ms) */
-  ::view-transition-old(.vt-home-exit) {
-    animation: vt-fade-out 0.3s ease-out forwards;
+  ::view-transition-old(vt-home) {
+    animation: vt-fade-out 0.3s ease-out both;
   }
 
-  /* Step 2: #dc-chan slide-out left (200–600ms) */
-  ::view-transition-old(.vt-dcchan-exit) {
+  /* Step 2: でじこんちゃんの立ち絵が左へ抜ける (200–600ms) */
+  ::view-transition-old(vt-dcchan) {
     animation: vt-slide-out-left 0.4s ease-in 0.2s both;
-  }
-
-  /* Step 3: Character slide-in right (400–900ms) */
-  ::view-transition-new(.vt-char-enter) {
-    animation: vt-slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
-  }
-
-  /* Step 4: Chat window fade-slide-in (500–1000ms) */
-  ::view-transition-new(.vt-window-enter) {
-    animation: vt-fade-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
   }
 
   @keyframes vt-fade-out {
@@ -149,14 +143,6 @@ footer {
   @keyframes vt-slide-out-left {
     from { opacity: 1; transform: translateX(0); }
     to   { opacity: 0; transform: translateX(-30%); }
-  }
-  @keyframes vt-slide-in-right {
-    from { opacity: 0; transform: translateX(30%); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes vt-fade-slide-in {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 }
 
