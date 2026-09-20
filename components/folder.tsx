@@ -68,6 +68,10 @@ export default function Folder({
   // クリックでもキーボードでも開閉できるようにする。div のままだと Tab で到達できず、
   // 中身のリンクにキーボードだけでは辿り着けない
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // 中の紙 (a 要素) で押された Enter もここまで上がってくる。それを preventDefault すると、
+    // リンクの既定動作である click が生成されず、リンクが開かなくなる。
+    // フォルダ自身にフォーカスがあるときだけ開閉する
+    if (e.target !== e.currentTarget) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       toggle();
