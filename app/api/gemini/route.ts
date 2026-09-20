@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { parseChatRequest, type ChatRequestError } from '@/lib/chat-request';
 import { createGeminiClient, withRetry } from '@/lib/gemini-client';
 import { EMOTIONS, describeEmotionHeader } from '@/lib/emotion';
+import { createRateLimiter, type RateLimitScope } from '@/lib/rate-limit';
 
 const setting = `
     # 命令文
@@ -13,6 +14,7 @@ const setting = `
     * 必ず回答の一行目には["${EMOTIONS.join('", "')}"]のいずれかの感情を表す一文字を記述し、本文は2行目から記述してください。なお、感情の表記の前後に余計なスペースや句点、読点を含めないでください。
     * 感情の後には余計な句読点や空白を入れず、改行した後に本文は2行目から記述してください。
     * 返答は画面にそのまま表示されるので、Markdown記法（**太字**、行頭の * や - による箇条書き、# の見出し）は使わず、プレーンテキストで書くこと。箇条書きにしたいときは行頭に「・」を使うこと
+    * 本文はおおむね200字を目安にする。ひとことで足りるときは短く返し、手順や一覧などで必要なときは目安を超えてよい。長くなりそうなときは要点を先に伝え、続きは聞かれてから答えること
     * 山下マナトは聖乳くるみ(赤瀬みく)のファンで、でじこんちゃんに特別な感情を抱いていた。
 
     # キャラクター設定
@@ -47,33 +49,25 @@ const REQUEST_ERROR_MESSAGES: Partial<Record<ChatRequestError, string>> = {
     too_many_messages: 'いっぱいお話ししてくれてありがとう！会話をリセットしてからまた話しかけてね！',
 };
 
-// --- インメモリレート制限 (スライディングウィンドウ) ---
-const RATE_LIMIT_RPM = 8; // Gemini 2.5 Flash Free Tier 10RPM に対して余裕枠
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-const requestTimestamps: number[] = [];
+// レート制限。窓の数え方と上限値は lib/rate-limit.ts にある (#33)
+const rateLimiter = createRateLimiter();
 
-function isRateLimited(): boolean {
-    const now = Date.now();
-    // ウィンドウ外のタイムスタンプを除去
-    while (requestTimestamps.length > 0 && requestTimestamps[0] < now - RATE_LIMIT_WINDOW_MS) {
-        requestTimestamps.shift();
-    }
-    return requestTimestamps.length >= RATE_LIMIT_RPM;
-}
-
-function recordRequest(): void {
-    requestTimestamps.push(Date.now());
-}
+// 分の上限は「今ちょっと混んでいる」、1日の上限は「今日はもう終わり」。待ち方が違うので文言を分ける
+const RATE_LIMIT_MESSAGES: Record<RateLimitScope, string> = {
+    minute: 'わわっ、今たくさんの人が話しかけてくれてるみたい！',
+    day: 'うぅ、今日はみんなとおしゃべりしすぎちゃった…。また明日ね！',
+};
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export async function POST(request: Request) {
     try {
         // レート制限チェック
-        if (isRateLimited()) {
-            const retryAfter = 30;
+        const rateLimit = rateLimiter.check();
+        if (rateLimit.limited) {
+            const retryAfter = rateLimit.retryAfterSeconds;
             return NextResponse.json(
-                { error: 'わわっ、今たくさんの人が話しかけてくれてるみたい！', retryAfter },
+                { error: RATE_LIMIT_MESSAGES[rateLimit.scope], retryAfter },
                 {
                     status: 429,
                     headers: { 'Retry-After': String(retryAfter) },
@@ -127,7 +121,7 @@ export async function POST(request: Request) {
         const completion = await withRetry(
             (timeout) => {
                 // 試行ごとに記録し、ローカルのレート制限を上流への実リクエスト数に合わせる
-                recordRequest();
+                rateLimiter.record();
                 return client.chat.completions.create(
                     {
                         model: "gemini-2.5-flash",
@@ -141,7 +135,7 @@ export async function POST(request: Request) {
                 );
             },
             // 枠が尽きたら再試行せず、その時点のエラー (429 など) を返す
-            { canRetry: () => !isRateLimited() },
+            { canRetry: () => !rateLimiter.check().limited },
         );
 
         if (isDev) {
