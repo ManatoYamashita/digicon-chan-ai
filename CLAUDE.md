@@ -146,7 +146,11 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
   - 退出は View Transition、入場は GSAP という分担。`/chat` の入場（`components/chat-page.tsx` の `useGSAP`）は URL 直打ちやリロードでも効くうえ、`useGSAP` は layout effect なので新スナップショット取得の直前に `opacity: 0` を書き込む。同じ要素を View Transition でも動かすと二重になって濁る
   - `view-transition-name` は必ず TSX のインライン `style` か `styles/globals.css` に書く。`*.module.scss` に書くと Lightning CSS が値をハッシュ化して `::view-transition-*()` のセレクタと一致しなくなる
   - 開発サーバーでは StrictMode の二重コミットでページ遷移以外にも遷移が走る。挙動の確認は `pnpm build && pnpm start` で行う（#32）
-- **画像:** アニメーション WebP（`public/images/emotions/` の立ち絵と `public/images/icons/dcchan-icon.webp`）は `next/image` に `unoptimized` を付ける。画像最適化はどの幅でも元のファイルを返すだけで、幅ごとにキャッシュを作って無駄になる
+- **画像:** 画像最適化は `next.config.ts` の `images.unoptimized` で**全体的に切ってある**（#48）。`public/images/` のファイルがそのまま配信されるので、**元ファイルが表示サイズに見合っている必要がある**
+  - 切ってある理由: 配信物は 30 枚中 29 枚が WebP（残り 1 枚が JPEG）で既に圧縮済みなので、幅ごとに変換してもほとんど縮まらない。一方で Hobby プランの変換枠は消費され、尽きると `/_next/image` が `HTTP 402`（`x-vercel-error: OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED`）を返して画像が消える
+  - **枠が尽きるとモバイル幅から先に壊れる。** キャッシュ済みの変換は 304 で配信され続け、新しいキャッシュキーだけが 402 になるため。#48 の時点で `/about` は 1280×800 では 18 枚中 2 枚、**390×844 では 18 枚中 15 枚**が空白だった。デスクトップだけ見ていると気付けない
+  - 画像を足したら `pnpm images:resize` を通す。長辺 1600px に収め（ギャラリーのライトボックスが最大 90vw × 85vh）、WebP は quality 85 で再圧縮し、8KB 以上縮むものだけ差し替える
+  - **アニメーション WebP はスクリプトの対象外。** `public/images/emotions/` の立ち絵 6 本と `public/images/icons/dcchan-icon.webp`。触らないことでフレーム落ちの余地を構造的に消している。個別の `<Image>` にも `unoptimized` を残してある（`components/chat-character.tsx` と `components/sounds.tsx`）。設定を戻したときに真っ先に壊れるのがここだから
   - **再圧縮するときはフレームを落とさない。** 多くの画像ツールは既定で1フレーム目だけを読む。`sharp` なら入力にも出力にも効く `{ animated: true }` が要る。落としても画像は表示され続けるため、画面を見ただけでは気付けない（#30 で「照」の立ち絵が 38 フレームから 1 フレームに潰れたまま本番に出ていた）
 
     ```bash

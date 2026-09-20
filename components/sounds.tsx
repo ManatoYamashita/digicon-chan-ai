@@ -27,12 +27,15 @@ function Sounds({title, description}: Props) {
     return (
         <div className={styles.sounds}>
             <div className={styles.image_container}>
+                {/* dcchan-icon.webp は 5 フレームのアニメーション WebP。最適化を通すと
+                    1 フレーム目に潰れるため、next.config.ts の設定とは別に個別でも外す */}
                 <Image
                     src={ImgSrc}
                     className={styles.image}
                     alt="デジコン DTM班"
                     priority
                     fill
+                    unoptimized
                     sizes="(max-width: 480px) 30vw, (max-width: 1000px) 10vw"
                 />
             </div>
