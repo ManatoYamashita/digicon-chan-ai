@@ -100,6 +100,19 @@ footer {
   animation: none;
 }
 
+/* ===== View Transitions: 遷移の起動役 ===== */
+/* app/layout.tsx の <ViewTransition update="vt-shell"> が document.startViewTransition を
+   呼ぶためだけの境界。React は update / enter / exit のクラスを要素の
+   view-transition-class として付けるので、ここではクラスセレクタで掴む。
+   境界そのものは動かさず、旧ページは即座に消して新ページを出す。
+   実際の演出は view-transition-name を振った要素が担当する。 */
+::view-transition-group(.vt-shell) { animation: none; }
+::view-transition-old(.vt-shell) { animation: none; opacity: 0; }
+::view-transition-new(.vt-shell) { animation: none; opacity: 1; }
+
+/* 遷移中のオーバーレイがクリックを吸わないようにする */
+::view-transition { pointer-events: none; }
+
 /* ===== Menu: View Transitions から除外 ===== */
 ::view-transition-group(menu-fab),
 ::view-transition-group(menu-pill) {
