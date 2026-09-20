@@ -169,6 +169,45 @@ BASE_URL                # サイトURL
 NEXT_PUBLIC_GA_MEASUREMENT_ID  # Google Analytics測定ID
 ```
 
+### `GEMINI_API_KEY` の発行元と、請求の上限（#36）
+
+**このリポジトリは公開されているので、Google アカウント名と請求先アカウント ID はここに書かない。** 必要なら `gcloud auth list` と `gcloud billing projects describe` で引く。
+
+| | |
+|---|---|
+| GCP プロジェクト | `gen-lang-client-0333144685`（表示名 `digicon-chan`） |
+| API キー | `digicon-chan-gemini-api`。`generativelanguage.googleapis.com` 専用に制限済み |
+| 発行元アカウント | 個人の Google アカウント。`gcloud projects list` に `digicon-chan` が出るもの |
+
+**請求に硬い上限を掛けているのは、この GCP プロジェクトの割り当て上書きだけ。** `lib/rate-limit.ts` はインスタンスごとのインメモリなので歯止めにしかならない。
+
+`gemini-2.5-flash` に対して、日次・分あたりの全系統（ティア1／2／3と priority）を上書き済み。
+
+| 窓 | 上書き値 | 上書き前の既定 |
+|---|---|---|
+| 1日あたり | **1,000** | 10,000（ティア1） / 100,000（2） / **-1 = 無制限**（3） |
+| 1分あたり | **300** | 1,000（ティア1） / 2,000（2） / 20,000（3） |
+
+最悪でも約 **$1.1/日**（長い返答1件 ≒ $0.0011）で止まる。通常運用は数十件/日なので当たらない。
+
+> [!IMPORTANT]
+> **上書きは model ごとに効く。モデルを変えたら、新しいモデル名で入れ直すこと。** `gemini-2.5-flash` に掛けた上書きは `gemini-3.x` には一切かからず、上限が既定（ティア3なら無制限）へ戻る。
+
+予算アラートは月 ¥750（≒ $5）、50% / 90% / 100% で通知。**通知するだけで支出は止まらない。** 止めるのは割り当てのほう。
+
+現在の上書きを確認する:
+
+```bash
+TOKEN=$(gcloud auth print-access-token)
+curl -sS "https://serviceusage.googleapis.com/v1beta1/projects/gen-lang-client-0333144685/services/generativelanguage.googleapis.com/consumerQuotaMetrics?pageSize=300" \
+  -H "Authorization: Bearer $TOKEN" \
+| jq -r '(.metrics // [])[] | . as $m | (.consumerQuotaLimits // [])[] | . as $l
+  | ($l.quotaBuckets // [])[] | select((.dimensions.model // "") == "gemini-2.5-flash") | select(.consumerOverride)
+  | "  \($m.metric | sub("generativelanguage.googleapis.com/";""))  \($l.unit)  既定=\(.defaultLimit) → \(.effectiveLimit)"' | sort -u
+```
+
+値を変えるときは、同じ `limits/...` へ `consumerOverrides` を POST する（`?force=true`）。
+
 ## リモート構成
 
 このリポジトリには push 先が2つある。混同すると、Issue や PR が誰にも見えない場所に出来上がる。
