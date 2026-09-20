@@ -298,6 +298,12 @@ main へのマージは、そのまま本番デプロイになる。`/api/gemini
 1. **マージ前**
    - レビューコメントすべてに返信済みで、チェックが通っていることを確かめる
    - Preview では `/api/gemini` がキー未設定の 500 JSON を返すことを確かめる。Preview は Vercel Authentication で保護されているので `vercel curl` を使う（初回は `vercel link --yes --project dcchan --scope yamashitamanato` が必要）
+     - **ワークツリーごとに `.vercel/project.json` は別々。** `.claude/worktrees/` の中から叩くときは、まず中身が `dcchan`（`prj_LZ5DeBc552WlhiOkpegW6J9IWLnP`）を指しているか見る。別プロジェクトを指していると、`vercel curl` は認証が通らずページが 302（`vercel.com/sso-api`）、API が 401 `Protected deployment` を返す。**手順が壊れたように見えるが、原因はリンク先**
+     - **`vercel curl` は `--yes` を要求する。未リンクのディレクトリでこれを付けると、ディレクトリ名で新しい Vercel プロジェクトを黙って作ってリンクする。** `not-found` / `fix-emotion-webp` / `emotion-metric` という空のプロジェクトは、すべてこれで出来た。`--yes` を付ける前にリンクを確かめる
+
+     ```bash
+     cat .vercel/project.json   # projectName が dcchan であること
+     ```
    - マージは head を固定して行い、確認後の push が紛れ込まないようにする
 
    ```bash
