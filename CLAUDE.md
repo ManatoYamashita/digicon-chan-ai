@@ -24,14 +24,14 @@ Gemini の上流呼び出しは、本物の SDK クライアントの fetch だ�
 
 ## 技術スタック
 
-- **Next.js 16** (App Router + Turbopack)
+- **Next.js 16.3** (App Router + Turbopack)。`<Link transitionTypes>` を使うため 16.1.6 から上げた（#42）。このプロップは 16.2 で入ったもの
 - **React 19**
 - **TypeScript** (strict mode, パスエイリアス `@/*` → `./`)
 - **Gemini API** - OpenAI SDK (`openai` パッケージ) 経由で `generativelanguage.googleapis.com` に接続
 - **GSAP** + **framer-motion** - アニメーション
 - **Sass** (SCSS Modules) - スタイリング
 - **@svgr/webpack** - SVGをReactコンポーネントとしてインポート
-- **View Transitions API** - ルートレイアウトの `<ViewTransition>` が遷移を起こし、演出対象には `view-transition-name` を振る（`styles/globals.css`）。`next.config.ts` の設定は不要（`experimental.viewTransition` は no-op なので #32 で削除した）
+- **View Transitions API** - ルートレイアウトの `<ViewTransition>` が遷移を起こし、演出対象には `view-transition-name` を振る（`styles/globals.css`）。`next.config.ts` の設定は不要（`experimental.viewTransition` は no-op なので #32 で削除した）。遷移の種別は `<Link transitionTypes>` で渡し、CSS の `:active-view-transition-type()` で受ける（#42）
   - `ViewTransition` は `react@19.2.4` 本体には無い。App Router が `react` を Next.js の同梱ビルド（`next/dist/compiled/react`）へ解決するので使えている。型は `next/dist/types.d.ts` の `/// <reference types="react/experimental" />` 経由で届く
 
 ## アーキテクチャ
@@ -160,6 +160,11 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
   - 移動・拡大縮小・ループは `prefers-reduced-motion` に合わせる。GSAP は `gsap.matchMedia()` の `(prefers-reduced-motion: no-preference)` の中で付ける。CSS のアニメーションは `@media (prefers-reduced-motion: no-preference)` の中に書く。framer-motion は `MotionConfig reducedMotion="user"` で包む（#20、#22）
   - 利用者の操作に対する短い反応（押したときの縮小、アイコンの切り替えなど）はそのままでよい
 - **ページ遷移:** `app/layout.tsx` の `<ViewTransition default="none" update="vt-shell">` が `document.startViewTransition` を起こす。ページ全体の退出フェードは `styles/globals.css` の `::view-transition-old(.vt-shell)` に書く。個別に動かしたい要素だけ `style={{ viewTransitionName: "..." }}` を振り、`::view-transition-old/new(名前)` を当てる
+  - **遷移中に動くものの所有者は View Transition ひとつに保つ。** 同じ時間帯に実 DOM の CSS アニメーションや `transition` を重ねると、`::view-transition-new` が live 表現なのでその上で別途走り、二重掛けになる。過去に踏んだのは `.body-default > main` の `animation: In`（#41）と、`.body-default` / `.body-chat` の `transition: background 0.5s`（#40）の 2 件
+    - **`<main>` に transform の残るアニメーションを足さない。** `fill-mode: forwards` で値が残ると `<main>` が `position: fixed` の子孫の包含ブロックになり、`.dcchan` の `height: 200vh` の立ち絵がページのスクロール量に算入される。`body { overflow: hidden }` でスクロールバーは出ないので、`document.scrollingElement.scrollHeight - clientHeight` を測らないと気付けない（1280×800 で 803px。#41）
+  - **`/` からの退出演出は遷移の種別で絞る。** `vt-dcchan` は `/` にしか無い名前なので、名前があるだけだと `/` から離れるどの遷移でも old だけのグループができて退出アニメが走る（`/` → `/about` でも `/chat` 向けの演出が出ていた）。`components/menu.tsx` の `<Link transitionTypes={["to-chat"]}>` が渡した文字列を Next.js が `React.addTransitionType` へ載せ、`react-dom` が `document.startViewTransition({ update, types })` として呼ぶので、CSS 側は `:root:active-view-transition-type(to-chat)::view-transition-old(vt-dcchan)` で掴める（#42）
+    - 種別で絞るのは `/` 固有の演出だけ。`::view-transition-old(.vt-shell)` のフェードアウトは全ページ共通の「旧ページが消える」演出なので絞らない
+    - 種別が付かない遷移（`/` → `/about`、ブラウザの戻る・進む）では UA 既定のクロスフェードだけになる
   - **既存の要素に `view-transition-name` を後付けしない。** 付けた要素は stacking context になり、その中の `z-index` が外の兄弟に効かなくなる。`/` の `#home` に振ったとき、`.sounds`（`z-index: 2`）・`.sidebar`（2）・`.greets`（1）がまとめて `#dc-chan` の立ち絵の裏へ落ちた。390×844 で画素の 17%、1280×800 で 3.5% が変わり、音声の再生カードが不可視になる（#32）
     - ページ全体を消す・出すだけなら要素に名前は要らない。`::view-transition-old(.vt-shell)` が境界のスナップショット＝旧ページ全体を掴んでいる。名前を振ってよいのは `components/dc-chan.tsx` の `.dcchan` のように、**他と違う動きをさせたい要素**だけ
     - 名前を振ったら **base と head を両方ビルドして静止画の画素を比べる。** `document.getAnimations()` の一覧が想定どおりでも、重なり順の退行はそこには出ない。アニメーション WebP はキャプチャごとにフレームが変わるので、比較の前に `img` を隠すか、同一 URL を 2 回撮ってノイズ量を先に測る
@@ -168,6 +173,9 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
   - 退出は View Transition、入場は GSAP という分担。`/chat` の入場（`components/chat-page.tsx` の `useGSAP`）は URL 直打ちやリロードでも効くうえ、`useGSAP` は layout effect なので新スナップショット取得の直前に `opacity: 0` を書き込む。同じ要素を View Transition でも動かすと二重になって濁る
   - `view-transition-name` は必ず TSX のインライン `style` か `styles/globals.css` に書く。`*.module.scss` に書くと Lightning CSS が値をハッシュ化して `::view-transition-*()` のセレクタと一致しなくなる
   - 開発サーバーでは StrictMode の二重コミットでページ遷移以外にも遷移が走る。挙動の確認は `pnpm build && pnpm start` で行う（#32）
+  - **遷移をまたいで DOM を触る副作用は、`useEffect` ではなくレイアウトエフェクトで書く。** React は `startViewTransition({ update })` の `update` の中で `mutationCallback()`（旧ツリーの破棄）と `layoutCallback()`（新ツリーのレイアウトエフェクト）を呼び、passive effect（`useEffect`）は `transition.ready` の後に回す。`useEffect` で書くと新しいスナップショットを撮る時点でまだ旧ページの状態のままになる（#40）
+    - `body` の背景クラスは `components/body-class.tsx` が唯一の所有者。各ページは `<BodyClass name="body-*" />` を 1 つ描画するだけで、`document.body.classList` を直接触る箇所はこのファイルの 2 行しか無い
+    - SSR では `useLayoutEffect` が警告を出すので、`typeof window === "undefined" ? useEffect : useLayoutEffect` の切り替えを `body-class.tsx` の中だけで行う
 - **画像:** 画像最適化は `next.config.ts` の `images.unoptimized` で**全体的に切ってある**（#48）。`public/images/` のファイルがそのまま配信されるので、**元ファイルが表示サイズに見合っている必要がある**
   - 切ってある理由: 配信物は 30 枚中 29 枚が WebP（残り 1 枚が JPEG）で既に圧縮済みなので、幅ごとに変換してもほとんど縮まらない。一方で Hobby プランの変換枠は消費され、尽きると `/_next/image` が `HTTP 402`（`x-vercel-error: OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED`）を返して画像が消える
   - **枠が尽きるとモバイル幅から先に壊れる。** キャッシュ済みの変換は 304 で配信され続け、新しいキャッシュキーだけが 402 になるため。#48 の時点で `/about` は 1280×800 では 18 枚中 2 枚、**390×844 では 18 枚中 15 枚**が空白だった。デスクトップだけ見ていると気付けない
