@@ -52,3 +52,26 @@
     }
 
 }
+// 縦に入らなくなる高さでは、挨拶の吹き出し3つ (レイアウト高さ 320px 幅で実測 107.5px、
+// デスクトップ幅で 153.6px) を落として見出しだけを残す。320x256 で .row3 に許される
+// 余白は 34px しかなく、padding を詰めても入らない。
+// transform: scale(0.8) は見た目だけで、レイアウトの高さは縮まない。
+//
+// 文字サイズは高さ基準にする。上の 8vw のままだと 1280x300 のような横長短尺で
+// タイトルが 76px まで育ってしまう。
+//
+// ここより下に max-width のブロックを足さないこと。@media はカスケードに影響せず、
+// 同詳細度 (.hello .title は (0,2,0)) ならソース順の後勝ちで決まる。
+@media screen and (max-height: 24rem) {
+    .hello {
+        .phrases {
+            display: none;
+        }
+        .title {
+            font-size: clamp(1.5rem, 8vh, 3rem);
+        }
+        .desu {
+            font-size: 1rem;
+        }
+    }
+}

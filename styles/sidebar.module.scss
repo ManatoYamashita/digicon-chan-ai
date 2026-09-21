@@ -129,3 +129,79 @@ $transition: $timing ease all;
     }
   }
 }
+
+// 縦に入らなくなる高さでは、7本 x $linkHeight の縦並び (= 272px) が画面に入らない。
+// リンクの当たり判定 64x32 はそのままに、横並びの折り返しへ組み替える。
+//
+// grid の repeat(auto-fit, ...) は使えない。コンテナのサイズが不定 (width: fit-content の
+// max-content 計算中) のとき auto-fit は繰り返し1回に解決され、1列7行へ戻る
+// (CSS Grid 仕様 7.2.3.2)。flex-wrap にはこの罠が無い。
+//
+// ここより下に max-width のブロックを足さないこと。@media はカスケードに影響せず、
+// 同詳細度ならソース順の後勝ちで決まる。
+@media screen and (max-height: 24rem) {
+  .navbar {
+    width: -moz-fit-content;
+    width: fit-content;
+    // 左右を 0.5rem にすると、高さ80pxの箱で border-radius: 6rem が r=40px のピル形へ
+    // 比例縮小したカーブに、1段目の端のリンクが食い込む。1rem にすると 320px 幅で
+    // content = 256 = ちょうど 4 x 64 となり、サブピクセルで3列へ落ちる危険がある
+    padding: 0.5rem 0.75rem;
+  }
+
+  .navbar_menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    // gap は入れない。320px 幅では 4 x 64 + 3g <= 264 より g <= 2.6px で実質0になる。
+    // 区切りは下の hover / focus の角丸背景で付ける
+  }
+
+  // 幅 $spacer * 4 を縮ませない。これがリンクを潰さない担保
+  .navbar_item {
+    flex: 0 0 auto;
+  }
+
+  // 縦位置を top で動かすゼリー状の指標は、横並びでは当たらない場所へ出る。
+  // 上の @for の生成規則は top / animation / opacity しか書いておらず content には
+  // 触れないので、同詳細度 (0,2,1) の後勝ちで消せる。!important は要らない
+  .navbar_item:last-child:before {
+    content: none;
+  }
+
+  .navbar_link {
+    // span の包含ブロックを .navbar_menu (position: relative) へ移す。下のツールチップで使う
+    position: static;
+    border-radius: $borderRadius * 1.75;
+
+    // 指標を消したぶん、ホバーとフォーカスの手掛かりをリンク自身に持たせる。
+    // .icon の fill は currentColor ではないので、color だけを変えても何も起きない
+    &:hover,
+    &:focus-visible {
+      background: var(--dc-primary-b);
+
+      .icon {
+        fill: #fff;
+      }
+    }
+
+    // ツールチップはナビ全体の真下に1スロットで出す。left: 100% のままだと隣のリンクに
+    // 重なり、段の最後の1本では画面外へ出る。リンクの中身はSVGとこの span だけで、
+    // span がアクセシブル名を担っているので display: none にはしない
+    // (opacity: 0 のままアクセシビリティツリーには残る)。
+    // 真上ではなく真下なのは、デスクトップ分岐では .row3 が上寄せでナビが画面上端に来るから。
+    // 1280x300 で真上に出すと top: -12px になり、7本すべてが画面外へ出る (実測)
+    span {
+      left: 50%;
+      right: auto;
+      top: calc(100% + 0.25rem);
+      margin-left: 0;
+      transform: translate(-50%, -0.5rem);
+    }
+
+    .navbar:not(:hover) &:focus span,
+    &:hover span {
+      transform: translate(-50%, 0);
+    }
+  }
+}
