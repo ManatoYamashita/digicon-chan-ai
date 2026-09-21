@@ -127,9 +127,19 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 `app/page.module.scss` の `.back` は `height: 100svb` の flex column で、中は3行。
 
 - `.row`(33%) と `.row2`(20%) は `overflow: hidden` を持つため flex の automatic minimum size
-  が 0 になり、**縦が足りないと無音で 0px まで潰れる**。実測で潰れ始めるのは
-  幅≤768 で **H < 454**、幅>768 で **H < 384**。つまり **640×400 の時点で
-  Music・Card・Toggle・ロゴ・Sounds は何も見えていない**（#60）
+  が 0 になり、**縦が足りないと無音で 0px まで潰れる**。行の高さの合計は、幅≤768 で
+  `H − 438`（= `23rem` + `.back` の `padding-bottom: 70px`）に線形で乗る。つまり
+  **H ≤ 438 の間は 0px** で、その上も細い切れ端が続く（H=480 で 26 / 16px、553 で 72 / 43px、
+  600 で 101 / 61px）。幅>768 は H=385 で 19 / 11px、480 で 78 / 47px（崖は外挿で約 355。
+  24rem の下なので 0px は観測されない）。**#60 の Issue が書いた崖 454 / 384 は計算値で、
+  実測とは 16px ずれていた**（本番ビルド、n=1）
+- **行が 0px でも、`.sounds` は見えている。** `position: absolute; top: auto` で、包含ブロックは
+  `.back`。`.row2` は `position: static` なので、`.row2` の `overflow: hidden` に切られない。
+  640×400 でも ver1.0〜3.0 の 3 ボタンは画面にあり、押せる（`elementFromPoint` で確認）。
+  縦位置は `top: auto` のため `.row2` の中央から決まる。`.row` を `display: none` にすると、行の高さと
+  上の margin・gap のぶん上へ動き（CSS 注入で実測。640×400 で 32px、1280×480 で 85px）、
+  `.row2` を `display: none` にすると消える。
+  **見えていないのは Music・Card・Toggle・ロゴだけ**（#60 の Issue 本文は Sounds も含めていたが誤り）
 - 潰れきると残るのは `.row3`（`.sidebar` + `.hello`）だけで、その高さは `.navbar` の
   min-content = **272px**（リンク7本 × `$linkHeight` 2rem + 縦 padding 3rem）で固定される。
   ここは縮まない
@@ -176,8 +186,42 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
   自ら封じている。`styles/not-found.module.scss` と `styles/chat-window.module.scss` の
   `@media (max-height: 20rem)` と同じ「飾りより導線を優先する」判断
 
+`@media screen and (max-height: 30rem)` は別の規則で、`.row` と `.row2 .r2_column`（Music・Card・
+Toggle・ロゴ）を **`visibility: hidden`** にする（#60）。潰れて見えないのに Tab が当たる操作子を、
+Tab 順と読み上げから外すための規則。
+
+- **`display: none` にしない。レイアウトが 1px も動かない。** 幅 10 種 × 高さ 72 種の 720 点で
+  `#home` 以下の全要素の矩形が修正前と一致した（本番ビルド、`prefers-reduced-motion: reduce`、n=1）。
+  H=385〜389 の 41 点だけ、走査の待ち時間が 90ms だと、圧縮から非圧縮へ切り替わった直後の値が
+  落ち着く前に読んでハッシュが揺れた。ここは待ち時間を 600ms にし、同じビルドから 30rem のルールを
+  実行時に削除した状態と突き合わせ直した（H=376〜392 × 10 幅の 170 点）。差は 0 だった。
+  **高さを連続で変えながら測るときは、切替の直後の数点を待ち時間を延ばして測り直す**
+- **`.row2` 自身は隠さない。** Sounds を残すため。`.row` と `.row2` を丸ごと落とすと、
+  640×400 で見えて押せる Sounds が消える
+- **24rem のブロックとは別の現象を救っている。** こちらは「見えないのにフォーカスされる」、
+  24rem 側は「縦に溢れる」。挨拶バブルの非表示やナビの縦積みまで 30rem へ巻き込むと、
+  385〜480px の端末（iPhone 横向きなど）から必要のない圧縮を掛けることになる。24rem 以下では
+  24rem 側の `display: none` が行ごと落とす
+- **閾値は崖の上に余裕を持たせた 30rem。** 幅≤768 の崖 438px（23rem + 70px）に対し、既定で 42px
+  の余裕。`rem` なので文字サイズに追従する（`Page.setFontSizes` で 20px にすると 600px で切り替わる）。
+  境界は 10 幅（320〜1280）すべてで 480 = 隠す / 481 = 出す
+- 効果: 640×400 / 844×390 / 1280×450 / 640×460 の Tab 一巡は **17 → 14 停止**。行内の停止は
+  6 → 3（Sounds の 3 ボタンだけ。3 つとも `elementFromPoint` で到達可）。844×390 で上端に見えていた
+  Music と Card の白い切れ端は消える
+- **480px の直上にも切れ端は残る**（幅≤768 で 481px の行は 27 / 16px、390×553 では 72 / 43px）。
+  「0 ではないが使えない」帯は閾値をどこに置いても直上に生じる。ここは #60 の範囲外
+- `visibility: hidden` でも音は止まらない。Music に再生を止める処理は無い（`components/music.tsx` に
+  `visibilitychange` も unmount 時の停止も無い）ので、再生中に行が隠れると停止する操作が無くなる。
+  `display: none` の #56 から存在する挙動
+
 **計測するときの注意:**
 
+- **「見えているか」は矩形の高さではなく `elementFromPoint` で測る。** 行が 0px でも、絶対配置の
+  `.sounds` は `overflow: hidden` に切られず見えている。行の高さだけで「全部見えていない」と
+  結論すると誤る（#60 の Issue 本文がそうだった）。要素の中心で `document.elementFromPoint(cx, cy)` を引き、
+  返ったものが要素自身かその子孫なら、画面にあって押せる。Tab の停止ごとに読むと「行内の停止 6 のうち
+  到達不可 3（Music の 2 つと Card のリンク）」と数えられる。**Issue や CLAUDE.md の計算値も、
+  1 点は実測で確かめる。** 崖 454 は実測 438 だった
 - **`.navbar_link` は `transition: all .25s`。`focus()` の直後に computed style を読むと
   開始値（`opacity: 0`、静止位置の transform、`background: rgba(0,0,0,0)`）が返る。**
   300ms 以上待ってから読む。待たずに読むと「フォーカス演出が効いていない」という
