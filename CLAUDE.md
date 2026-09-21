@@ -136,9 +136,21 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 - 最下端は `.hello .desu`。`<span>` はインラインなので `getBoundingClientRect()` は
   行ボックス（`line-height: 1` の 16px）ではなく ascent+descent（Nunito で約21.8px）を返し、
   3px 下へ出る
-- **はみ出しが始まる高さは 幅≤768 で 356px、幅>768 で 345px**（実測）。
+- **はみ出しの最下端は `.hello .desu` の bottom で決まり、`.desu` の font-size が
+  幅で3段階に変わるので崖も3段階になる。** ビューポート高さがこれを下回ると溢れる。
   `.back` の `padding-bottom: 70px` は `.back` 自身の border box（100svb）の内側にあるので、
   はみ出した子孫はそれを突き抜ける。**padding-bottom ははみ出し量に効かない**
+
+  | 幅 | `.desu` の font-size | `.desu` の bottom | `scrollHeight - clientHeight` が 0 になる最小の高さ |
+  |---|---|---|---|
+  | ≤540 | 1rem | 355.0 | **355px** |
+  | 541〜768 | 1.5rem | 356.0 | **356px** |
+  | >768 | 2rem | 344.2 | **344px** |
+
+  本番ビルドに対し、`@media (max-height: 24rem)` の `CSSMediaRule` を実行時に削除して
+  修正前を再現し、320 / 540 / 541 / 640 / 768 / 769 / 1280 の7幅で 1px 刻みに走査した値
+  （n=1、2セッションで独立に一致）。**ブレークポイントの境界ちょうど（540/541、768/769）まで
+  測らないと、代表値1つで一般化して 1px ずれる。**
 
 `@media screen and (max-height: 24rem)` でコンパクト表示へ切り替える。
 `.row` / `.row2` を落とし、`.row3` を縦積みにし、リンクを横並びの折り返しにし、
@@ -155,6 +167,9 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 - **`.navbar_item:last-child::before` のゼリー状の指標は `content: none` で止める。**
   `@for` の生成規則は `top` / `animation` / `opacity` しか書いておらず `content` には
   触れないので、同詳細度 (0,2,1) の後勝ちで消える。`!important` は要らない
+- **閾値の単位は `rem`。`px` で固定してはいけない。** `Page.setFontSizes` で既定フォントを
+  20px にすると、閾値は 480px（24rem）へ、ナビの縦並びの高さは 340px（17rem）へ**連動して動く**。
+  `px` 固定だと文字サイズを上げた利用者では崖が閾値を追い越し、救えなくなる（実測で確認）
 - **極小サイズでは Music・Card・Toggle・ロゴ・Sounds を意図的に落としている。**
   WCAG 1.4.10 は 320×256 へのリフローで情報と機能を失わないことを求めるが、
   `body { overflow: hidden }` と `.back { height: 100svb }` がスクロールという解法を

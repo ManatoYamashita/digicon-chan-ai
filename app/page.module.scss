@@ -69,7 +69,9 @@
 }
 
 // 縦に入らなくなる高さでは、飾りを落としてリンクと見出しだけを残す。
-// 実測の崖はモバイル分岐 (幅≤768) で 356px、デスクトップ分岐で 344px。
+// 実測の崖 (scrollHeight - clientHeight が 0 になる最小の高さ) は、最下端の
+// .hello .desu の font-size が幅で3段階に変わるので 3 段階になる:
+// 幅≤540 で 355px、幅541〜768 で 356px、幅>768 で 344px。
 // styles/not-found.module.scss と styles/chat-window.module.scss の
 // @media (max-height: 20rem) と同じ判断で、端末のプリセットではなく実際に入らなくなる高さで切る。
 //
