@@ -101,3 +101,29 @@
     }
   }
 }
+
+// 縦が足りず行が潰れる高さでは、見えなくなった操作子を Tab 順と読み上げから外す (#60)。
+//
+// .row / .row2 は overflow: hidden なので、縦が足りないと高さ 0px まで潰れる。幅≤768 では
+// H ≤ 438px (23rem + .back の padding-bottom 70px) で 0px になり、その上にも細い切れ端が続く。
+// 中の Music の Play/Pause とシークバー、Card のリンクには Tab が当たるのに、画面には何も出ない。
+//
+// display: none ではなく visibility: hidden にする。こうするとレイアウトが変わらない。
+// .sounds は position: absolute で top: auto なので、縦位置が .row2 の中央から決まる。
+// .row2 を display: none にすると Sounds が消える。.row だけ display: none にしても、
+// 行の高さと上の margin・gap のぶん Sounds が上へ動く (640x400 で 32px、1280x480 で 85px)。
+//
+// .row2 自身は隠さない。Sounds は絶対配置で .row2 の overflow に切られず、この高さでも
+// 画面に見えていて押せる。隠すのは Toggle とロゴを入れた .r2_column だけ。
+//
+// 閾値は崖 (23rem + 70px、既定で 438px) の上に余裕を持たせた 30rem。px ではなく rem なのは
+// 上の 24rem と同じ理由で、文字サイズを上げた利用者では崖も一緒に上がるため。
+// 24rem 以下では上の display: none (#56) が行ごと落とすので、この規則は実質的に働かない。
+@media screen and (max-height: 30rem) {
+  .back {
+    .row,
+    .row2 .r2_column {
+      visibility: hidden;
+    }
+  }
+}
