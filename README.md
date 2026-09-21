@@ -37,6 +37,9 @@ Gemini APIを使用してでじこんちゃんと会話が楽しめます！で�
 
 ## 技術スタック
 
+<img width="985" height="613" alt="digiconchan-ai-demo" src="https://github.com/user-attachments/assets/859a59c8-b527-4d02-b288-c24df6354168" />
+
+
 | カテゴリ | 技術 |
 |---|---|
 | フレームワーク | Next.js 16 (App Router + Turbopack) |
