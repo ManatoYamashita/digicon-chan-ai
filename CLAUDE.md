@@ -188,6 +188,25 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 - 本番ビルドに対して測る。`document.scrollingElement.scrollHeight - clientHeight` と、
   `scrollTop = 9999` の書き戻しの2通りで見る。**Tab 一巡では最終値ではなく最大値を読む**。
   一巡すると 0 へ戻るので、最終値だけでは「問題なし」に見える
+- **本番をブラウザで測るときは、Google Analytics への通信を遮断する。** 本番の HTML には
+  `gtag/js` と `ga-init` が載っている（`app/layout.tsx`。`NEXT_PUBLIC_GA_MEASUREMENT_ID` があるとき）。
+  計測用の Chrome を開くだけで GA のスクリプトが走り、たとえば 11 サイズ × 2 通り
+  （`no-preference` / `reduce`）を測れば 22 回の読み込みが閲覧数に混ざる恐れがある。
+  CDP では `Network.enable` の後、**最初のナビゲーションより前に** `Network.setBlockedURLs` で
+  `*googletagmanager.com*` `*google-analytics.com*` `*analytics.google.com*` を止める
+  - 本番で確認済み（#56）: `gtag/js` への 2 リクエストとも `blockedReason=inspector` で失敗した。
+    `gtag()` は関数として定義されるが、ライブラリ本体が読まれないので、`dataLayer` に積まれた
+    設定が送信されることはない
+  - **遮断なしで読み込んで「遮断が要るか」を確かめてはいけない。** 本番の GA に閲覧を送ってしまう
+- **GSAP が走る `no-preference` の幾何は、最初の1条件で収束しきらないことがある。**
+  `/` の `[data-animate="r3"]`（`.sidebar` と `.hello`）は `components/page-animations.tsx` の
+  `x: -100% → 0`（delay 0.75s + duration 0.5s + stagger 0.1s）で入場する。#56 の本番確認では、
+  Chrome を起動した直後の最初の1条件（320×256）だけ、2.5 秒待っても途中の値
+  （`.sidebar` が x=15.9、`.hello` が x=13.4 のような端数）が読めた（n=1。同じビルドの別回と
+  本番では x=16）。これをレイアウトの差と見間違えて、直っている修正を疑わないこと
+  - **x 座標に端数が出たら、まず GSAP を疑い、GSAP が動かない `prefers-reduced-motion: reduce`
+    で突き合わせる。** `reduce` では入場アニメを付けていない（`gsap.matchMedia()` の
+    `no-preference` の中でだけ付ける）ので、`reduce` が一致していればレイアウトは同一と言える
 
 ### /chat の UI で守ること（#20）
 
