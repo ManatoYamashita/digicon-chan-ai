@@ -122,6 +122,58 @@ vercel logs --project dcchan --scope yamashitamanato --environment production --
 
 送信に失敗したとき（429、通信エラー、504、本文が空の返答）は、発言を履歴から外して入力欄へ戻す。回数は減らず、エラー文言も Gemini へ送り返さない。エラーは履歴の外に `error` として持ち、「入力欄に戻したので、もう一度送って」という案内を添えて表示する。`route.ts` のエラー文言には何が起きたかだけを書く。
 
+### `/`（トップ）の短尺対応（#56）
+
+`app/page.module.scss` の `.back` は `height: 100svb` の flex column で、中は3行。
+
+- `.row`(33%) と `.row2`(20%) は `overflow: hidden` を持つため flex の automatic minimum size
+  が 0 になり、**縦が足りないと無音で 0px まで潰れる**。実測で潰れ始めるのは
+  幅≤768 で **H < 454**、幅>768 で **H < 384**。つまり **640×400 の時点で
+  Music・Card・Toggle・ロゴ・Sounds は何も見えていない**（#60）
+- 潰れきると残るのは `.row3`（`.sidebar` + `.hello`）だけで、その高さは `.navbar` の
+  min-content = **272px**（リンク7本 × `$linkHeight` 2rem + 縦 padding 3rem）で固定される。
+  ここは縮まない
+- 最下端は `.hello .desu`。`<span>` はインラインなので `getBoundingClientRect()` は
+  行ボックス（`line-height: 1` の 16px）ではなく ascent+descent（Nunito で約21.8px）を返し、
+  3px 下へ出る
+- **はみ出しが始まる高さは 幅≤768 で 356px、幅>768 で 345px**（実測）。
+  `.back` の `padding-bottom: 70px` は `.back` 自身の border box（100svb）の内側にあるので、
+  はみ出した子孫はそれを突き抜ける。**padding-bottom ははみ出し量に効かない**
+
+`@media screen and (max-height: 24rem)` でコンパクト表示へ切り替える。
+`.row` / `.row2` を落とし、`.row3` を縦積みにし、リンクを横並びの折り返しにし、
+`.hello` の挨拶バブルを落とす。**リンクの当たり判定 64×32 は変えない。**
+
+- **3ファイルとも追記はファイルの末尾に置く。** `@media` はカスケードに影響せず、
+  同詳細度ならソース順の後勝ちで決まる。`.hello .title` は `max-width: 540px` 版と
+  同じ (0,2,0) なので、後ろに `max-width` のブロックを足すと負ける
+- **ナビの横並びに `grid` の `repeat(auto-fit, …)` は使えない。** コンテナのサイズが不定
+  （`width: fit-content` の max-content 計算中）のとき `auto-fit` は繰り返し1回に解決され、
+  1列7行へ戻る（CSS Grid 仕様 7.2.3.2）。`flex-wrap` にはこの罠が無い
+- **ツールチップはナビの真下に出す。** デスクトップ分岐では `.row3` が上寄せでナビが
+  画面上端に来るので、真上に出すと 1280×300 で `top: -12px` になり7本すべてが画面外へ出る
+- **`.navbar_item:last-child::before` のゼリー状の指標は `content: none` で止める。**
+  `@for` の生成規則は `top` / `animation` / `opacity` しか書いておらず `content` には
+  触れないので、同詳細度 (0,2,1) の後勝ちで消える。`!important` は要らない
+- **極小サイズでは Music・Card・Toggle・ロゴ・Sounds を意図的に落としている。**
+  WCAG 1.4.10 は 320×256 へのリフローで情報と機能を失わないことを求めるが、
+  `body { overflow: hidden }` と `.back { height: 100svb }` がスクロールという解法を
+  自ら封じている。`styles/not-found.module.scss` と `styles/chat-window.module.scss` の
+  `@media (max-height: 20rem)` と同じ「飾りより導線を優先する」判断
+
+**計測するときの注意:**
+
+- **`.navbar_link` は `transition: all .25s`。`focus()` の直後に computed style を読むと
+  開始値（`opacity: 0`、静止位置の transform、`background: rgba(0,0,0,0)`）が返る。**
+  300ms 以上待ってから読む。待たずに読むと「フォーカス演出が効いていない」という
+  誤った結論になる。実画素（`Page.captureScreenshot` + `sharp`）で裏を取れる
+- 確認する画面サイズは /chat と同じ4つ（1280×800 / 640×400 / 390×844 / 320×256）に
+  **1280×300 を加える**。横長短尺はデスクトップ分岐に入るため、モバイル幅だけ見ていると
+  見つからない（#56 では 44px 溢れていた）
+- 本番ビルドに対して測る。`document.scrollingElement.scrollHeight - clientHeight` と、
+  `scrollTop = 9999` の書き戻しの2通りで見る。**Tab 一巡では最終値ではなく最大値を読む**。
+  一巡すると 0 へ戻るので、最終値だけでは「問題なし」に見える
+
 ### /chat の UI で守ること（#20）
 
 - **ページをスクロールさせない**: `body` は `overflow: hidden` なので、ページが一度スクロールすると利用者は戻せない。メッセージ一覧は `scrollIntoView` ではなく、一覧自身の `scrollTo` で送る。モバイルでは幅 820px の立ち絵を `.characterWrap` の `overflow: clip` で切る。はみ出したままだとレイアウトビューポートが広がり、固定表示のナビが画面外へ出る
