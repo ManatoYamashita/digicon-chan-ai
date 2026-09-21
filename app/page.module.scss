@@ -67,3 +67,35 @@
     top: 0;
     left: 0;
 }
+
+// 縦に入らなくなる高さでは、飾りを落としてリンクと見出しだけを残す。
+// 実測の崖はモバイル分岐 (幅≤768) で 356px、デスクトップ分岐で 344px。
+// styles/not-found.module.scss と styles/chat-window.module.scss の
+// @media (max-height: 20rem) と同じ判断で、端末のプリセットではなく実際に入らなくなる高さで切る。
+//
+// .row / .row2 はこの高さでは既に flex で 0px まで潰れている。height: 33% / 20% に対して
+// overflow: hidden があるため automatic minimum size が 0 になり、.row3 の min-content 272px
+// (リンク7本 x 32px + .navbar の縦 padding 48px) に押し出される。320x256 で実測 h=0。
+// 消しても失うものは無く、margin (16 + 32) と gap (16 x 2) の計 80px を回収できる。
+//
+// 閾値は px ではなく rem。ナビの高さは styles/sidebar.module.scss の $spacer: 1rem 由来
+// (7 x 2rem + 3rem = 17rem) なので、ルート文字サイズを上げた利用者では崖も一緒に下がる。
+//
+// ここより下に max-width のブロックを足さないこと。@media はカスケードに影響せず、
+// 同詳細度ならソース順の後勝ちで決まる。
+@media screen and (max-height: 24rem) {
+  .back {
+    .row,
+    .row2 {
+      display: none;
+    }
+
+    // 320px 幅ではリンク列と見出しを横には並べられない。
+    // margin には触らない。モバイルの margin-top: auto は上の max-width ブロックが担当し、
+    // デスクトップは上寄せのまま残す (デスクトップのピルナビは width: 50vw; right: 24px なので、
+    // 上寄せなら衝突の余地がない)
+    .row3 {
+      flex-direction: column;
+    }
+  }
+}
