@@ -75,7 +75,7 @@ function Music({ title, description }: Props) {
 
     return (
         <section className={styles.music}>
-            <div className={`${styles.player} ${styles.horizontal}`}>
+            <div className={styles.player}>
                 <div className={styles.wrapper}>
                     <div className={styles.infoWrapper}>
                         <Image className={styles.img} src={jacketImg} alt="DeskTop Musics ジャケット" width={75} height={75} />
