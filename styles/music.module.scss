@@ -1,17 +1,33 @@
 .music {
   height: 100%;
-  max-height: 33vh;
   width: 50%;
   overflow: hidden;
+
+  /* 行 (.row) の高さは viewport 高さの線形関数で、この中身の自然な高さとは無関係に縮む。
+     高さの分岐は @media で viewport から再導出せず、実際に与えられた高さを @container で引く。
+     container-type: size は contain: layout を含むので、絶対配置の子孫の包含ブロックになる。
+     .music の中の絶対配置 (.play_container の .pl / .pa / input) はいずれも
+     position: relative の .play_container を包含ブロックにしているので影響はない。 */
+  container-type: size;
 }
 
 .player {
+    /* box-sizing を指定しないと、padding のぶん border box が .music より 64px 高くなり、
+       border-radius の下端が常に .music の overflow: hidden に切り取られる。
+       このリポジトリには全体の box-sizing: border-box が無いため、ここで個別に指定する。 */
+    box-sizing: border-box;
     height: 100%;
     position: relative;
     background-color: whitesmoke;
     color: #6A515E;
     padding: 2rem;
     border-radius: 20px;
+  }
+
+  /* components/music.tsx が既に付けている div。高さを .player の content box に合わせておくと、
+     短いときの @container ブロックで align-content: center が効く。 */
+  .wrapper {
+    height: 100%;
   }
   
   .player .img {
@@ -209,6 +225,112 @@
           .time {
             display: none;
           }
+        }
+      }
+    }
+  }
+
+  /* ------ 行が低いときの横1行レイアウト ------ */
+
+  /* .row は viewport 高さに比例して縮むが、この player の縦積みは
+     自然高さ 184.6px (幅>480) / 213.8px (幅≤480) + padding を要求する。実測では
+     シークバーが見えるのは 1280x700 / 768x800 / 390x800 から上だった。
+     縦積みが入らない高さでは、ジャケット・タイトル・シークバー・Play/Pause を
+     横1行に組み替えて自然高さを 64px まで落とす。
+
+     閾値 14rem (224px) は「縦積みが入る最小の高さ」の実測から決めた。player の上端から
+     最も深い要素の下端までは 216.6px (幅>480、.time の下端) / 209.8px (幅≤480、シークバーの
+     下端。.time は display: none)。224px は、フォントの差でこの値が数 px 動いても縦積みが
+     溢れないようにした余裕込みの値。
+     確認済みの主要サイズ (1280x800 の行 264px、390x844 の行 252.8px) はどちらも
+     この上に残るので、縦積みのまま変わらない。
+
+     ハンドラを持たない .prev / .next と、情報量の低い .time は落とす。
+     セレクタは @media (max-width: 480px) のブロックより 1 段深くしてある。
+     .music .player .infoWrapper .img (0,4,0) は .player .wrapper を挟んで (0,5,0) で上書きする。
+     ブロックの位置もファイル末尾でなければならない (同詳細度はソース順の後勝ち)。 */
+  @container (max-height: 14rem) {
+    .music .player {
+      padding: 0.75rem;
+    }
+
+    .music .player .wrapper {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        "art info play"
+        "art track play";
+      align-content: center;
+      align-items: center;
+      column-gap: 0.75rem;
+      row-gap: 0.25rem;
+
+      /* display: contents で img と .info を .wrapper の grid item に昇格させる。
+         components/music.tsx の DOM は変えない。 */
+      .infoWrapper {
+        display: contents;
+      }
+
+      .img {
+        grid-area: art;
+        width: 2.5rem;
+        height: 2.5rem;
+        margin: 0;
+        border-radius: 10px;
+      }
+
+      .info {
+        grid-area: info;
+        min-width: 0;
+        padding: 0;
+
+        .h1 {
+          margin: 0;
+          font-size: 0.9rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .p {
+          display: none;
+        }
+      }
+
+      .controls {
+        grid-area: play;
+        justify-content: center;
+        padding: 0;
+        margin: 0;
+        transform: none;
+
+        .prev,
+        .next {
+          display: none;
+        }
+
+        /* .play_container の中身は全て position: absolute なので、寸法を与えないと
+           高さ 0 のまま svg だけがはみ出して描かれる。横1行では明示的に置く。 */
+        .play_container {
+          width: 1.75rem;
+          height: 1.75rem;
+          font-size: 1.75rem;
+          margin: 0;
+        }
+      }
+
+      .trackTime {
+        grid-area: track;
+        padding: 0;
+        margin: 0;
+        transform: none;
+
+        .track {
+          padding: 0;
+        }
+
+        .time {
+          display: none;
         }
       }
     }

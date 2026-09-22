@@ -1,9 +1,18 @@
 .card {
   width: 50%;
   height: 100%;
+
+  /* 高さの分岐を @media で viewport から再導出せず、実際に与えられた高さを @container で引く。
+     container-type: size は contain: layout を含むが、.card の中の絶対配置
+     (.card__image と .card__overlay は .container、.card__arc は .card__header) は
+     いずれも内側に position: relative の包含ブロックを持つので影響はない。 */
+  container-type: size;
 }
 .container {
-  height: 33vh;
+  /* 33vh 固定にすると行 (.row) の高さと無関係に高さを主張するので、行が縮むと必ず
+     overflow: hidden に切り取られる。390x844 でも画像の 9%、1280x600 では 23% が切れていた。
+     行にぴったり収める。画像は object-fit: cover なのでトリミングになる。 */
+  height: 100%;
   --surface-color: #fff;
   --curve: 40;
   position: relative;
@@ -121,5 +130,52 @@
   .card__thumb {
     width: 40px;
     height: 40px;
+  }
+}
+
+/* ------ 行が低いときのオーバーレイの圧縮 ------ */
+
+/* hover で出るオーバーレイ (.card__header + .card__description) の自然高さは 176〜192px。
+   .container がそれを下回ると、bottom: 0 に貼り付いたオーバーレイの上端 = ヘッダーが切れる。
+   実測では説明文が全部見えるのは 1280x760 から上だけだった。
+   低いときは説明文を落としてヘッダーだけ残し、自然高さを 64px (サムネイル 40px + padding 24px)
+   まで落とす。
+
+   閾値 12.5rem (200px) は「オーバーレイが入る最小の高さ」の実測 (幅を 320〜1600 で振ったときの
+   最大 192px、幅 621〜768) に 8px の余裕を足した値。確認済みの主要サイズ
+   (1280x800 の行 264px、390x844 の行 252.8px) はこの上に残るので、説明文は出たままになる。
+
+   セレクタは @media (max-width: 620px) のブロックより 1 段深い .container 付きにしてある。
+   ブロックの位置もファイル末尾でなければならない (同詳細度はソース順の後勝ち)。 */
+@container (max-height: 12.5rem) {
+  .container {
+    .card__header {
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+    }
+
+    .card__title {
+      font-size: 0.95rem;
+    }
+
+    /* サブタイトルは幅 320〜390 で 2〜3 行に折り返し、オーバーレイが 64px を超えて
+       ヘッダーの上端が切れる。1 行に収まるタイトルだけ残す。 */
+    .card__status {
+      display: none;
+    }
+
+    .card__thumb {
+      width: 40px;
+      height: 40px;
+    }
+
+    /* 80px の弧は、低いヘッダーには不釣り合いなうえ bottom: 100% で上へ 80px 伸びる */
+    .card__arc {
+      display: none;
+    }
+
+    .card__description {
+      display: none;
+    }
   }
 }
