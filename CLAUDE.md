@@ -231,10 +231,12 @@ Tab 順と読み上げから外すための規則。
     縦位置が変わる。`.music` / `.card` の中の絶対配置（`.card__overlay` と `.card__image` は
     `.container`、`.card__arc` は `.card__header`、`.pl` / `.pa` / `input` は `.play_container`）は
     いずれも内側に `position: relative` を持つので影響しない
-  - **`@container` ブロックは既存の `@media` より後ろに置き、セレクタを 1 段深くする。**
-    `@media (max-width: 480px)` の中は `.music .player .infoWrapper .img`(0,4,0) まで深い。
-    `@container` 側を `.player .wrapper` 経由の (0,5,0) にして初めて勝てる。ソース順の後勝ちだけでは
-    詳細度の差を埋められない
+  - **`@container` ブロックは既存の `@media` より後ろに置く。「1 段深くしたから勝てる」ではない。**
+    `@media (max-width: 480px)` の中は `.music .player .infoWrapper .img`(0,4,0) まで深く、
+    `@container` 側の `.music .player .wrapper .img` も**同じ (0,4,0)**。ここを決めているのは
+    詳細度ではなく**ソース順の後勝ち**なので、ブロックをファイル末尾から動かすと崩れる。
+    詳細度で勝っているのは `.info .h1`(0,5,0 対 `.music .player .infoWrapper .info h1` の 0,4,1) と
+    `.trackTime .time`(0,5,0 対 0,4,0) だけ。**ビルド後の CSS でクラス数を数えて確かめる**
 - **このリポジトリに全体の `box-sizing: border-box` は無い**（`styles/` と `app/` に個別指定が 4 箇所
   あるだけ）。`.player` は `height: 100%` + `padding: 2rem` で border box が親より **64px 高く**、
   角丸の下端が 1280×800 でも切れていた。`box-sizing: border-box` を足しても**中身の位置は動かない**
