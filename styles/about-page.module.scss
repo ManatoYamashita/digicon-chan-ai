@@ -2,7 +2,10 @@
 @use "sass:map";
 
 // ── Design tokens ──
-$glass-bg: rgba(255, 255, 255, 0.15);
+// リンクカードの下地。白い文字に対して、ぼかした青い背景の上で最小 6.4:1（hover で 7.5:1）。
+// 白の半透明だと下の青と混ざって 3.2:1 までしか出ない (#77)
+$link-bg: rgba(0, 30, 80, 0.35);
+$link-bg-hover: rgba(0, 30, 80, 0.45);
 $glass-border: rgba(255, 255, 255, 0.25);
 $glass-blur: 20px;
 $section-gap: 80px;
@@ -498,7 +501,7 @@ $orb-blur-profiles: (
   align-items: center;
   gap: 10px;
   padding: 20px 12px;
-  background: $glass-bg;
+  background: $link-bg;
   -webkit-backdrop-filter: blur($glass-blur);
   backdrop-filter: blur($glass-blur);
   border: 1px solid $glass-border;
@@ -538,7 +541,7 @@ $orb-blur-profiles: (
 
   &:hover {
     transform: translateY(-6px) scale(1.02);
-    background: rgba(255, 255, 255, 0.25);
+    background: $link-bg-hover;
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
 
     svg {
