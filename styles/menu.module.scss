@@ -29,8 +29,8 @@ $line-gap:     5px;
   inset: 0;
   z-index: 98;
   background: rgba(0, 0, 0, 0.20);
-  backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
 }
 
 // ── FAB container ──
@@ -50,8 +50,8 @@ $line-gap:     5px;
   width: $fab-size;
   height: $fab-size;
   border-radius: 50px;
-  backdrop-filter: blur($dark-blur);
   -webkit-backdrop-filter: blur($dark-blur);
+  backdrop-filter: blur($dark-blur);
   background: $dark-glass;
   border: 1px solid $dark-glass-border;
   cursor: pointer;
@@ -119,8 +119,8 @@ $line-gap:     5px;
 // ── Expanded menu panel (ライト系グラスモーフィズム) ──
 .menu {
   border-radius: $menu-radius;
-  backdrop-filter: blur($glass-blur);
   -webkit-backdrop-filter: blur($glass-blur);
+  backdrop-filter: blur($glass-blur);
   background: $glass-bg;
   border: 1px solid $glass-border;
   padding: 8px;
@@ -195,8 +195,8 @@ $line-gap:     5px;
   padding: 4px 6px;
   border-radius: 24px;
   background: $glass-bg;
-  backdrop-filter: blur($glass-blur);
   -webkit-backdrop-filter: blur($glass-blur);
+  backdrop-filter: blur($glass-blur);
   border: 1px solid $glass-border;
   box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.1),
