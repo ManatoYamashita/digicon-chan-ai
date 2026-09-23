@@ -129,15 +129,19 @@ export default function AboutPage() {
       if (!containerRef.current) return;
 
       // ── Background Orbs floating animation ──
-      const orbs = orbsRef.current?.querySelectorAll(`.${styles.orb}`);
-      orbs?.forEach((orb, i) => {
-        gsap.to(orb, {
-          y: "random(-30, 30)",
-          x: "random(-20, 20)",
-          duration: 6 + i * 2,
-          ease: "sine.inOut",
-          yoyo: true,
-          repeat: -1,
+      // 終わりの無いループなので、視差効果を減らす設定のときは付けない
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const orbs = orbsRef.current?.querySelectorAll(`.${styles.orb}`);
+        orbs?.forEach((orb, i) => {
+          gsap.to(orb, {
+            y: "random(-30, 30)",
+            x: "random(-20, 20)",
+            duration: 6 + i * 2,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+          });
         });
       });
 
@@ -263,6 +267,8 @@ export default function AboutPage() {
           }
         );
       }
+
+      return () => mm.revert();
     },
     { scope: containerRef }
   );
