@@ -82,6 +82,34 @@
   }
 }
 
+// 幅≤768 で行が 0px に潰れているのに、行の上の margin と gap (.row の 1rem + gap 1rem + .row2 の 2rem
+// + gap 1rem = 80px) は残る (#80)。.row3 の高さは .navbar の min-content 17rem で縮まないので、
+// H ≤ 438px では .row3 が padding-bottom 70px の内側からはみ出し、下端が 352px に固定される。
+// ナビの上端は H − 56px なので、H ≈ 411px 以下で .desu と .sidebar の下端がナビの下へ潜っていた。
+// 24rem 以下はコンパクト表示が行ごと落とすので、その上の帯だけが残っていた。
+//
+// 行は display: none にしない。.sounds (position: absolute; top: auto) は .row2 の位置から縦位置が
+// 決まり、この帯でも見えていて押せる (#60)。.row2 より上を詰めると .sounds も同じだけ上へ動き、
+// 48px 詰めると 320x385 で上端が画面外 (-10px) へ出た。そこで .row2 と .row3 の間の gap (16px) は
+// .sounds を動かさずに回収し (gap を 0 にして、.row と .row2 の間のぶんを .row2 の margin へ移す)、
+// .row の上の margin (16px) だけ .sounds ごと詰める。計 32px 上がる。
+//
+// 閾値 26rem は、既定の 16px で 416px (重なる上限 411px の上)。rem なので文字サイズに追従し、
+// 20px なら 520px。どちらも行が 0px の帯 (23rem + 70px 以下) の内側に収まる。
+@media screen and (max-width: 768px) and (max-height: 26rem) {
+  .back {
+    gap: 0;
+
+    .row {
+      margin-top: 0;
+    }
+
+    .row2 {
+      margin-top: 3rem;
+    }
+  }
+}
+
 .front {
     position: fixed;
     top: 0;
