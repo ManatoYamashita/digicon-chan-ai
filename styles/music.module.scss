@@ -74,13 +74,11 @@
 
 .play_container .pl {
   position: absolute;
-  animation: keyframes-fill .5s;
 }
 
 .play_container .pa {
   position: absolute;
   display: none;
-  animation: keyframes-fill .5s;
 }
 
 /* ------ On check event ------ */
@@ -102,14 +100,29 @@
 }
 
 /* ------ Animation ------ */
-@keyframes keyframes-fill {
-  0% {
-    transform: rotate(-180deg) scale(0);
-    opacity: 0;
+
+/* 180 度の回転と scale 0 -> 1.2 のオーバーシュートなので、prefers-reduced-motion に従う。
+   .pl は display: none を持たず初期表示されるため、これは操作への反応ではなく
+   ページを開いた瞬間にも一度走る入場アニメでもある (#68)。
+
+   animation の宣言と @keyframes は必ず同じメディアクエリの中に置く。@keyframes だけを
+   中に入れると、reduce のときに animation-name が解決できなくなる (#32 と同じ形)。
+   reduce では .pl / .pa の入れ替えは display の差し替えだけになり、機能は変わらない。 */
+@media (prefers-reduced-motion: no-preference) {
+  .play_container .pl,
+  .play_container .pa {
+    animation: keyframes-fill .5s;
   }
 
-  50% {
-    transform: rotate(-10deg) scale(1.2);
+  @keyframes keyframes-fill {
+    0% {
+      transform: rotate(-180deg) scale(0);
+      opacity: 0;
+    }
+
+    50% {
+      transform: rotate(-10deg) scale(1.2);
+    }
   }
 }
   

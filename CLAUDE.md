@@ -210,9 +210,8 @@ Tab 順と読み上げから外すための規則。
   Music と Card の白い切れ端は消える
 - **480px の直上にも切れ端は残る**（幅≤768 で 481px の行は 27 / 16px、390×553 では 72 / 43px）。
   「0 ではないが使えない」帯は閾値をどこに置いても直上に生じる。ここは #60 の範囲外
-- `visibility: hidden` でも音は止まらない。Music に再生を止める処理は無い（`components/music.tsx` に
-  `visibilitychange` も unmount 時の停止も無い）ので、再生中に行が隠れると停止する操作が無くなる。
-  `display: none` の #56 から存在する挙動
+- `visibility: hidden` の行の中で鳴っている音は、#65 で止めるようにした（下記「行に触れなくなったときの再生」）。
+  それまでは `display: none` の #56 から、再生中に行が隠れると停止する操作が無くなっていた
 
 ### 行の中身を行の高さに追従させる（#64）
 
@@ -246,7 +245,8 @@ Tab 順と読み上げから外すための規則。
 - 閾値は中身の**自然高さの実測**から決める。player の上端から最も深い要素の下端までは
   **216.6px**（幅>480、`.time` の下端）/ **209.8px**（幅≤480、シークバーの下端）。
   オーバーレイは幅 320〜1600 で振って最大 **192px**（幅 621〜768）。それぞれに数 px の余裕を足して
-  `14rem` / `12.5rem` にした
+  `14rem` / `12.5rem` にした。**Card 側は #67 で字幕を折り返させたため、最大 212.8px になり `14rem` へ上げた**
+  （下記「Card ヘッダーの横の切れ」）
 - 圧縮後の自然高さは Music・Card とも **64px**。行が 64px に達するのは幅≤768 で H ≈ 541px なので、
   `visibility: hidden` の閾値は幅≤768 だけ 30rem → **34rem** へ上げた。幅>768 は崖が 355px で
   481px でも行が 78.3px あるため **30rem のまま**
@@ -262,16 +262,8 @@ Tab 順と読み上げから外すための規則。
   320×256 / 1280×300 は 11 停止で不変。390×500 は **17 → 14 停止**（見えないシークバーと
   Play/Pause と Card のリンクが Tab から外れる）
 
-**この Issue の範囲外として残したもの:**
-
-- **`.card__title` は幅 320 で 48.5%、幅 390 で 75% が横に切れる**（`.card__header` が `row-reverse` で
-  `.card__header_text` に `min-width: 0` が無く、flex item が縮まないため）。**高さではなく幅の問題**で、
-  H=1200 でも同じ。#64 の圧縮が効く高さでは、サブタイトルを落とすことで結果的に解消している
-  （幅 320〜1600 すべてでタイトルは完全可視）。残るのは幅≤390 かつ H≥760 の 6 点
-- `components/card.tsx` の `styles.card__header_text` も module に定義が無い。こちらは
-  `className={undefined}` なので DOM に `class="undefined"` は出ない
-- `styles/music.module.scss` の `@keyframes keyframes-fill`（Play/Pause の 0.5 秒の回転）は
-  `@media (prefers-reduced-motion: no-preference)` の中に入っていない。CLAUDE.md の方針から外れている
+**この Issue の範囲外として切り出し、#67 / #68 / #69 で解決したもの**（下記「Card ヘッダーの
+横の切れ」「Play/Pause の回転」「行に触れなくなったときの再生」を参照）。
 
 **計測するときの注意:**
 
@@ -321,6 +313,85 @@ Tab 順と読み上げから外すための規則。
   - **x 座標に端数が出たら、まず GSAP を疑い、GSAP が動かない `prefers-reduced-motion: reduce`
     で突き合わせる。** `reduce` では入場アニメを付けていない（`gsap.matchMedia()` の
     `no-preference` の中でだけ付ける）ので、`reduce` が一致していればレイアウトは同一と言える
+
+### Card ヘッダーの横の切れ（#67 / #69）
+
+`.card__header` は `flex-direction: row-reverse`。主軸の始端が右なので、**溢れたぶんは左へ出て**
+`.container` の `overflow: hidden` に切り取られる。
+
+- **切れていたのはタイトルではなくサブタイトル（`.card__status`）だった。** `<h2 class="card__title">`
+  はブロックなので、その矩形は親 div の幅（= サブタイトルの min-content）まで引き伸ばされる。
+  **矩形を測ると「タイトルが 51.5% 切れている」ように見えるが、`text-align: end` でグリフは右端に
+  寄っているので、実際に欠けるのは幅 320 の "G" の左 1.1px だけ。**#67 の Issue 本文が最初に書いた
+  48.5% / 75% は、h2 の矩形＝サブタイトルのグリフの可視率だった
+  - **「切れているか」は矩形ではなく `Range.getClientRects()` でグリフを測る。** `selectNodeContents`
+    してから返る矩形の和を取り、祖先の `overflow` で切った後に残る割合を出す。
+    ブロック要素の矩形は文字の位置を表さない
+- **`min-width: 0` だけでは足りない。はみ出す向きが左から右へ変わるだけ。** flex item
+  （`.card__header_text`）は縮むようになるが、サブタイトルは `display: inline-block` で
+  **min-content より狭くならない**。行に収まらない内容は `text-align: end` にかかわらず行の終わり側
+  （右）へはみ出す（CSS Text の規定）ので、縮んだ列の外、**右隣の `.card__thumb` の上**へ出る。
+  min-content を決めているのは折り返せない塊「Illu/Anime/Design:」で、16px のとき **131.9px**
+  - 実測（幅 361、16px）: 列は 204.5〜273px、サブタイトルは 204.5〜336.4px、サムネイルは 289px から。
+    字幕のグリフ面積のうちサムネイルと重なる割合は、幅 320 で 38.6%、390 で 24.4%、430 で 9.6%、
+    456 以上で 0（修正前はどの幅でも 0）
+  - **祖先の `overflow` で切った可視率には、兄弟要素との重なりは出ない。** 上の測り方で 1.0 でも、
+    グリフが隣の要素に隠れていることがある。**グリフの矩形と、隣の要素（サムネイル・アイコン）の
+    矩形の交差も測る。** PR #70 は最初これを測らずに「13 点すべてで可視率 1.0」と書いた
+- 採った解は 3 つ。
+  1. `.card__header_text { min-width: 0 }`（#69 の未定義クラスを起こすのと同時に片付く）
+  2. `.card__status` に `max-width: 100%` と `overflow-wrap: break-word` を付け、列の中で折り返させる。
+     `word-break: keep-all` で日本語の語の途中の改行を止める。名前「山下マナト」が 1 行に入る幅では
+     名前の途中で折れず、入らない幅（320 / 340 / 361 / 375）でだけ折れる。`overflow-wrap: anywhere`
+     だと 14 幅で名前が割れた
+  3. `@media (max-width: 360px)` で `.card__status` を `0.75rem` へ落とし、行数を抑える
+     （16px のままだと幅 320〜350 で 5 行、オーバーレイ 228.8px）
+- 結果（本番ビルド、`reduce`、n=1）: 幅 320〜1600 の 21 点すべてで、タイトル・サブタイトルとも
+  可視率 **1.0**、サムネイルとの重なり **0**
+- **折り返した分だけオーバーレイが高くなる。** 自然高さの最大は 192px → **212.8px**（幅 361〜375、
+  字幕 4 行）。#64 の `@container (max-height: 12.5rem)`（200px）を越えるので **`14rem`（224px）へ
+  上げた**。行の高さ H=380〜1000 を 4px 刻み × 16 幅で走査し、行が見えている 1888 点すべてで
+  オーバーレイは箱に収まった。説明文が出る最小の箱は全幅で 224.7〜225.4px
+- **`@media (max-width: 620px)` の中の `.card__status` は `.card__header` にネストされていて (0,2,0)。**
+  `.card__status` 単体 (0,1,0) をいくら後ろに書いても効かない。**効かないときは、まず相手が
+  ネストで深くなっていないかを見る**
+
+### Play/Pause の回転アニメ（#68）
+
+`@keyframes keyframes-fill`（`rotate(-180deg) scale(0)` → `scale(1.2)`、0.5 秒）は
+`@media (prefers-reduced-motion: no-preference)` の中へ移した。
+
+- **`.pl` は `display: none` を持たず初期表示されるので、これは操作への反応ではなく
+  「ページを開いた瞬間にも一度走る入場アニメ」でもある。** CLAUDE.md の「利用者の操作に対する
+  短い反応はそのままでよい」には当たらない
+- **`animation` の宣言と `@keyframes` は必ず同じメディアクエリの中に置く。** `@keyframes` だけを
+  中に入れると `reduce` で `animation-name` が解決できない（#32 と同じ形）
+- 実測: `reduce` では `animationName` が `none`、`no-preference` ではハッシュ名
+  （`...__keyframes-fill`）に解決される。`reduce` でも `.pl` / `.pa` の入れ替えは `display` の
+  差し替えだけで済み、機能は変わらない
+
+### 行に触れなくなったときの再生（#65）
+
+行が低いと `.row` は `visibility: hidden`（#60 / #64）、さらに低いと `display: none`（#56）になり、
+Play/Pause は画面からも Tab 順からも消える。鳴っている音を止める手段が無くなるので、
+`components/music.tsx` 側で止める。
+
+- **閾値を JavaScript 側にも書かない。** 幅で 2 本に分かれた `34rem` / `30rem` と `24rem` を
+  再現すると CSS と二重管理になり、片方だけ直したときに必ずずれる。条件は書かず、
+  **実際に描画された結果**（`getClientRects().length > 0` かつ `getComputedStyle(...).visibility === "visible"`）
+  だけを見る
+- 検知は `ResizeObserver`。**`IntersectionObserver` は `visibility: hidden` を見ない**ので使えない。
+  `.row` の高さはビューポートの高さに比例するので、閾値をまたぐときは必ずこの要素の寸法も変わる。
+  ブレークポイントが幅で切り替わる場合も、`.music` は `width: 50%` なので寸法が動く
+- **チェックボックスは非制御なので、`pause()` と同時に `toggleRef.current.checked = false` も要る。**
+  戻さないと CSS のアイコン（`.play_container input:checked ~ .pa`）が一時停止のまま残る
+- **`<audio>` を DOM から外しても再生は止まらない。** unmount の後始末で明示的に `pause()` する。
+  実測（ソフト遷移 `/` → `/about`）で `inDom: false` / `paused: true` を確認した
+- `isPlaying` の `useState` は**宣言されているだけで一度も読まれていなかった**ので外した。
+  非制御チェックボックスの `e.target.checked` が唯一の真実
+- 実測（本番ビルド、`reduce`、n=1）: 390×800 → 390×500（`visibility: hidden`）/ 390×300（`display: none`）/
+  1280×800 → 1280×460 / 769×500 → 768×500（幅だけ跨ぐ）の 4 通りすべてで停止し、アイコンも
+  `play` に戻り、サイズを戻せば再び再生できた。1280×800 → 1280×700（隠れない）では**鳴り続ける**
 
 ### /chat の UI で守ること（#20）
 
