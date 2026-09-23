@@ -10,6 +10,14 @@
     /* 白い文字やアイコンを載せる塗り。明るい側の端でも白に対して 4.5:1 以上 */
     --fill-accent-solid: linear-gradient(135deg, var(--dc-primary-b) 0%, var(--dc-primary-db) 100%);
 }
+/* iOS Safari は横向きにすると、文字の一部を自動で拡大する (text autosizing)。
+   iPhone の横向き (ページ領域 750x326) では、12px のフッターが 1.37 倍、/ の見出しが 1.2 倍に
+   膨らんでいた。アイコンやチャット欄の文字は膨らまないので、並びが崩れる (#71)。
+   100% は「自動拡大をしない」の意味で、利用者によるピンチでの拡大は妨げない */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
 body {
     position: relative;
     font-family: var(--font-nunito), sans-serif;
@@ -67,13 +75,18 @@ footer {
     inset-block-start: auto;
 }
 
+/* 各ページの background-color は、iPhone の横向きでノッチ側の余白 (safe area) を塗る色になる。
+   背景画像はそこへは伸びず、色だけが塗られる。以前の .body-default は black で、左右に黒い帯が
+   出ていた (#71)。グラデーションの両端の中間色にして、帯を背景に馴染ませる */
+
 /* ページ間の背景の切り替えは View Transition の root グループのクロスフェードに任せる。
    body に transition: background を足してはいけない。::view-transition-new は live 表現
    なので実 DOM の遷移がその上で別途走り、クロスフェードと二重掛けになる。さらに
    linear-gradient と repeating-linear-gradient のスタックは補間できず 50% 地点で
    離散的に切り替わるため、背景が二段階に変わって見える (#40) */
 .body-default {
-  background-color: black;
+  /* #06C0FF と #0070D9 の中間 */
+  background-color: #0398EC;
   background-image: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
 }
 /* 青いグラデーションや立ち絵の上に載るので、文字の後ろに暗い面を敷く。白い文字との対比を 6:1 以上に保つ */
@@ -168,6 +181,8 @@ footer {
       transparent var(--grid-size)
     ),
     linear-gradient(147deg, #e8f4f8 0%, #d1e8f0 74%);
+  /* #e8f4f8 と #d1e8f0 の中間。横向きの safe area を塗る (上のコメント参照) */
+  background-color: #dceef4;
 }
 /* 既定のフッター色 (rgb(200, 200, 200)) は明るい背景だと 1.3:1 まで落ちる */
 .body-chat footer {
@@ -177,6 +192,7 @@ footer {
 /* ===== About page ===== */
 .body-about {
   background: linear-gradient(147deg, var(--dc-primary-sb) 0%, var(--dc-primary-b) 74%);
+  background-color: #0398EC;
   max-height: none;
   overflow-y: auto;
   overflow-x: hidden;
@@ -214,6 +230,10 @@ footer {
    ここは footer だけを直す。footer は layout の <main> 内にあって 404 のツリーの
    外に position: fixed で描かれるので、body 側からしか色が届かない */
 /* 既定のフッター色 (rgb(200, 200, 200)) は明るい背景だと 1.3:1 まで落ちる */
+.body-notfound {
+  /* 404 の背景は .page が塗るが、safe area の色は body からしか届かない */
+  background-color: #dceef4;
+}
 .body-notfound footer {
   color: var(--color-text-secondary);
 }
