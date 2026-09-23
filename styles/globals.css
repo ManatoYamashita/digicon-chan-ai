@@ -122,7 +122,6 @@ footer {
 ::view-transition { pointer-events: none; }
 
 /* ===== Menu: View Transitions から除外 ===== */
-::view-transition-group(menu-fab),
 ::view-transition-group(menu-pill) {
   animation: none;
 }

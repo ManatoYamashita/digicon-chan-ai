@@ -5,7 +5,6 @@
 $glass-bg: rgba(255, 255, 255, 0.15);
 $glass-border: rgba(255, 255, 255, 0.25);
 $glass-blur: 20px;
-$card-radius: 20px;
 $section-gap: 80px;
 $cyan: rgba(6, 192, 255, 0.8);
 $cyan-glow: rgba(6, 192, 255, 0.3);
@@ -199,40 +198,6 @@ $orb-blur-profiles: (
 @keyframes scrollPulse {
   0%, 100% { opacity: 0.2; transform: scaleY(0.6); }
   50% { opacity: 0.8; transform: scaleY(1); }
-}
-
-// ── Glass card (shared) ──
-.glassCard {
-  background: $glass-bg;
-  -webkit-backdrop-filter: blur($glass-blur);
-  backdrop-filter: blur($glass-blur);
-  border: 1px solid $glass-border;
-  border-radius: $card-radius;
-  padding: 32px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-
-  // Top gradient shine
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.4) 30%,
-      rgba(6, 192, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0.4) 70%,
-      transparent 100%
-    );
-    border-radius: $card-radius $card-radius 0 0;
-  }
 }
 
 // ── Profile Section ──
@@ -609,10 +574,6 @@ $orb-blur-profiles: (
     align-items: center;
   }
 
-  .glassCard {
-    padding: 24px 20px;
-  }
-
   .folderSection {
     min-height: 30svh;
     transform: scale(0.6);
@@ -654,11 +615,6 @@ $orb-blur-profiles: (
 
   .heroCardWrapper {
     max-width: min(320px, 90vw);
-  }
-
-  .glassCard {
-    padding: 20px 16px;
-    border-radius: 16px;
   }
 
   .galleryGrid {
