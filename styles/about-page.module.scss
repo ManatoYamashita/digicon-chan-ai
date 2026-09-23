@@ -204,8 +204,8 @@ $orb-blur-profiles: (
 // ── Glass card (shared) ──
 .glassCard {
   background: $glass-bg;
-  backdrop-filter: blur($glass-blur);
   -webkit-backdrop-filter: blur($glass-blur);
+  backdrop-filter: blur($glass-blur);
   border: 1px solid $glass-border;
   border-radius: $card-radius;
   padding: 32px;
@@ -466,8 +466,8 @@ $orb-blur-profiles: (
   inset: 0;
   z-index: 100;
   background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -534,8 +534,8 @@ $orb-blur-profiles: (
   gap: 10px;
   padding: 20px 12px;
   background: $glass-bg;
-  backdrop-filter: blur($glass-blur);
   -webkit-backdrop-filter: blur($glass-blur);
+  backdrop-filter: blur($glass-blur);
   border: 1px solid $glass-border;
   border-radius: 16px;
   color: #fff;
