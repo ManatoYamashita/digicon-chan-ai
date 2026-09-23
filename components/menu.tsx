@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence, MotionConfig } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import styles from "@/styles/menu.module.scss";
 
 type NavItem = {
@@ -75,74 +74,12 @@ const navItems: NavItem[] = [
 ];
 
 export default function Menu() {
-  const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-
-  const close = () => setIsOpen(false);
-  const toggle = () => setIsOpen((prev) => !prev);
 
   return (
     // 視差効果を減らす設定のときは、インジケーターの移動や拡大縮小をやめる
     <MotionConfig reducedMotion="user">
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className={styles.overlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={close}
-          />
-        )}
-      </AnimatePresence>
-
-      <div className={styles.fab} style={{ viewTransitionName: "menu-fab" }}>
-        <AnimatePresence>
-          {isOpen && (
-            <motion.nav
-              className={styles.menu}
-              initial={{ opacity: 0, scale: 0.95, y: 8 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 8 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            >
-              {navItems.map(({ href, label, icon, transitionTypes }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`${styles.link} ${pathname === href ? styles.active : ""}`}
-                  aria-current={pathname === href ? "page" : undefined}
-                  transitionTypes={transitionTypes}
-                  onClick={close}
-                >
-                  {pathname === href ? (
-                    <motion.span
-                      className={styles.activeIndicator}
-                      layoutId="desktop-nav-indicator"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  ) : null}
-                  {icon}
-                  {label}
-                </Link>
-              ))}
-            </motion.nav>
-          )}
-        </AnimatePresence>
-
-        <motion.button
-          className={styles.trigger}
-          onClick={toggle}
-          whileTap={{ scale: 0.9 }}
-          aria-label="メニューを開く"
-          aria-expanded={isOpen}
-        >
-          <span className={styles.hamburger} data-open={isOpen} />
-        </motion.button>
-      </div>
-
-      {/* Mobile pill bar */}
+      {/* ピルバー（画面幅によらずこれだけを使う） */}
       <nav className={styles.pillBar} style={{ viewTransitionName: "menu-pill" }}>
         {navItems.map(({ href, label, icon, transitionTypes }) => (
           <Link

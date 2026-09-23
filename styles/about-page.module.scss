@@ -2,10 +2,12 @@
 @use "sass:map";
 
 // ── Design tokens ──
-$glass-bg: rgba(255, 255, 255, 0.15);
+// リンクカードの下地。白い文字に対して、ぼかした青い背景の上で最小 6.4:1（hover で 7.5:1）。
+// 白の半透明だと下の青と混ざって 3.2:1 までしか出ない (#77)
+$link-bg: rgba(0, 30, 80, 0.35);
+$link-bg-hover: rgba(0, 30, 80, 0.45);
 $glass-border: rgba(255, 255, 255, 0.25);
 $glass-blur: 20px;
-$card-radius: 20px;
 $section-gap: 80px;
 $cyan: rgba(6, 192, 255, 0.8);
 $cyan-glow: rgba(6, 192, 255, 0.3);
@@ -199,40 +201,6 @@ $orb-blur-profiles: (
 @keyframes scrollPulse {
   0%, 100% { opacity: 0.2; transform: scaleY(0.6); }
   50% { opacity: 0.8; transform: scaleY(1); }
-}
-
-// ── Glass card (shared) ──
-.glassCard {
-  background: $glass-bg;
-  -webkit-backdrop-filter: blur($glass-blur);
-  backdrop-filter: blur($glass-blur);
-  border: 1px solid $glass-border;
-  border-radius: $card-radius;
-  padding: 32px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-
-  // Top gradient shine
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.4) 30%,
-      rgba(6, 192, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0.4) 70%,
-      transparent 100%
-    );
-    border-radius: $card-radius $card-radius 0 0;
-  }
 }
 
 // ── Profile Section ──
@@ -533,7 +501,7 @@ $orb-blur-profiles: (
   align-items: center;
   gap: 10px;
   padding: 20px 12px;
-  background: $glass-bg;
+  background: $link-bg;
   -webkit-backdrop-filter: blur($glass-blur);
   backdrop-filter: blur($glass-blur);
   border: 1px solid $glass-border;
@@ -573,7 +541,7 @@ $orb-blur-profiles: (
 
   &:hover {
     transform: translateY(-6px) scale(1.02);
-    background: rgba(255, 255, 255, 0.25);
+    background: $link-bg-hover;
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
 
     svg {
@@ -607,10 +575,6 @@ $orb-blur-profiles: (
 
   .heroTextBlock {
     align-items: center;
-  }
-
-  .glassCard {
-    padding: 24px 20px;
   }
 
   .folderSection {
@@ -654,11 +618,6 @@ $orb-blur-profiles: (
 
   .heroCardWrapper {
     max-width: min(320px, 90vw);
-  }
-
-  .glassCard {
-    padding: 20px 16px;
-    border-radius: 16px;
   }
 
   .galleryGrid {
