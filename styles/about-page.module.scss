@@ -1,3 +1,6 @@
+@use "sass:list";
+@use "sass:map";
+
 // ── Design tokens ──
 $glass-bg: rgba(255, 255, 255, 0.15);
 $glass-border: rgba(255, 255, 255, 0.25);
@@ -30,31 +33,66 @@ $cyan-glow: rgba(6, 192, 255, 0.3);
   opacity: 0;
 }
 
+// 円は filter: blur(80px) ではなく、ぼかした結果の輝度分布を radial-gradient で直接描く。
+// GSAP が円を動かし続けるので、filter だと iOS Safari は毎フレームぼかしを計算し直し、
+// 合成に 1 フレーム数秒かかって /about が固まって見えていた（#73）。
+//
+// 各 stop は「直径 $size の円盤（輝度 1）を標準偏差 80px のガウス関数でぼかしたとき、
+// 中心から d の点の輝度」を数値積分した値。円盤の半径 r に対する σ の比で形が変わるので、
+// サイズごとに値を持つ。3σ（240px）より外は 0.1% 未満なので透明にする。
+$orb-blur-profiles: (
+  400: (95.6% 0px, 93.4% 44px, 86.1% 88px, 72.4% 132px, 53.2% 176px, 32.8% 220px, 16.4% 264px, 6.5% 308px, 2% 352px, 0.5% 396px),
+  350: (90.9% 0px, 87.8% 42px, 78.7% 83px, 63.7% 124px, 44.7% 166px, 26.5% 208px, 13.1% 249px, 5.3% 290px, 1.7% 332px, 0.4% 374px),
+  300: (82.8% 0px, 79.2% 39px, 68.9% 78px, 53.5% 117px, 36.3% 156px, 21% 195px, 10.2% 234px, 4.1% 273px, 1.4% 312px, 0.4% 351px),
+  250: (70.5% 0px, 66.9% 36px, 56.7% 73px, 42.4% 110px, 28% 146px, 16.1% 182px, 7.7% 219px, 3.1% 256px, 1.1% 292px, 0.3% 328px),
+  200: (54.2% 0px, 51.1% 34px, 42.6% 68px, 31.4% 102px, 20.3% 136px, 11.4% 170px, 5.5% 204px, 2.3% 238px, 0.8% 272px, 0.3% 306px),
+  180: (46.9% 0px, 44.1% 33px, 36.7% 66px, 26.9% 99px, 17.3% 132px, 9.8% 165px, 4.8% 198px, 2% 231px, 0.7% 264px, 0.2% 297px),
+);
+
+@mixin orb-size($size) {
+  width: $size * 1px;
+  height: $size * 1px;
+
+  &::before {
+    $stops: ();
+    @each $pair in map.get($orb-blur-profiles, $size) {
+      $stops: list.append(
+        $stops,
+        color-mix(in srgb, var(--orb-color) list.nth($pair, 1), transparent) list.nth($pair, 2),
+        comma
+      );
+    }
+    background: radial-gradient(circle closest-side, $stops, transparent 100%);
+  }
+}
+
 .orb {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
   opacity: 0.3;
   will-change: transform;
 
+  // ぼかしの裾は円盤の外へ 3σ 広がるので、塗る箱をそのぶん外へ出す
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -240px;
+  }
+
   &:nth-child(1) {
-    width: 400px;
-    height: 400px;
-    background: rgba(255, 255, 255, 0.4);
+    @include orb-size(400);
+    --orb-color: rgba(255, 255, 255, 0.4);
     top: 10%;
     left: -10%;
   }
   &:nth-child(2) {
-    width: 350px;
-    height: 350px;
-    background: rgba(6, 192, 255, 0.5);
+    @include orb-size(350);
+    --orb-color: rgba(6, 192, 255, 0.5);
     top: 40%;
     right: -8%;
   }
   &:nth-child(3) {
-    width: 300px;
-    height: 300px;
-    background: rgba(160, 100, 255, 0.4);
+    @include orb-size(300);
+    --orb-color: rgba(160, 100, 255, 0.4);
     bottom: 5%;
     left: 20%;
   }
@@ -602,9 +640,9 @@ $cyan-glow: rgba(6, 192, 255, 0.3);
   }
 
   .orb {
-    &:nth-child(1) { width: 250px; height: 250px; }
-    &:nth-child(2) { width: 200px; height: 200px; }
-    &:nth-child(3) { width: 180px; height: 180px; }
+    &:nth-child(1) { @include orb-size(250); }
+    &:nth-child(2) { @include orb-size(200); }
+    &:nth-child(3) { @include orb-size(180); }
   }
 }
 
