@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import styles from "@/styles/music.module.scss";
-import { useState, useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 
 import jacketImg from "@/public/images/gallery/cover.webp";
 
@@ -19,25 +19,60 @@ function formatTime(seconds: number): string {
 
 function Music({ title, description }: Props) {
 
-    const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const sectionRef = useRef<HTMLElement>(null);
+    const toggleRef = useRef<HTMLInputElement>(null);
     const durationRef = useRef(0);
     const seekbarRef = useRef<HTMLInputElement>(null);
     const currentTimeRef = useRef<HTMLDivElement>(null);
     const durationTimeRef = useRef<HTMLDivElement>(null);
 
-    const handleCheckboxChange = useCallback(() => {
-        setIsPlaying(prev => {
-            const next = !prev;
-            if (audioRef.current) {
-                if (next) {
-                    audioRef.current.play().catch(error => console.error("Failed to play sound:", error));
-                } else {
-                    audioRef.current.pause();
-                }
-            }
-            return next;
-        });
+    const handleCheckboxChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        if (e.target.checked) {
+            audio.play().catch(error => console.error("Failed to play sound:", error));
+        } else {
+            audio.pause();
+        }
+    }, []);
+
+    // 行が低いと .row は visibility: hidden になり (#60 / #64)、さらに低いと display: none に
+    // なる (#56)。どちらでも Play/Pause は画面から消え、Tab でも踏めないので、鳴っている音を
+    // 止める手段が無くなる (#65)。
+    //
+    // 閾値を JavaScript 側にも持たせると CSS と二重管理になり、片方だけ直したときに必ずずれる。
+    // 条件は書かず、実際に描画された結果 (箱の有無と computed style) だけを見て判断する。
+    useEffect(() => {
+        const section = sectionRef.current;
+        // <audio> は同じ要素のまま差し替わらないので、ここで掴んで後始末まで使い回す。
+        const audio = audioRef.current;
+        if (!section || !audio) return;
+
+        const pauseIfUnreachable = () => {
+            if (audio.paused) return;
+            const reachable =
+                section.getClientRects().length > 0 &&
+                getComputedStyle(section).visibility === "visible";
+            if (reachable) return;
+            audio.pause();
+            // チェックボックスは非制御なので、DOM 側も戻さないと CSS のアイコンが
+            // 一時停止のまま残る (.play_container input:checked ~ .pa)。
+            if (toggleRef.current) toggleRef.current.checked = false;
+        };
+
+        // .row の高さはビューポートの高さに比例するので、閾値をまたぐときはこの要素の
+        // 寸法も必ず変わる。ResizeObserver がその瞬間を拾う。
+        const observer = new ResizeObserver(pauseIfUnreachable);
+        observer.observe(section);
+        window.addEventListener("resize", pauseIfUnreachable);
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("resize", pauseIfUnreachable);
+            // <audio> を DOM から外しても再生は止まらないので、離脱時に明示的に止める。
+            audio.pause();
+        };
     }, []);
 
     const handleTimeUpdate = useCallback(() => {
@@ -74,7 +109,7 @@ function Music({ title, description }: Props) {
     }, []);
 
     return (
-        <section className={styles.music}>
+        <section className={styles.music} ref={sectionRef}>
             <div className={styles.player}>
                 <div className={styles.wrapper}>
                     <div className={styles.infoWrapper}>
@@ -92,7 +127,7 @@ function Music({ title, description }: Props) {
                         </div>
                         <div className={styles.play}>
                         <label className={styles.play_container}>
-                            <input defaultChecked={false} type="checkbox" aria-label="Play/Pause" onChange={handleCheckboxChange} />
+                            <input ref={toggleRef} defaultChecked={false} type="checkbox" aria-label="Play/Pause" onChange={handleCheckboxChange} />
                             <svg viewBox="0 0 384 512" height="1em" xmlns="http://www.w3.org/2000/svg" className={styles.pl}><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"></path></svg>
                             <svg viewBox="0 0 320 512" height="1em" xmlns="http://www.w3.org/2000/svg" className={styles.pa}><path d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"></path></svg>
                             <audio
