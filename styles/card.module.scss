@@ -55,6 +55,18 @@
   transition: .2s ease-in-out;
 }
 
+/* .card__header は row-reverse。この div はその flex item で、min-width: auto のままだと
+   min-content より縮まない。min-content を決めているのは字幕の折り返せない塊
+   「Illu/Anime/Design:」で、16px のとき 131.9px ある。.card__thumb は flex-shrink: 0 なので、
+   カードが狭いと溢れたぶんが主軸の始端と逆 — つまり左へ出て、.container の
+   overflow: hidden に切り取られる。幅 320 で字幕のグリフの 51.5%、幅 390 で 25% が
+   切れていた (#67)。
+   components/card.tsx が参照しているのに定義が無く、className が undefined になって
+   いたクラスでもある (#69)。 */
+.card__header_text {
+  min-width: 0;
+}
+
 .card__arc {
   width: 80px;
   height: 80px;
@@ -130,6 +142,22 @@
   .card__thumb {
     width: 40px;
     height: 40px;
+  }
+}
+
+/* min-width: 0 だけでは、字幕の折り返せない塊そのものが入らない幅 (≤349) が残る。
+   inline-block は min-content より狭くならず、text-align: end で右端に貼り付くので、
+   親をいくら縮めても左へ同じだけはみ出す (幅 320 で 11.9px)。塊自体を縮める。
+   16px で 131.9px の塊は 12px で 99.0px になり、幅 320 でも収まる。
+   実測の崖は 349/350 なので、10px の余裕を見て 360px を閾値にした。
+
+   上の @media (max-width: 620px) の中の .card__status は .card__header にネストされて
+   いて (0,2,0)。ここも .card__header 経由の (0,2,0) にし、かつ後ろに置かないと勝てない。 */
+@media (max-width: 360px) {
+  .card__header {
+    .card__status {
+      font-size: 0.75rem;
+    }
   }
 }
 
