@@ -407,6 +407,7 @@ Play/Pause は画面からも Tab 順からも消える。鳴っている音を�
 
 - **iOS Safari は横向きで文字の一部を自動で拡大する（text autosizing）。** 同じ 750×326 を Chrome で描くと再現しない。アイコンやチャット欄の文字は膨らまず、12px のフッターが 1.37 倍、`/` の見出しが 1.2 倍になって並びが崩れた。`styles/globals.css` の `html { text-size-adjust: 100% }` で止めている。**Chrome のエミュレーションでは確かめられない**ので、実機のスクリーンショットと Chrome の同寸法の描画を、アイコン（膨らまない）を物差しにして比べる
 - **左右の safe area は `body` の `background-color` で塗られる。** 背景画像はそこへ伸びない。`viewport-fit=cover` にはしていないので、各ページの `body` にグラデーションの中間色を指定して帯を馴染ませている（`/` と `/about` は `#0398EC`、`/chat` と 404 は `#dceef4`）。ページを足したら同じように色を付ける
+- **`/` はスマートフォンの横向きで SNS リンクのバー（`.sidebar`）を出さない。** 条件は `(orientation: landscape) and (hover: none) and (pointer: coarse) and (max-height: 30rem)`（`styles/sidebar.module.scss` の末尾）。パソコンの縦に縮めた窓（1280×300）とズームした画面では、24rem のブロックが「飾りより導線を優先」して横並びにしたバーを残す。iPad の横向き（縦 820px 前後）は高さで外れる。Chrome で確かめるときは `Emulation.setTouchEmulationEnabled` と `mobile: true` を併用しないと `hover: none` / `pointer: coarse` にならない
 - **`/chat` は横向きの 600〜768px をデスクトップ配置にする。** モバイル配置の条件は `(max-width: 768px) and (orientation: portrait), (max-width: 599px)`。`styles/chat-page.module.scss`・`styles/chat-character.module.scss`・`components/chat-page.tsx`（GSAP の入場）・`styles/menu.module.scss`（ナビ）の 4 箇所で揃える
   - **下限 599px を外してはいけない。** 確認サイズの 320×256 は横長なので、向きだけで分けるとチャット欄（最小 360px）が画面からはみ出す
   - ナビの幅は `100vw - 360px - 5rem`。ラベル 3 つが入らない 600〜719px では、ラベルを見た目だけ隠してアイコンだけにする（読み上げ名は残る）。アイコンだけなら幅 574px から入る
