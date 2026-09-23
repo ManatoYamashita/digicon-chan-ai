@@ -205,3 +205,17 @@ $transition: $timing ease all;
     }
   }
 }
+
+// スマートフォンの横向きでは、リンクのバーを出さない (#71)。
+// 横向きの iPhone (ページ領域 750x326) では、横並びのバーが見出しと立ち絵の上に大きく乗る。
+// リンクは縦向きに戻せば出る。
+//
+// パソコンの縦に縮めた窓 (1280x300 など) と、ズームした画面では残す。上の 24rem のブロックは
+// 「飾りより導線を優先する」ためにバーを横並びへ組み替えたもので、そちらの判断は変えない。
+// タッチ操作の端末 (hover: none かつ pointer: coarse) に絞り、iPad の横向き (縦 820px 前後) は
+// 高さ 30rem で外す。Toolbar を畳んだ iPhone の横向きでも縦は 430px 以下なので、この条件に入る
+@media screen and (orientation: landscape) and (hover: none) and (pointer: coarse) and (max-height: 30rem) {
+  .sidebar {
+    display: none;
+  }
+}

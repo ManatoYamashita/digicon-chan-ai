@@ -399,7 +399,19 @@ Play/Pause は画面からも Tab 順からも消える。鳴っている音を�
 - **動きは `prefers-reduced-motion` で切り替える**: GSAP は `gsap.matchMedia()` を使い、`reduce` のときは opacity だけを変える。CSS のアニメーションと View Transition は `@media (prefers-reduced-motion: no-preference)` の中に書き、framer-motion は `MotionConfig reducedMotion="user"` で包む
 - **色は役割トークンを使う**: `globals.css` の `--color-text-*` と `--fill-accent-solid` を使う。値は描画された背景で 4.5:1 以上を実測して決めた。白い文字を `#06c0ff` 側のグラデーションに載せると 2.1:1 まで落ちる
 - **フォーカスを落とさない**: 送信中の入力欄は `disabled` ではなく `readOnly` にし、送信ボタンは `aria-disabled` にする。入力欄とリセットボタンが入れ替わるときは、新しく出た方へフォーカスを移す。メッセージ一覧は `role="log"` にして、返答と「入力中…」を読み上げさせる
-- **確認する画面サイズ**: 1280×800、390×844（Chrome のデバイスエミュレーション）、640×400（200% ズーム相当）、320×256。どれでもページ自体のスクロール量が 0 で、ヘッダー・バッジ・ナビ・入力欄が画面内にあること
+- **確認する画面サイズ**: 1280×800、390×844（Chrome のデバイスエミュレーション）、640×400（200% ズーム相当）、320×256、**750×326（iPhone の横向き）**。どれでもページ自体のスクロール量が 0 で、ヘッダー・バッジ・ナビ・入力欄が画面内にあること
+
+### 横向きの iPhone Safari（#71）
+
+実機（iPhone 12〜14 系、横 844×390pt）の Safari では、ページが使える領域は**約 750×326**（左右の safe area 各約 47pt と上のツールバー約 64pt を除く）。幅が 768 以下なので、何もしないと縦長と同じ配置に入る。
+
+- **iOS Safari は横向きで文字の一部を自動で拡大する（text autosizing）。** 同じ 750×326 を Chrome で描くと再現しない。アイコンやチャット欄の文字は膨らまず、12px のフッターが 1.37 倍、`/` の見出しが 1.2 倍になって並びが崩れた。`styles/globals.css` の `html { text-size-adjust: 100% }` で止めている。**Chrome のエミュレーションでは確かめられない**ので、実機のスクリーンショットと Chrome の同寸法の描画を、アイコン（膨らまない）を物差しにして比べる
+- **左右の safe area は `body` の `background-color` で塗られる。** 背景画像はそこへ伸びない。`viewport-fit=cover` にはしていないので、各ページの `body` にグラデーションの中間色を指定して帯を馴染ませている（`/` と `/about` は `#0398EC`、`/chat` と 404 は `#dceef4`）。ページを足したら同じように色を付ける
+- **`/` はスマートフォンの横向きで SNS リンクのバー（`.sidebar`）を出さない。** 条件は `(orientation: landscape) and (hover: none) and (pointer: coarse) and (max-height: 30rem)`（`styles/sidebar.module.scss` の末尾）。パソコンの縦に縮めた窓（1280×300）とズームした画面では、24rem のブロックが「飾りより導線を優先」して横並びにしたバーを残す。iPad の横向き（縦 820px 前後）は高さで外れる。Chrome で確かめるときは `Emulation.setTouchEmulationEnabled` と `mobile: true` を併用しないと `hover: none` / `pointer: coarse` にならない
+- **`/chat` は横向きの 600〜768px をデスクトップ配置にする。** モバイル配置の条件は `(max-width: 768px) and (orientation: portrait), (max-width: 599px)`。`styles/chat-page.module.scss`・`styles/chat-character.module.scss`・`components/chat-page.tsx`（GSAP の入場）・`styles/menu.module.scss`（ナビ）の 4 箇所で揃える
+  - **下限 599px を外してはいけない。** 確認サイズの 320×256 は横長なので、向きだけで分けるとチャット欄（最小 360px）が画面からはみ出す
+  - ナビの幅は `100vw - 360px - 5rem`。ラベル 3 つが入らない 600〜719px では、ラベルを見た目だけ隠してアイコンだけにする（読み上げ名は残る）。アイコンだけなら幅 574px から入る
+  - 実測（本番ビルド、`reduce`、n=1）: 599 / 600 / 640 / 667 / 700 / 709 / 710 / 719 / 720 / 736 / 750 / 768 / 769 の横向きと、568×270・320×256・390×844・768×1024・844×390・1280×800 の 19 サイズで、スクロール 0・ナビとチャット欄の重なり 0・ナビのはみ出しなし・送信ボタンに到達可
 
 ### 404ページ（#43）
 
