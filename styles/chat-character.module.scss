@@ -17,7 +17,8 @@
   pointer-events: none;
 }
 
-@media (max-width: 768px) {
+// 横向きの 600〜768px はデスクトップと同じ配置 (#71。styles/chat-page.module.scss を参照)
+@media (max-width: 768px) and (orientation: portrait), (max-width: 599px) {
   .imageWrap {
     inset: auto;
     left: 50%;

@@ -155,7 +155,11 @@
   opacity: 0;
 }
 
-@media (max-width: 768px) {
+// 横向きの狭い画面 (iPhone の横向きで幅 667〜750px 前後) はデスクトップと同じ配置にする (#71)。
+// モバイル配置は縦長のときと、横向きでもチャット欄 (最小 360px) とアイコンだけのナビが並ばない
+// 幅 (≤599px。320x256 など) のときだけ。
+// components/chat-page.tsx と styles/chat-character.module.scss、styles/menu.module.scss も同じ条件に揃える
+@media (max-width: 768px) and (orientation: portrait), (max-width: 599px) {
   .chatPage {
     position: relative;
     flex-direction: column;

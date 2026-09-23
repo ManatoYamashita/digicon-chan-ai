@@ -265,3 +265,33 @@ $line-gap:     5px;
     bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+// ── /chat (横向きの狭い画面) ──
+// /chat は横向きの 600〜768px ならデスクトップと同じ配置になる (#71。styles/chat-page.module.scss を参照)。
+// ナビもデスクトップと同じく、チャット欄 (最小 360px) の右側に収める
+@media screen and (min-width: 600px) and (max-width: 768px) and (orientation: landscape) {
+  :global(.body-chat) .pillBar {
+    left: auto;
+    right: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    width: min(50vw, calc(100vw - 360px - 5rem));
+  }
+}
+
+// 幅がラベル 3 つに足りないとき (ナビの幅は 100vw - 360px - 5rem) は、アイコンだけにする。
+// ラベルは見た目だけ隠し、リンクの読み上げ名として残す。
+// アイコンだけなら 1 項目 42px (padding 12px x 2 + 18px) で、幅 574px から入る。下限 600px で 26px の余裕
+@media screen and (min-width: 600px) and (max-width: 719px) and (orientation: landscape) {
+  :global(.body-chat) .pillItem {
+    padding-inline: 12px;
+  }
+
+  :global(.body-chat) .pillLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

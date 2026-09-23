@@ -188,7 +188,8 @@ export default function ChatPage() {
         },
         (context) => {
           const reduceMotion = Boolean(context.conditions?.reduceMotion);
-          const isMobile = window.matchMedia("(max-width: 768px)").matches;
+          // styles/chat-page.module.scss と同じ条件。横向きはデスクトップ配置 (#71)
+          const isMobile = window.matchMedia("(max-width: 768px) and (orientation: portrait), (max-width: 599px)").matches;
           const motion = (vars: gsap.TweenVars): gsap.TweenVars => (reduceMotion ? {} : vars);
           const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 

@@ -160,7 +160,8 @@ export default function Menu() {
               />
             ) : null}
             {icon}
-            {label}
+            {/* 狭い横向きの /chat ではアイコンだけにし、ラベルは読み上げ名として残す (#71) */}
+            <span className={styles.pillLabel}>{label}</span>
           </Link>
         ))}
       </nav>
