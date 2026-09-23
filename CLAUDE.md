@@ -429,6 +429,16 @@ GSAP が円を動かし続けるので、iOS Safari は毎フレームぼかし�
 - 円の無限ループは `gsap.matchMedia()` の `(prefers-reduced-motion: no-preference)` の中で付ける
 - **`backdrop-filter` → `-webkit-backdrop-filter` の順で書くと、Lightning CSS が接頭辞なしを落とす。**
   Chrome と Firefox ではぼかしが描かれない。`-webkit-` を先に書く
+  - #75 で 7 ルール（`styles/menu.module.scss` の 4 つ、`styles/about-page.module.scss` の 3 つ）を並べ替えた。
+    **直したかはビルド後の CSS で確かめる。** ソースを見ても分からない
+    ```bash
+    for f in .next/static/chunks/*.css; do tr '}' '\n' < "$f" | grep -o '[-a-z]*backdrop-filter:[^;]*' | sort | uniq -c; done
+    ```
+  - Chrome は `-webkit-backdrop-filter` を解釈しない（`CSS.supports('-webkit-backdrop-filter', 'blur(1px)')` が false）
+  - 実測（本番ビルド、Chrome headless、`reduce`、n=1）: ピルバーの非アクティブのラベル（`rgba(0,0,0,.65)`）は
+    ぼかし無しで最小 5.5:1 → 有りで 17:1。`/about` のリンクカードの白い文字（13.6px / 600）は最小 2.7 → 3.2:1、
+    中央値はどちらも約 3.3:1 で、**直す前から 4.5:1 に届いていない**（ぼかしで下がったのではない）
+  - `.fab`・`.trigger`・`.menu`・`.overlay` は `display: none !important` で常に描かれず、`.glassCard` はどの TSX からも参照されていない
 
 ### 404ページ（#43）
 
