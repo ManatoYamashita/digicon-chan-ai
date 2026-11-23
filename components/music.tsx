@@ -4,7 +4,8 @@ import Image from "next/image";
 import styles from "@/styles/music.module.scss";
 import { useRef, useCallback, useEffect } from "react";
 
-import jacketImg from "@/public/images/gallery/cover.webp";
+// 表示は最大 216×80 CSS px なので、元の 800px 幅ではなく縮小版を使う（scripts/make-thumbnails.mjs）
+import jacketImg from "@/public/images/gallery/thumbs/cover-jacket.webp";
 
 type Props = {
     title: string;
