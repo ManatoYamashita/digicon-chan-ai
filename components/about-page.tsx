@@ -375,7 +375,7 @@ export default function AboutPage() {
                 onClick={() => setLightboxSrc(img.src)}
               >
                 <Image
-                  src={img.src}
+                  src={img.thumb ?? img.src}
                   alt={img.alt}
                   fill
                   sizes="(max-width: 768px) 50vw, 33vw"

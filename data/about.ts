@@ -12,8 +12,15 @@ export type TimelineItem = {
 };
 
 export type GalleryImage = {
+  /** 元画像。ライトボックスではこちらを原寸で見せる */
   src: string;
   alt: string;
+  /**
+   * ギャラリーのマスに表示する縮小版（scripts/make-thumbnails.mjs が作る）。
+   * 画像最適化を切っている（#48）ので srcset が出ず、無いと元画像がそのまま小さなマスに読み込まれる。
+   * 1 枚目と 5 枚目は大きなマスなので元画像のまま。並び順を変えたら縮小版の幅を測り直すこと
+   */
+  thumb?: string;
 };
 
 export type ExternalLink = {
@@ -70,17 +77,17 @@ export const timelineData: TimelineItem[] = [
 
 export const galleryImages: GalleryImage[] = [
   { src: "/images/gallery/cover.webp", alt: "創作タイニーデスク" },
-  { src: "/images/gallery/ad.webp", alt: "でじこんちゃん 誕生日広告" },
-  { src: "/images/gallery/identity-photo.webp", alt: "でじこんちゃん 証明写真 写るんです" },
-  { src: "/images/gallery/yc.webp", alt: "東京都市大学 横浜キャンパス" },
+  { src: "/images/gallery/ad.webp", thumb: "/images/gallery/thumbs/ad.webp", alt: "でじこんちゃん 誕生日広告" },
+  { src: "/images/gallery/identity-photo.webp", thumb: "/images/gallery/thumbs/identity-photo.webp", alt: "でじこんちゃん 証明写真 写るんです" },
+  { src: "/images/gallery/yc.webp", thumb: "/images/gallery/thumbs/yc.webp", alt: "東京都市大学 横浜キャンパス" },
   { src: "/images/dcchan.webp", alt: "でじこんちゃん" },
-  { src: "/images/gallery/dcchan-square.webp", alt: "でじこんちゃん プロフィール画像" },
-  { src: "/images/gallery/dcchan-3d.webp", alt: "でじこんちゃん 3Dモデル" },
+  { src: "/images/gallery/dcchan-square.webp", thumb: "/images/gallery/thumbs/dcchan-square.webp", alt: "でじこんちゃん プロフィール画像" },
+  { src: "/images/gallery/dcchan-3d.webp", thumb: "/images/gallery/thumbs/dcchan-3d.webp", alt: "でじこんちゃん 3Dモデル" },
   { src: "/images/gallery/dcchan-selfie.webp", alt: "でじこんちゃん 証明写真" },
-  { src: "/images/gallery/friends.webp", alt: "でじこんちゃんと、創作連合のお友達" },
+  { src: "/images/gallery/friends.webp", thumb: "/images/gallery/thumbs/friends.webp", alt: "でじこんちゃんと、創作連合のお友達" },
   { src: "/images/gallery/dcchan-design-anime.webp", alt: "アニメ用キャラクターデザイン" },
-  { src: "/images/gallery/dcchan-loli.jpg", alt: "でじこんちゃん（少女）" },
-  { src: "/images/gallery/farewel-dc-2023.webp", alt: "卒業おめでとう 2023" },
+  { src: "/images/gallery/dcchan-loli.jpg", thumb: "/images/gallery/thumbs/dcchan-loli.webp", alt: "でじこんちゃん（少女）" },
+  { src: "/images/gallery/farewel-dc-2023.webp", thumb: "/images/gallery/thumbs/farewel-dc-2023.webp", alt: "卒業おめでとう 2023" },
   { src: "/images/gallery/dcchan-identify-photo.webp", alt: "でじこんちゃん 証明写真集" },
   { src: "/images/gallery/dcwithApp.webp", alt: "でじこんちゃん マッチングアプリプロフィール画像" },
 ];
